@@ -1,7 +1,7 @@
 # **Visual Social Graph: Product Strategy Document**
-## **Version 1.0**
+## **Version 1.1 - Category Leadership Edition**
 
-*"Category creation requires strategy, not just execution"*
+*"Strategy is choosing what not to become"*
 
 ---
 
@@ -9,21 +9,27 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Version** | 1.0 |
+| **Version** | 1.1 (Category Leadership Edition) |
 | **Date** | December 2025 |
-| **Status** | Strategic Framework - Active |
+| **Status** | Strategic Constitution - Active |
 | **Owner** | Product Strategy / Founder |
 | **Review Cycle** | Quarterly (or on major market shifts) |
 | **Classification** | Internal - Strategic |
+| **Changes from v1.0** | Added: Category Defense, Strategic Constraints Weaponization, Behavioral Strategy, Strategy-Grade Metrics |
+
+**Document Hierarchy:**
+```
+Strategic Constitution (this document) - Rarely changes
+    ↓ guides
+Product Requirements Document - Changes with major versions
+    ↓ informs
+Product Roadmap - Changes quarterly
+    ↓ drives
+Feature Specifications - Changes continuously
+```
 
 **Purpose:**
-This document defines our strategic approach to building, positioning, and scaling Visual Social Graph. While the PRD defines WHAT we build, this document defines WHY we build it this way, WHO we're competing against, and HOW we win.
-
-**Related Documents:**
-- Product Requirements Document (PRD v2.1-E) - Product definition
-- Product Roadmap - Execution timeline
-- GTM Brief - Go-to-market tactics
-- Metrics Framework - Success measurement
+This document is our **strategic constitution**. It defines not just what we're building, but what we refuse to become. It constrains future opportunity to protect category integrity. It outlives features, roadmaps, and even specific products.
 
 ---
 
@@ -32,15 +38,19 @@ This document defines our strategic approach to building, positioning, and scali
 1. [Strategic Vision](#1-strategic-vision)
 2. [Market Analysis](#2-market-analysis)
 3. [Competitive Landscape](#3-competitive-landscape)
-4. [Category Strategy](#4-category-strategy)
-5. [User Strategy](#5-user-strategy)
-6. [Product Strategy](#6-product-strategy)
-7. [Business Model Strategy](#7-business-model-strategy)
-8. [Growth Strategy](#8-growth-strategy)
-9. [Risk Management Framework](#9-risk-management-framework)
-10. [Strategic Roadmap](#10-strategic-roadmap)
-11. [Decision Frameworks](#11-decision-frameworks)
-12. [Strategic Assumptions & Validation](#12-strategic-assumptions--validation)
+4. **[Why Incumbents Cannot Win This Category](#4-why-incumbents-cannot-win-this-category)** ⭐ NEW
+5. **[Strategic Constraints as Weapons](#5-strategic-constraints-as-weapons)** ⭐ NEW
+6. [Category Strategy](#6-category-strategy)
+7. [User Strategy](#7-user-strategy)
+8. **[Behavioral Strategy & Responsibility](#8-behavioral-strategy--responsibility)** ⭐ NEW
+9. [Product Strategy](#9-product-strategy)
+10. [Business Model Strategy](#10-business-model-strategy)
+11. [Growth Strategy](#11-growth-strategy)
+12. **[Strategy-Grade Metrics](#12-strategy-grade-metrics)** ⭐ NEW
+13. [Risk Management Framework](#13-risk-management-framework)
+14. [Strategic Roadmap](#14-strategic-roadmap)
+15. [Decision Frameworks](#15-decision-frameworks)
+16. [Strategic Assumptions & Validation](#16-strategic-assumptions--validation)
 
 ---
 
@@ -591,9 +601,1136 @@ Friendliness    │                           Friendliness
 
 ---
 
-## **4. Category Strategy**
+## **4. Why Incumbents Cannot Win This Category** ⭐ NEW
 
-### **4.1 Category Definition**
+### **4.1 The Category Defense Thesis**
+
+**Core Argument:**
+Personal Network Intelligence requires architectural, cultural, and business model commitments that incumbents **cannot make** without destroying their existing value propositions.
+
+This isn't about who has better technology. It's about **who can make the necessary sacrifices**.
+
+### **4.2 Why Social Platforms Cannot Win**
+
+**Platforms: Facebook/Meta, Twitter/X, LinkedIn, Instagram, TikTok**
+
+**Why they will try:**
+- Feature differentiation vs. competitors
+- User retention (keep people on platform)
+- Monetization opportunity (premium tier)
+- Defensive move (if we succeed)
+
+**Why they will fail:**
+
+**1. Business Model Conflict (Fatal)**
+```
+Their revenue model: Advertising (98% of Meta revenue, 90% of Twitter revenue)
+├─ Requires: Keeping users ON platform, maximizing time-on-site
+├─ Requires: Opaque algorithms (control what users see)
+├─ Requires: Data collection and targeting
+└─ Requires: Engagement optimization (controversial content)
+
+Our value proposition: Show users their REAL network structure
+├─ Reveals: Platform manipulation (algorithmic curation)
+├─ Reveals: Echo chambers (polarization)
+├─ Empowers: Users to leave platform if needed
+└─ Reduces: Time on platform (clarity → efficiency)
+
+Fundamental conflict: 
+We succeed when users understand and optimize their networks.
+They succeed when users stay confused and engaged.
+
+They cannot build this without cannibalizing core business.
+```
+
+**2. Trust Deficit (Insurmountable)**
+```
+Historical context:
+├─ Cambridge Analytica (Facebook)
+├─ Shadow profiles (all platforms)
+├─ Algorithm manipulation (documented)
+├─ Data breaches (regular occurrence)
+└─ Congressional testimonies (public accountability)
+
+User perception:
+"Platforms showing me my 'true' network is like tobacco companies
+ offering smoking cessation programs."
+
+We have: Clean slate, no baggage, privacy-first DNA
+They have: Decade+ of trust violations
+
+Trust cannot be retrofitted.
+```
+
+**3. Incentive Misalignment (Structural)**
+```
+If LinkedIn showed users:
+├─ "50% of your connections never engage" → Users feel bad
+├─ "Your positioning is weak" → Reflects poorly on LinkedIn
+├─ "These connections are strategic, leave LinkedIn to contact" → Users leave
+└─ "You're in an echo chamber" → LinkedIn's algorithm exposed
+
+Platform native features must:
+├─ Make users feel good (engagement)
+├─ Keep users on platform (retention)
+├─ Validate platform value (justify membership)
+└─ Increase platform usage (ad impressions)
+
+Our insights can be uncomfortable.
+Their insights must be flattering.
+```
+
+**4. Multi-Platform Impossibility**
+```
+Our core value: Unified view across ALL platforms
+├─ Twitter + LinkedIn + Instagram = holistic identity
+└─ Cross-platform insights (where you have influence vs. where you don't)
+
+Platform limitations:
+├─ Each platform only has its own data
+├─ Competitive sensitivity (won't share with rivals)
+├─ API restrictions (intentionally limited)
+└─ Legal/antitrust concerns (data sharing agreements)
+
+They can only build single-platform features.
+We build cross-platform intelligence.
+```
+
+**5. Organizational Complexity**
+```
+To build this, platforms would need:
+├─ Algorithm transparency (conflicts with core IP)
+├─ Data science team (reallocated from ad targeting)
+├─ UX redesign (not a feature, an experience)
+├─ Privacy architecture (opposite of current model)
+└─ Executive buy-in (explains why algorithms manipulate)
+
+We are: Built for this from day one
+They are: Fundamentally incompatible organization
+
+It's not a feature. It's a different business.
+```
+
+**Historical Precedent:**
+- TouchGraph Facebook Browser (2010-2015)
+  - Built exactly this for Facebook
+  - Facebook killed API access
+  - Lesson: Platforms kill threats to engagement model
+
+**Conclusion:** Platforms cannot build this without destroying themselves. If they try, it will be neutered, flattering, platform-locked, and untrustworthy.
+
+---
+
+### **4.3 Why Analytics Vendors Cannot Win**
+
+**Vendors: Hootsuite, Sprout Social, Buffer, Later, Brandwatch**
+
+**Why they will try:**
+- Feature parity (check the box)
+- Competitive response (if we succeed)
+- Upsell opportunity (premium tier)
+
+**Why they will fail:**
+
+**1. Architectural Debt (Technical)**
+```
+Their architecture:
+├─ Built on platform APIs (Twitter API, Facebook Graph API)
+├─ OAuth required (account access mandatory)
+├─ Server-side processing (must store credentials)
+├─ Engagement optimization (schedule posts, track metrics)
+└─ Team collaboration (multi-user, enterprise)
+
+Our architecture:
+├─ Manual upload (no API dependency)
+├─ No account access (privacy-first)
+├─ Client-side processing (browser-based)
+├─ Relationship intelligence (not engagement tracking)
+└─ Individual focus (single-user experience)
+
+To build our product, they would need to:
+├─ Rebuild entire data pipeline (manual upload system)
+├─ Abandon OAuth (conflicts with existing features)
+├─ Explain why they need two systems (confusing to users)
+└─ Cannibalize existing product (complexity explosion)
+
+Rewriting architecture = 18-24 month project = too slow
+```
+
+**2. Identity Crisis (Brand)**
+```
+Their brand promise: "Manage all your social media in one place"
+Our brand promise: "Understand who you are online"
+
+They are: Management tools (scheduling, publishing, reporting)
+We are: Intelligence tools (insight, positioning, strategy)
+
+If Hootsuite adds network visualization:
+├─ Users expect: Another dashboard feature
+├─ Users think: "Cool graph, but does it help me schedule?"
+├─ Brand dilution: Confuses what Hootsuite is for
+└─ Positioning conflict: Management vs. Intelligence
+
+We own: Personal Network Intelligence (category)
+They own: Social Media Management (different category)
+
+Adding features doesn't change categories.
+```
+
+**3. Pricing Conflict (Business Model)**
+```
+Their pricing: $49-$500/month (enterprise focus)
+Our pricing: $12-$29/month (individual focus)
+
+Their customers: Marketing teams, agencies, enterprises
+Our customers: Individual creators, professionals
+
+To serve our market, they would need to:
+├─ Create separate SKU (confusing product line)
+├─ Price at $12/mo (cannibalize existing tiers)
+├─ Target individuals (conflict with B2B sales)
+└─ Explain difference (education burden)
+
+Enterprise vendors have gravity toward complexity and price.
+We have gravity toward simplicity and accessibility.
+```
+
+**4. Feature Bloat Trap**
+```
+Current state:
+├─ Hootsuite: 200+ features (overwhelming)
+├─ Sprout Social: 150+ features (complex)
+└─ Buffer: 50+ features (bloated from "simple" start)
+
+Adding network visualization:
+├─ Feature #201 (buried in menus)
+├─ Tutorial debt (more onboarding)
+├─ Support burden (more complexity)
+└─ Performance impact (heavier app)
+
+We have: One job, done exceptionally well
+They have: Swiss army knife (jack of all trades)
+
+Focus is our advantage.
+Their advantage (comprehensive) becomes disadvantage (bloated).
+```
+
+**5. Trust Asymmetry**
+```
+They require: Account credentials (OAuth)
+├─ Access to: Post on your behalf, read DMs, full control
+├─ Risk: Security breaches, unauthorized posts
+└─ Trust burden: "We won't abuse access"
+
+We require: One-time file upload
+├─ Access to: Only what you explicitly give
+├─ Risk: Minimal (we never see credentials)
+└─ Trust advantage: "We can't abuse what we don't have"
+
+After high-profile breaches (SolarWinds, LastPass, etc.):
+Users increasingly sensitive to credential sharing.
+
+They can't match our privacy without abandoning OAuth.
+Abandoning OAuth = abandoning existing product.
+```
+
+**Historical Precedent:**
+- Buffer adding analytics (2014-2018)
+  - Tried to be both management + analytics
+  - Analytics always second priority
+  - Confusing positioning
+  - Eventually de-emphasized analytics
+
+**Conclusion:** Analytics vendors can add network graphs, but they cannot own Personal Network Intelligence category. Feature ≠ Category.
+
+---
+
+### **4.4 Why CRM Vendors Cannot Win**
+
+**Vendors: Salesforce, HubSpot, Pipedrive, Notion (relationship tracking)**
+
+**Why they will try:**
+- Feature expansion (total addressable market growth)
+- Competitive moat (more features = more lock-in)
+- Upsell opportunity (premium modules)
+
+**Why they will fail:**
+
+**1. Wrong Use Case (Fundamental)**
+```
+CRM purpose: Manage sales pipeline and customer relationships
+├─ Sales-focused: Lead → Opportunity → Close
+├─ Transactional: Every relationship has revenue potential
+├─ Manual entry: Sales reps input data
+└─ Company-owned: Business asset, not personal
+
+PNI purpose: Understand personal network and digital identity
+├─ Insight-focused: Who am I? Where do I stand?
+├─ Non-transactional: Relationships have intrinsic value
+├─ Automated: Data comes from platforms
+└─ Individually-owned: Personal asset, portable
+
+Conflict:
+CRM sees relationships as sales opportunities.
+PNI sees relationships as identity components.
+
+Different philosophy, different workflows, different users.
+```
+
+**2. Data Source Incompatibility**
+```
+CRM data:
+├─ Manual entry (sales reps type notes)
+├─ Email integration (Gmail, Outlook)
+├─ Meeting tracking (calendar)
+└─ Transaction history (deals, revenue)
+
+PNI data:
+├─ Social media exports (Twitter, Instagram, LinkedIn)
+├─ Engagement patterns (likes, comments, shares)
+├─ Network structure (who connects to whom)
+└─ Content analysis (what you post about)
+
+No overlap.
+CRM would need entirely new data pipeline.
+```
+
+**3. Visualization Philosophy**
+```
+CRM visualization:
+├─ Pipeline funnel (linear progression)
+├─ Dashboards (metrics, KPIs, quotas)
+├─ Reports (tables, bar charts)
+└─ Goal: Optimize sales process
+
+PNI visualization:
+├─ Network graph (relational structure)
+├─ Positioning maps (comparative analysis)
+├─ Insight narratives (strategic understanding)
+└─ Goal: Reveal identity and opportunities
+
+CRMs are built for executives reviewing metrics.
+We're built for individuals discovering themselves.
+
+Different epistemology.
+```
+
+**4. Privacy Model Incompatibility**
+```
+CRM model:
+├─ Company owns data (business asset)
+├─ Shared access (team collaboration)
+├─ Compliance focus (GDPR for customer data)
+└─ Retention: Indefinite (historical value)
+
+Our model:
+├─ Individual owns data (personal asset)
+├─ Private by default (solo experience)
+├─ Privacy focus (GDPR for personal data)
+└─ Retention: User controlled (delete anytime)
+
+CRM adding PNI would require:
+├─ Separate data model (siloed from CRM data)
+├─ Different permissions (personal vs. company)
+├─ Compliance complexity (two regimes)
+└─ Identity confusion (am I using CRM or PNI?)
+
+Easier to build separate product than retrofit.
+```
+
+**5. Market Mismatch**
+```
+CRM buyers: Sales leaders, RevOps, executives
+├─ Budget: Company budget ($50-$500/user/month)
+├─ Decision: Committee, procurement process
+├─ Goal: Revenue growth, pipeline efficiency
+└─ Success metric: Deals closed, quota attainment
+
+PNI buyers: Individual creators, professionals
+├─ Budget: Personal budget ($12-$29/month)
+├─ Decision: Individual, immediate
+├─ Goal: Career growth, strategic clarity
+└─ Success metric: Insight gained, positioning improved
+
+B2B vs. B2C.
+Enterprise vs. Individual.
+Different GTM, different everything.
+```
+
+**Conclusion:** CRM vendors live in a different universe. They can build relationship tracking, but not Personal Network Intelligence.
+
+---
+
+### **4.5 Why AI Copilots Cannot Win**
+
+**Vendors: ChatGPT, Claude, Gemini (with analysis capabilities)**
+
+**Why they will try:**
+- Natural extension (AI analyzes everything)
+- User demand ("analyze my network")
+- Competitive feature (differentiation)
+
+**Why they will fail:**
+
+**1. Data Access Problem (Fundamental)**
+```
+AI needs: Raw social media data
+├─ Twitter archive, Instagram export, LinkedIn connections
+└─ Users must upload to AI
+
+Privacy concern:
+├─ "Upload my social data to OpenAI servers?"
+├─ "Let AI train on my network?"
+├─ "Share my connections with third party?"
+└─ Trust barrier (even if privacy policy says safe)
+
+Our advantage:
+├─ Purpose-built for this data (expected, trusted)
+├─ Clear privacy policy (no AI training)
+├─ Transparent processing (80% client-side)
+└─ Brand reputation (privacy-first DNA)
+
+AI companies have: General-purpose trust debt
+We have: Specific-purpose trust surplus
+
+Users will share network data with us, not with AI chat.
+```
+
+**2. Visualization Limitation (Technical)**
+```
+AI output:
+├─ Text (analysis, recommendations)
+├─ Code (can generate D3.js)
+├─ Tables (structured data)
+└─ Static images (if vision model)
+
+PNI output:
+├─ Interactive graphs (zoom, pan, explore)
+├─ Progressive revelation (guided discovery)
+├─ Multiple linked views (perspectives)
+└─ Temporal evolution (watch network change)
+
+AI can describe networks.
+We can show networks.
+
+"A picture is worth a thousand words."
+A live, interactive, beautiful graph is worth a million.
+```
+
+**3. Algorithmic Sophistication**
+```
+AI approach: General intelligence
+├─ Trained on: Everything (broad but shallow)
+├─ Optimized for: Language understanding, generation
+├─ Network analysis: Not specialized
+└─ Algorithms: Generic (basic clustering)
+
+Our approach: Specialized intelligence
+├─ Trained on: Networks (narrow but deep)
+├─ Optimized for: Graph algorithms, community detection
+├─ Network analysis: Core competency
+└─ Algorithms: Sophisticated (Louvain, PageRank, custom)
+
+AI is generalist.
+We are specialist.
+
+In specialized domains, specialists win.
+```
+
+**4. Experience Design**
+```
+AI experience:
+├─ Chat interface (linear conversation)
+├─ Text output (read and scroll)
+├─ Sequential (one question at a time)
+└─ Ephemeral (conversation disappears)
+
+Our experience:
+├─ Visual interface (spatial exploration)
+├─ Graph output (navigate and discover)
+├─ Parallel (multiple views simultaneously)
+└─ Persistent (save and return)
+
+PNI is inherently visual and explorative.
+Chat interfaces are fundamentally wrong medium.
+```
+
+**5. Monetization Model**
+```
+AI model:
+├─ Subscription ($20/month for ChatGPT Plus)
+├─ Compute-heavy (each analysis costs them money)
+├─ Cross-subsidized (funded by chat, image generation, etc.)
+└─ Non-differentiated (everyone has access)
+
+Our model:
+├─ Subscription ($12-$29/month)
+├─ Compute-efficient (client-side processing)
+├─ Focused (entire product is network intelligence)
+└─ Differentiated (only we do this deeply)
+
+AI companies can't justify building deep PNI.
+Opportunity cost too high (other features more valuable).
+
+We can justify because it's our entire business.
+```
+
+**6. Category Ownership**
+```
+If ChatGPT adds network analysis:
+├─ User expectation: "AI analyzed my network" (generic)
+├─ Brand association: "ChatGPT did it" (not a category)
+├─ Mental model: Feature of AI (not new category)
+└─ Positioning: AI tool (not network intelligence tool)
+
+If we define Personal Network Intelligence:
+├─ User expectation: "Visual Social Graph showed me" (specific)
+├─ Brand association: "Visual Social Graph = PNI" (category)
+├─ Mental model: New category (not feature)
+└─ Positioning: PNI leader (category king)
+
+Features don't create categories.
+Focused products create categories.
+```
+
+**Historical Precedent:**
+- ChatGPT Code Interpreter vs. Replit, GitHub Copilot
+  - AI can analyze code, but doesn't own "coding" category
+  - Specialized tools still win in their domains
+
+**Conclusion:** AI can add network analysis features, but cannot own Personal Network Intelligence. General intelligence ≠ Specialized insight.
+
+---
+
+### **4.6 Category Defense Summary**
+
+**Why We Win:**
+
+| Incumbent Type | Why They Try | Why They Fail | Our Moat |
+|----------------|--------------|---------------|----------|
+| **Social Platforms** | Feature differentiation | Business model conflict, trust deficit | Privacy-first, multi-platform, truth-telling |
+| **Analytics Vendors** | Competitive response | Architectural debt, identity crisis | Purpose-built, focused, accessible pricing |
+| **CRM Systems** | Feature expansion | Wrong use case, data incompatibility | Personal vs. transactional, visual vs. tabular |
+| **AI Copilots** | Natural extension | Data access problem, visualization limitation | Specialized algorithms, visual medium, category ownership |
+
+**The Structural Advantage:**
+
+```
+Incumbents face: "Innovator's Dilemma"
+├─ Must protect existing revenue (can't cannibalize)
+├─ Must satisfy existing customers (can't confuse)
+├─ Must maintain existing architecture (can't rebuild)
+└─ Must preserve existing brand (can't reposition)
+
+We face: "Clean Slate Advantage"
+├─ No revenue to protect (optimize for future)
+├─ No customers to confuse (define expectations)
+├─ No architecture to maintain (build right from start)
+└─ No brand to preserve (create category)
+
+This is why startups win categories.
+This is why we will win Personal Network Intelligence.
+```
+
+**The Time Window:**
+
+```
+Current state: No dominant player in PNI
+├─ Window open: 24-36 months
+├─ Category solidifies: First mover owns mental real estate
+└─ After that: Challengers must displace incumbent (much harder)
+
+Our strategy: Move fast, own category, build moat
+Their response: Too slow (organizational inertia)
+
+Speed is our weapon.
+```
+
+**What Would Make Us Lose:**
+
+Only if we:
+1. Compromise privacy (violate core principle → lose trust advantage)
+2. Add account access (become like analytics vendors → lose differentiation)
+3. Become feature-bloated (lose focus → lose clarity)
+4. Change business model to ads (lose alignment → lose credibility)
+5. Move too slowly (let competitor define category first)
+
+As long as we stay true to principles and move fast, **incumbents cannot win this category**.
+
+This isn't confidence.
+This is structural analysis.
+
+---
+
+## **5. Strategic Constraints as Weapons** ⭐ NEW
+
+### **5.1 The Philosophy of Strategic Constraints**
+
+**Traditional view:** Constraints limit what you can do
+**Our view:** Constraints define who you are
+
+**The difference:**
+- Limits are obstacles to work around
+- Constraints are commitments to weaponize
+
+**Why this matters:**
+When a constraint is non-negotiable, it becomes:
+1. **An identity signal** (who we are)
+2. **A competitive moat** (what others can't copy)
+3. **A decision filter** (what we say no to)
+4. **A trust amplifier** (what users believe about us)
+
+### **5.2 Tier 1 Constraints: Non-Negotiable (Constitutional)**
+
+**These constraints define our existence. Violating them = we cease to be Visual Social Graph.**
+
+---
+
+**Constraint 1: No Account Access (The Foundation)**
+
+```
+Constitutional commitment:
+"We never connect to user accounts.
+ We never request credentials.
+ We never use OAuth for social platforms.
+ No exceptions."
+
+Weaponization:
+├─ Brand promise: "We don't connect to your accounts. We respect them."
+├─ Marketing angle: Privacy-first in age of breaches
+├─ User trust: Can't be evil if we can't access
+├─ Competitive moat: Incumbents can't match (requires OAuth)
+└─ Legal safety: No terms of service violations
+
+What this eliminates:
+├─ Real-time sync (requires API access)
+├─ Auto-refresh (requires ongoing access)
+├─ Post scheduling (wrong product anyway)
+└─ 95% of competitive approaches
+
+Decision filter:
+├─ Feature request: "Auto-sync my network daily"
+│  └─ Answer: NO (requires account access)
+├─ Partnership: "Integrate with our OAuth system"
+│  └─ Answer: NO (violates principle)
+└─ Pivot: "Let's add real-time updates to compete"
+    └─ Answer: NO (destroy competitive advantage)
+
+Durability: Permanent
+Changeability: 0% (changing this = new company)
+Review: Never (this is who we are)
+```
+
+**Impact if violated:**
+- Brand destroyed (trust is everything)
+- Competitive advantage evaporated (become like everyone else)
+- Category ownership lost (no longer define PNI)
+- User base revolts (betrayed core promise)
+
+**Historical examples of companies violating founding constraints:**
+- WhatsApp: "No ads, ever" → Facebook added ads → user exodus
+- Signal: Maintained "no user data" → trusted
+- Instagram: Simple photo sharing → feature bloat → lost identity
+
+**We commit:** This constraint is permanent. If market demands real-time sync, we:
+1. Build privacy-preserving alternative (browser extension, local processing)
+2. Partner with platforms for official API (maintain privacy promise)
+3. Accept niche market (serve true believers)
+
+But we never compromise this constraint.
+
+---
+
+**Constraint 2: User Data is User-Owned (Privacy Architecture)**
+
+```
+Constitutional commitment:
+"User data belongs to user.
+ We store only what's necessary.
+ User can delete anytime.
+ We never sell data.
+ We never use data for AI training."
+
+Weaponization:
+├─ GDPR compliance: By design, not retrofit
+├─ Competitive differentiation: AI companies can't match
+├─ User control: Delete = instant effect
+├─ Transparency: Clear what we store
+└─ Trust multiplier: Actions match words
+
+What this eliminates:
+├─ Data monetization (selling insights to brands)
+├─ AI training (using networks to improve models)
+├─ Cross-user analytics (without explicit consent)
+└─ Indefinite retention (must allow deletion)
+
+Decision filter:
+├─ Revenue opportunity: "Sell anonymized data to researchers"
+│  └─ Answer: NO (even anonymized, violates ownership)
+├─ Feature: "Train AI on user networks to improve recommendations"
+│  └─ Answer: NO (unless explicit opt-in, default off)
+└─ Partnership: "Give us access to user graphs for analysis"
+    └─ Answer: NO (users own data, not us)
+
+Durability: Permanent
+Changeability: 0% (fundamental to trust)
+Review: Never (core architectural principle)
+```
+
+---
+
+**Constraint 3: Individual Focus, Not Enterprise (Market)**
+
+```
+Constitutional commitment:
+"We optimize for individual creators and professionals.
+ We do not become an enterprise-first product.
+ B2C DNA, not B2B."
+
+Weaponization:
+├─ Simplicity: Individual UX (not committee-designed)
+├─ Pricing: Accessible ($12/mo, not $500/mo)
+├─ Speed: Ship fast (no enterprise sales cycles)
+├─ Focus: One use case, done well
+└─ Brand: "For you" (not "for your team")
+
+What this eliminates (Phase 1-2):
+├─ Enterprise sales team
+├─ Multi-user collaboration
+├─ SSO, SAML, admin dashboards
+├─ Custom contracts, procurement process
+└─ Committee-driven roadmap
+
+Decision filter:
+├─ Revenue opportunity: "$100K enterprise deal, but need SSO"
+│  └─ Answer: DEFER (Phase 3+, not Phase 1-2)
+├─ Feature request: "We need team collaboration"
+│  └─ Answer: DEFER (individuals first)
+└─ Investor pressure: "Go upmarket for higher ACV"
+    └─ Answer: RESIST (proves individual market first)
+
+Durability: Strong (Phase 1-2), Flexible (Phase 3+)
+Changeability: 10% (can add enterprise tier later, but never abandon individuals)
+Review: Yearly (adjust based on market validation)
+```
+
+**Note:** This constraint is strong but not permanent. We can add enterprise tier in Phase 3+, but only AFTER proving individual market. This prevents:
+- Distraction (enterprise deals derail product focus)
+- Dilution (enterprise features bloat individual product)
+- Dependency (reliance on few large customers)
+
+**If we add enterprise:** It must be a separate tier, not a pivot. Individuals remain primary.
+
+---
+
+**Constraint 4: Insights Over Metrics (Product Philosophy)**
+
+```
+Constitutional commitment:
+"We provide insights, not just metrics.
+ Every number must answer 'so what?'
+ Visualization serves understanding, not decoration."
+
+Weaponization:
+├─ Positioning: Not another analytics dashboard
+├─ User value: Actionable intelligence
+├─ Competitive moat: Interpretation is hard to replicate
+├─ Brand promise: Strategic clarity
+└─ Category definition: Intelligence, not measurement
+
+What this eliminates:
+├─ Vanity metrics dashboard (follower count, like count)
+├─ Real-time alerts ("You got 50 new followers!")
+├─ Gamification (streaks, badges)
+└─ Engagement optimization (best time to post)
+
+Decision filter:
+├─ Feature request: "Show my follower growth chart"
+│  └─ Answer: Only if we add insight ("Growth rate suggests X")
+├─ Competitive pressure: "They have more metrics than us"
+│  └─ Answer: RESIST (we have better insights)
+└─ User feedback: "I want to see all my stats"
+    └─ Answer: EDUCATE (metrics without meaning are noise)
+
+Durability: Strong
+Changeability: 20% (can add metrics IF insights accompany them)
+Review: Quarterly (ensure insights remain primary)
+```
+
+**Measurement:**
+- Every feature must pass: "Does this reveal something they didn't know?"
+- If yes → Build
+- If no → Don't build (even if competitors have it)
+
+---
+
+**Constraint 5: Beautiful, Not Bloated (Experience)**
+
+```
+Constitutional commitment:
+"We ship features users love, not features competitors have.
+ Simplicity is sophistication.
+ Say no to feature bloat."
+
+Weaponization:
+├─ User experience: Clean, focused, delightful
+├─ Positioning: Premium, not commodity
+├─ Onboarding: Fast (no overwhelming complexity)
+├─ Performance: Lightweight (no feature bloat drag)
+└─ Brand: Taste (we have it, competitors don't)
+
+What this eliminates:
+├─ Feature parity race (matching competitors feature-for-feature)
+├─ "Nice-to-have" features (requested by <5% of users)
+├─ Enterprise feature sprawl (calendar integration, Slack bots, etc.)
+└─ Checkbox features (added for sales, rarely used)
+
+Decision filter:
+├─ Feature request: "Add [thing competitor has]"
+│  └─ Answer: Evaluate independently (don't copy blindly)
+├─ Sales pressure: "Customer needs X or they won't buy"
+│  └─ Answer: Customer fit? (If X is off-brand, wrong customer)
+└─ Investor feedback: "You need more features to compete"
+    └─ Answer: RESIST (quality > quantity)
+
+Durability: Strong
+Changeability: 30% (can add features if they serve core value)
+Review: Every feature launch (measure adoption, kill low-usage features)
+```
+
+**Measurement:**
+- Feature adoption rate: >40% of active users within 30 days
+- If <40%: Feature likely doesn't serve core value
+- Kill features ruthlessly (even if some users love them)
+
+---
+
+### **5.3 Tier 2 Constraints: Strong Commitments (Highly Resistant)**
+
+**These constraints guide strategy but can be adjusted under extreme pressure. Changing them requires founder-level decision.**
+
+---
+
+**Constraint 6: Freemium Model (Business)**
+
+```
+Strong commitment:
+"Free tier is genuinely useful (not crippled demo).
+ Paid tier delivers clear incremental value.
+ No bait-and-switch."
+
+Weaponization:
+├─ User acquisition: Free tier validates demand
+├─ Trust: Try before buy (no credit card)
+├─ Word-of-mouth: Free users evangelize
+└─ Brand: Generous, not extractive
+
+What this guides:
+├─ Free tier must deliver aha moment
+├─ Paid tier must be obviously better (not arbitrary limits)
+├─ No dark patterns (unclear what's free vs. paid)
+└─ Grandfather existing users (respect loyalty)
+
+Decision filter:
+├─ Revenue pressure: "Restrict free tier to increase conversions"
+│  └─ Answer: TEST carefully (don't destroy trust)
+├─ Competitive response: "Competitor offers more free features"
+│  └─ Answer: Maintain quality bar (free tier must be valuable)
+└─ Unit economics: "Free users cost too much"
+    └─ Answer: Optimize costs OR adjust pricing OR accept subsidization
+
+Durability: Strong
+Changeability: 40% (can adjust free/paid split, but maintain generosity)
+Review: Quarterly (ensure free tier remains valuable)
+```
+
+**Conditions for changing:**
+- If free tier abused (not individuals, but scrapers/bots) → Add verification
+- If unit economics broken (free users cost >$5/month) → Optimize or cap usage
+- If conversion <1% persistently (9+ months) → Reevaluate tier design
+
+But core principle remains: Free tier must be genuinely useful.
+
+---
+
+**Constraint 7: No Advertising (Monetization)**
+
+```
+Strong commitment:
+"Users are customers, not products.
+ Revenue comes from subscriptions, not ads.
+ No sponsored content, no affiliate deals (in core product)."
+
+Weaponization:
+├─ Trust: Incentive alignment (we win when you win)
+├─ UX: No clutter, no distractions
+├─ Positioning: Premium product
+└─ Brand integrity: Not sold out
+
+What this guides:
+├─ No banner ads (obviously)
+├─ No "sponsored insights" (influencer marketplace)
+├─ No affiliate commissions (recommending tools for kickback)
+└─ No selling user attention (email lists to sponsors)
+
+Decision filter:
+├─ Revenue opportunity: "$50K from sponsors to feature their tools"
+│  └─ Answer: NO (violates incentive alignment)
+├─ Partnership: "Affiliate program with 20% commission"
+│  └─ Answer: NO (in core product; OK in separate content)
+└─ Investor pressure: "Advertising could scale revenue faster"
+    └─ Answer: RESIST (destroys trust, our key asset)
+
+Durability: Very Strong
+Changeability: 20% (could add non-intrusive sponsorships in content, but never in product)
+Review: Yearly
+```
+
+**Exceptions:**
+- Blog sponsorships (separate from product, clearly disclosed)
+- Affiliate links in educational content (disclosed, not in app)
+- Partnership with complementary tools (if genuinely helpful, disclosed)
+
+But product itself remains ad-free.
+
+---
+
+**Constraint 8: Manual Upload First (Technical)**
+
+```
+Strong commitment:
+"Manual upload is our default.
+ Browser extension or API access only if:
+ (a) User demand overwhelming (>50% request), AND
+ (b) Privacy-preserving approach exists, AND
+ (c) Manual upload remains primary option"
+
+Weaponization:
+├─ Trust: Intentionality (user chooses to share)
+├─ Legal: No terms of service violations
+├─ Platform independence: Not dependent on APIs
+└─ Differentiation: Others can't match privacy claim
+
+What this guides:
+├─ UX optimization around upload flow
+├─ Educational content about download process
+├─ Wait-time engagement (sample networks)
+└─ Parser versioning (handle format changes)
+
+Decision filter:
+├─ User feedback: "Please add auto-sync"
+│  └─ Answer: DEFER (evaluate demand level)
+├─ Competitive pressure: "Competitor added real-time"
+│  └─ Answer: VALIDATE (do users actually care?)
+└─ Growth plateau: "Friction limiting growth"
+    └─ Answer: OPTIMIZE upload UX first, THEN consider alternatives
+
+Durability: Strong (Phase 1-2), Flexible (Phase 3+)
+Changeability: 50% (can add alternatives, but manual remains option)
+Review: Quarterly (measure upload completion rate, user feedback)
+```
+
+**Conditions for relaxing:**
+- Upload completion rate persistently <30% (9+ months) → Major problem
+- User surveys show >50% prefer automation → Demand validated
+- Privacy-preserving technical approach exists (e.g., local browser extension)
+
+If relaxed: Manual upload must remain as option (for maximum privacy users).
+
+---
+
+### **5.4 Tier 3 Constraints: Flexible Guidelines (Adjustable)**
+
+**These guide decisions but can be changed based on market learning.**
+
+**Constraint 9: Creator Focus (Market Segment)**
+- Current: Micro-influencers and personal brand builders
+- Flexible: Can expand to professionals, researchers, etc.
+- Changeability: 70%
+- Review: Quarterly
+
+**Constraint 10: Web-First (Platform)**
+- Current: Progressive Web App (PWA)
+- Flexible: Can add native mobile, desktop apps
+- Changeability: 80%
+- Review: Semi-annually
+
+**Constraint 11: $12/mo Price Point (Pricing)**
+- Current: Pro tier at $12/month
+- Flexible: Can test $9, $15, or dynamic pricing
+- Changeability: 90%
+- Review: Quarterly
+
+---
+
+### **5.5 Constraint Hierarchy & Change Process**
+
+**Change Authority:**
+
+```
+Tier 1 (Constitutional):
+├─ Authority: Founder unanimous decision
+├─ Process: Board approval (if applicable)
+├─ Timeline: 6+ months deliberation
+├─ Impact: Company transformation
+└─ Frequency: Never (or once in lifetime)
+
+Tier 2 (Strong Commitments):
+├─ Authority: Founder decision
+├─ Process: Team consultation
+├─ Timeline: 3+ months deliberation
+├─ Impact: Strategic shift
+└─ Frequency: Rare (every 2-3 years)
+
+Tier 3 (Flexible Guidelines):
+├─ Authority: Product lead decision
+├─ Process: Data-driven evaluation
+├─ Timeline: 1+ month analysis
+├─ Impact: Tactical adjustment
+└─ Frequency: As needed (quarterly reviews)
+```
+
+**When to reconsider constraints:**
+
+**Tier 1 triggers:**
+- Existential threat (company dies if we don't change)
+- Fundamental market shift (category becomes impossible)
+- Legal requirement (government mandates something incompatible)
+
+**Tier 2 triggers:**
+- Persistent unit economics failure (12+ months)
+- User demand overwhelming (>70% request change)
+- Competitive disadvantage critical (losing badly)
+
+**Tier 3 triggers:**
+- Market learning (data shows better approach)
+- A/B test results (empirical evidence)
+- User feedback (qualitative signals)
+
+---
+
+### **5.6 Using Constraints as Competitive Weapons**
+
+**In Marketing:**
+
+```
+Messaging examples:
+├─ "We don't connect to your accounts" (Tier 1, Constraint 1)
+├─ "Your data belongs to you" (Tier 1, Constraint 2)
+├─ "Built for individuals, not enterprises" (Tier 1, Constraint 3)
+├─ "Insights, not just metrics" (Tier 1, Constraint 4)
+└─ "Beautiful by design" (Tier 1, Constraint 5)
+
+Each constraint becomes:
+├─ A headline
+├─ A brand promise
+├─ A differentiation point
+└─ A trust signal
+```
+
+**In Product Decisions:**
+
+```
+Feature request process:
+1. Does it violate Tier 1 constraint?
+   └─ YES → Automatic rejection
+   └─ NO → Continue
+
+2. Does it violate Tier 2 constraint?
+   └─ YES → Requires founder approval
+   └─ NO → Continue
+
+3. Does it violate Tier 3 constraint?
+   └─ YES → Requires data justification
+   └─ NO → Continue to prioritization
+
+This filter rejects 60-70% of feature requests immediately.
+Result: Focused, coherent product.
+```
+
+**In Competitive Positioning:**
+
+```
+When competitor announces feature we can't/won't build:
+
+Step 1: Identify which constraint prevents us
+Step 2: Reframe constraint as advantage
+Step 3: Communicate why this is better for users
+
+Example:
+Competitor: "We now offer real-time auto-sync!"
+
+Our response:
+"We intentionally don't auto-sync because:
+ (1) We never access your accounts (privacy)
+ (2) You control when to refresh (intentionality)
+ (3) No ongoing platform dependency (resilience)
+ 
+ This isn't a limitation. It's a principle."
+
+Turn constraint into differentiation.
+```
+
+**In Fundraising:**
+
+```
+Investor: "Why don't you have [feature competitor has]?"
+
+Response framework:
+"We made a strategic decision NOT to build that because:
+ (1) It would require [violating constraint X]
+ (2) That would destroy [competitive advantage Y]
+ (3) Our constraint is our moat [explain why]
+ 
+ This discipline is why we'll win the category."
+
+Constraints signal strategic clarity (investors value this).
+```
+
+---
+
+### **5.7 Constraints as Identity**
+
+**The ultimate test:**
+
+```
+If we removed all Tier 1 constraints:
+├─ Added OAuth account access
+├─ Sold user data
+├─ Became enterprise-first
+├─ Showed only metrics
+└─ Added every feature competitors have
+
+Would we still be Visual Social Graph?
+
+Answer: No.
+
+We would be:
+├─ Another analytics tool
+├─ Another enterprise software company
+├─ Another feature-bloated dashboard
+└─ Indistinguishable from competition
+
+Constraints don't limit us.
+Constraints define us.
+
+Remove constraints = remove identity = remove value.
+```
+
+**This is why constraints are weapons:**
+
+Competitors cannot copy them without destroying themselves.
+We cannot abandon them without destroying ourselves.
+
+This is strategic commitment.
+This is category defensibility.
+This is how we win.
+
+---
+
+## **6. Category Strategy**
+
+### **6.1 Category Definition**
 
 **Category Name:** Personal Network Intelligence (PNI)
 
@@ -603,7 +1740,7 @@ Software that helps individuals understand and optimize their relationship netwo
 **Why this matters:**
 Creating a category is more valuable than winning in an existing category. Categories define the rules of competition. As category creator, we set those rules.
 
-### **4.2 Category Characteristics**
+### **6.2 Category Characteristics**
 
 **What makes Personal Network Intelligence distinct:**
 
@@ -639,7 +1776,7 @@ Creating a category is more valuable than winning in an existing category. Categ
 - Show professionalism (to brands/employers)
 - Differentiate from amateur creators
 
-### **4.3 Category Positioning Strategy**
+### **6.3 Category Positioning Strategy**
 
 **Positioning Statement:**
 
@@ -672,7 +1809,7 @@ Because understanding relationships is as important as understanding content
 "The privacy-first way to understand your digital identity"
 → Differentiate within category
 
-### **4.4 Category Creation Tactics**
+### **6.4 Category Creation Tactics**
 
 **Content Strategy (Category Education):**
 
@@ -746,7 +1883,7 @@ Goal: Educate market, create SEO moat
 - Co-marketing opportunities
 - Word-of-mouth amplification
 
-### **4.5 Category Defensibility**
+### **6.5 Category Defensibility**
 
 **How we defend category leadership:**
 
@@ -774,9 +1911,9 @@ Before then, we're vulnerable to well-funded competitors. Strategy: move fast, b
 
 ---
 
-## **5. User Strategy**
+## **7. User Strategy**
 
-### **5.1 User Segmentation Strategy**
+### **7.1 User Segmentation Strategy**
 
 **Primary Segment (Phase 1-2): Micro-Influencers**
 
@@ -855,7 +1992,7 @@ Pain Points (ranked):
 - Different messaging needed
 - Address after creator market proven
 
-### **5.2 User Acquisition Strategy**
+### **7.2 User Acquisition Strategy**
 
 **Acquisition Channels (Prioritized):**
 
@@ -1014,7 +2151,7 @@ Stage 5: Retention
 - Decision → Activation: 40% (aha moment within 7 days)
 - **Overall: Awareness → Activation: 2.9%**
 
-### **5.3 User Retention Strategy**
+### **7.3 User Retention Strategy**
 
 **Retention is more important than acquisition.** A leaky bucket never fills.
 
@@ -1114,7 +2251,7 @@ Implementation: Suggested in onboarding
 - Paid tier: >60% annual churn (broken product-market fit)
 - Immediate post-upgrade churn (pricing/value mismatch)
 
-### **5.4 User Success Strategy**
+### **7.4 User Success Strategy**
 
 **Definition of User Success:**
 
@@ -1176,2095 +2313,1663 @@ Creator: 4-8 hours (email + in-app + priority)
 
 ---
 
-## **6. Product Strategy**
+## **8. Behavioral Strategy & Responsibility** ⭐ NEW
 
-### **6.1 Product Philosophy**
+### **8.1 The Intelligence Product Responsibility Framework**
+
+**Core Recognition:**
+Personal Network Intelligence reveals truths that can be uncomfortable. Unlike entertainment products (make users feel good) or utility products (help users do tasks), intelligence products change how users see themselves.
+
+**This creates unique responsibilities:**
+
+1. **Emotional Safety**: Users must be prepared for uncomfortable insights
+2. **Strategic Support**: Insights without direction create anxiety
+3. **Misuse Prevention**: Intelligence can be weaponized
+4. **Long-term Impact**: How users integrate insights into identity
+
+**Our Commitment:**
+```
+We provide truth with compassion.
+We reveal patterns without judgment.
+We empower action, not just awareness.
+We prevent misuse through design.
+```
+
+### **8.2 Emotional Resistance Strategy**
+
+**The Reality:**
+Some users will discover things they didn't want to know:
+- "I'm in an echo chamber" (identity threat)
+- "Most of my followers are ghosts" (ego hit)
+- "My positioning is weak" (professional anxiety)
+- "I'm less influential than I thought" (status loss)
+
+**These aren't bugs. These are features.**
+But they require careful handling.
+
+---
+
+**Resistance Type 1: Denial**
+
+```
+User reaction: "This data must be wrong"
+├─ Defensive rationalization
+├─ Blame algorithm
+├─ Dismiss insights
+└─ Churn risk: High
+
+Our approach:
+├─ Show confidence levels (acknowledge uncertainty)
+├─ Explain methodology (transparency builds trust)
+├─ Provide data sources (user can verify)
+├─ Offer second opinion (re-upload after 30 days)
+└─ Normalize discomfort ("Many users feel this initially")
+
+Copy framework:
+❌ "You're in an echo chamber" (accusatory)
+✅ "67% of your frequent engagers share your viewpoints.
+    Many networks show similar patterns.
+    This creates comfort but limits exposure to new ideas."
+    
+Key: Contextualize, normalize, de-personalize
+```
+
+**Resistance Type 2: Overwhelm**
+
+```
+User reaction: "I don't know what to do with this"
+├─ Analysis paralysis
+├─ Feature abandonment
+├─ Information overload
+└─ Churn risk: Medium
+
+Our approach:
+├─ Prioritize insights (top 3, not all 20)
+├─ Sequential reveal (one insight at a time)
+├─ Clear next actions ("Try this first")
+├─ Celebrate small wins (progress tracking)
+└─ Break down complexity (micro-steps)
+
+Product implementation:
+├─ "Your Top 3 Opportunities" (not 10)
+├─ "Start here" button (directed action)
+├─ Progress indicators (you're making progress)
+└─ Undo option (reversibility reduces anxiety)
+
+Key: Simplify, direct, celebrate
+```
+
+**Resistance Type 3: Shame**
+
+```
+User reaction: "I've been doing it wrong this whole time"
+├─ Self-criticism
+├─ Regret about past decisions
+├─ Feeling behind peers
+└─ Churn risk: High (emotional damage)
+
+Our approach:
+├─ Reframe past as learning (not failure)
+├─ Show growth trajectory (where you're going)
+├─ Normalize imperfection (everyone starts somewhere)
+├─ Focus on future (what you can do now)
+└─ Remove judgment language (diagnostic, not evaluative)
+
+Copy framework:
+❌ "You've been neglecting your super fans"
+✅ "You have 47 highly engaged followers.
+    Investing more time here could accelerate growth.
+    Most successful creators focus on their core 50-100."
+    
+Key: Future-focused, opportunity-framed, normalized
+```
+
+**Resistance Type 4: Comparison Anxiety**
+
+```
+User reaction: "Everyone else is doing better than me"
+├─ Social comparison
+├─ Inadequacy feelings
+├─ Imposter syndrome
+└─ Churn risk: Medium-High
+
+Our approach:
+├─ Avoid leaderboards (unless opt-in)
+├─ Contextualized comparisons ("similar users")
+├─ Emphasize unique strengths (what you do well)
+├─ Show progress over time (you vs. you)
+└─ Offer private mode (no social pressure)
+
+Product implementation:
+├─ Default: Private analysis (no sharing required)
+├─ Opt-in: Public gallery (choice to share)
+├─ Benchmarking: Anonymous aggregates (not individuals)
+└─ Framing: "Your journey" (not "the ranking")
+
+Key: Privacy, choice, individual progress
+```
+
+---
+
+### **8.3 Strategic Support After Insight**
+
+**The Problem:**
+Insight without action creates anxiety. "Now what?"
+
+**Our Solution:**
+Every insight must include:
+1. **What this means for you** (interpretation)
+2. **Why this matters** (relevance)
+3. **What to do next** (action)
+
+**Support Structure:**
+
+**Level 1: Immediate Actions (Do This Now)**
+```
+Format:
+[Insight] → [What it means] → [Action (specific, 1-2 steps)]
+
+Example:
+"Sarah has high betweenness centrality.
+ 
+ What this means: Sarah connects you to different parts of your network.
+ Engaging her amplifies your reach across communities.
+ 
+ Action: Reply to Sarah's next 3 posts with thoughtful comments.
+         [Draft suggested comment] [Schedule reminder]"
+
+Key: Specific, immediate, low-friction
+```
+
+**Level 2: Strategic Guidance (Do This Week)**
+```
+Format:
+[Pattern] → [Opportunity] → [Strategy (3-5 steps)]
+
+Example:
+"You have 4 distinct communities that rarely interact.
+ 
+ Opportunity: Create content that bridges communities.
+ This expands reach while maintaining authentic voice.
+ 
+ Strategy:
+ 1. Identify common interests across communities
+ 2. Create content addressing shared themes
+ 3. Tag representatives from each community
+ 4. Measure cross-community engagement
+ 5. Iterate based on response
+ 
+ [Content ideas generator] [Community interest overlap tool]"
+
+Key: Strategic, achievable, supported with tools
+```
+
+**Level 3: Long-term Positioning (Do This Quarter)**
+```
+Format:
+[Positioning Analysis] → [Strategic Implications] → [Roadmap (quarterly goals)]
+
+Example:
+"You're positioned at intersection of Tech Education and Personal Development.
+ 
+ Strategic Implications:
+ ├─ Unique niche with limited competition
+ ├─ Attracts audience seeking practical + philosophical
+ ├─ Differentiation from pure tech or pure self-help
+ └─ Opportunity: Establish thought leadership here
+ 
+ Quarterly Roadmap:
+ Q1: Solidify positioning (80% content in niche)
+ Q2: Build authority (guest posts, podcast appearances)
+ Q3: Monetize (course/product aligned with positioning)
+ Q4: Scale (leverage positioning for partnerships)
+ 
+ [Positioning audit] [Content calendar] [Authority building checklist]"
+
+Key: Visionary, comprehensive, milestone-based
+```
+
+**Support Delivery Mechanisms:**
+
+```
+In-product:
+├─ Insight cards (always have "What to do" section)
+├─ Action buttons (make next step obvious)
+├─ Progress tracking (show actions completed)
+├─ Reminder system (nudge incomplete actions)
+└─ Resource library (how-to guides)
+
+Email:
+├─ Weekly action digest ("Your top 3 actions this week")
+├─ Success stories ("How others used this insight")
+├─ Educational content ("Understanding positioning")
+└─ Celebration emails ("You took action!")
+
+Community:
+├─ Ask questions ("How do I implement X?")
+├─ Share successes ("I did Y and it worked!")
+├─ Get support ("I'm struggling with Z")
+└─ Find accountability partners ("Let's do this together")
+```
+
+---
+
+### **8.4 Preventing Misuse**
+
+**The Risk:**
+Intelligence about networks can be weaponized:
+- Manipulation (exploit relationship structure)
+- Surveillance (track others without consent)
+- Harassment (identify vulnerable nodes)
+- Exclusion (intentionally isolate individuals)
+
+**Our Responsibility:**
+Design against misuse while preserving legitimate use.
+
+---
+
+**Misuse Vector 1: Manipulation**
+
+```
+Scenario: User identifies influential nodes, manipulates them for gain
+
+Risk level: Medium
+Difficulty to prevent: High (legitimate use looks similar)
+
+Design responses:
+├─ Framing: Emphasize authenticity ("Genuine engagement works best")
+├─ Education: Explain long-term costs of manipulation
+├─ Limits: Rate-limit bulk actions (prevent mass manipulation)
+└─ Detection: Flag suspicious patterns (sudden engagement spikes)
+
+Example:
+User sees "Engage with top 10 influencers" recommendation
+
+❌ Manipulative use: Copy-paste generic comments to all 10
+✅ Authentic use: Thoughtful, personalized engagement with each
+
+Our design:
+├─ Recommendation includes: "Personalize each interaction"
+├─ Template discouraged: No "copy to clipboard" for comments
+├─ Quality over quantity: "Engage deeply with 3, not shallowly with 10"
+└─ Long-term framing: "Building real relationships takes time"
+```
+
+**Misuse Vector 2: Surveillance**
+
+```
+Scenario: User analyzes others' networks without consent
+
+Risk level: High
+Difficulty to prevent: Low (we control data access)
+
+Design responses:
+├─ Data source: Only user's own exports (can't analyze others)
+├─ Privacy: No shared network analysis without explicit consent
+├─ Comparison: Anonymous aggregates only (not individual profiles)
+└─ Terms of Service: Explicit prohibition of surveillance
+
+Implementation:
+├─ Upload requires: User's own account data
+├─ Comparison features: Opt-in, reciprocal (both users consent)
+├─ Public gallery: User controls visibility (private by default)
+└─ No scraping: Technical prevention (rate limits, authentication)
+
+This is already baked into architecture (Tier 1 constraint).
+```
+
+**Misuse Vector 3: Harassment**
+
+```
+Scenario: User identifies vulnerable accounts, targets them
+
+Risk level: High
+Difficulty to prevent: Medium (behavioral, not technical)
+
+Design responses:
+├─ No vulnerability scoring (don't label "weak nodes")
+├─ Positive framing (opportunities, not weaknesses)
+├─ Community guidelines (explicit anti-harassment policy)
+├─ Reporting mechanism (flag malicious use)
+└─ Account suspension (for ToS violations)
+
+What we don't show:
+❌ "These followers are easy targets"
+❌ "This person has low engagement (vulnerable)"
+❌ "Exploit these connections"
+
+What we do show:
+✅ "These followers are highly engaged (your advocates)"
+✅ "This person is a bridge connector (strategic relationship)"
+✅ "Nurture these connections"
+
+Language matters. We choose empowering over exploitative.
+```
+
+**Misuse Vector 4: Exclusion**
+
+```
+Scenario: User intentionally isolates individuals from network
+
+Risk level: Low-Medium
+Difficulty to prevent: Very High (user controls their network)
+
+Design responses:
+├─ No recommendations to exclude (only to include)
+├─ Transparency about network effects (exclusion harms everyone)
+├─ Ethical framing (networks thrive on diversity)
+└─ Accept limitation (we can't control offline behavior)
+
+Our stance:
+We show network structure.
+We don't recommend who to exclude.
+We emphasize inclusion and diversity.
+
+But ultimately: Users control their own networks.
+We can't prevent someone from unfollowing others.
+We can only frame it ethically and explain consequences.
+
+Example:
+❌ "Remove these low-value connections"
+✅ "Your network benefits from diversity.
+    Even 'inactive' connections might engage with future content."
+```
+
+---
+
+**Misuse Detection & Response:**
+
+```
+Detection signals:
+├─ Bulk actions (100+ engagement actions in 1 hour)
+├─ Suspicious patterns (same message to many people)
+├─ User reports (flagged by community)
+└─ Terms of Service violations (scraped data, harassment)
+
+Response escalation:
+1. Warning (first offense, unclear intent)
+2. Feature restriction (limit rate, disable bulk actions)
+3. Account suspension (repeated violations)
+4. Permanent ban (egregious violations)
+
+Transparency:
+├─ Clear ToS (what's not allowed)
+├─ Warning before suspension (except egregious cases)
+├─ Appeal process (for false positives)
+└─ Public examples (anonymized, educational)
+```
+
+---
+
+### **8.5 Post-Insight Integration**
+
+**The Long-term Challenge:**
+How do users integrate insights into their identity over time?
+
+**Three Integration Paths:**
+
+**Path 1: Acceptance & Action (Ideal)**
+```
+User journey:
+1. Receives uncomfortable insight
+2. Processes emotionally (with our support)
+3. Accepts truth
+4. Takes strategic action
+5. Sees results
+6. Integrates insight into worldview
+
+Our role:
+├─ Emotional support (compassionate framing)
+├─ Strategic guidance (clear actions)
+├─ Progress tracking (show improvement)
+├─ Celebration (reinforce positive change)
+└─ Community (normalize growth process)
+
+Outcome: User becomes more strategic, self-aware
+Success rate target: 60% of users
+```
+
+**Path 2: Rejection & Disengagement (Acceptable)**
+```
+User journey:
+1. Receives uncomfortable insight
+2. Rejects it (not ready)
+3. Disengages from product
+4. May return later (when ready)
+
+Our role:
+├─ No pressure (respect their process)
+├─ Open door (easy to return)
+├─ Soft nurture (occasional email, no spam)
+└─ Win-back campaign (6 months later)
+
+Outcome: User not ready for this type of insight
+Success rate: 30% of users (acceptable loss)
+Note: Some will return when emotionally ready
+```
+
+**Path 3: Distortion & Misinterpretation (Risk)**
+```
+User journey:
+1. Receives insight
+2. Misinterprets meaning
+3. Takes counterproductive action
+4. Experiences negative outcome
+5. Blames product
+
+Our role:
+├─ Clear communication (prevent misinterpretation)
+├─ Confidence levels (show uncertainty)
+├─ Multiple perspectives (not single truth)
+├─ Warning for high-stakes decisions (get second opinion)
+└─ Support access (clarify confusion)
+
+Outcome: User misuses insights
+Success rate target: <10% of users (minimize through design)
+```
+
+**Supporting Long-term Integration:**
+
+```
+Month 1: Discovery Phase
+├─ Explore insights
+├─ Ask questions
+├─ Form hypotheses
+└─ Emotional processing
+
+Month 3: Action Phase
+├─ Implement strategies
+├─ Test approaches
+├─ Measure results
+└─ Adjust tactics
+
+Month 6: Integration Phase
+├─ Insights become intuition
+├─ Strategy becomes habit
+├─ Self-awareness deepened
+└─ Network management strategic
+
+Month 12: Mastery Phase
+├─ Proactive network building
+├─ Positioning refined
+├─ Teaching others (ambassador)
+└─ Product-native thinking
+```
+
+---
+
+### **8.6 Ethical Principles Codified**
+
+**Our Ethical Commitments:**
+
+**1. Truth with Compassion**
+```
+We will:
+├─ Show uncomfortable truths (don't hide reality)
+├─ Frame compassionately (not judgmentally)
+├─ Provide support (actionable guidance)
+└─ Respect user readiness (no forcing acceptance)
+
+We won't:
+├─ Sugarcoat to avoid discomfort (patronizing)
+├─ Be brutally honest without care (cruel)
+├─ Provide insight without support (abandonment)
+└─ Force users to confront what they're not ready for
+```
+
+**2. Empowerment, Not Control**
+```
+We will:
+├─ Show users their network (transparency)
+├─ Suggest opportunities (recommendations)
+├─ Explain implications (education)
+└─ Let users decide (autonomy)
+
+We won't:
+├─ Dictate actions (prescriptive)
+├─ Manipulate choices (dark patterns)
+├─ Remove agency (paternalistic)
+└─ Make decisions for users
+```
+
+**3. Privacy as Human Right**
+```
+We will:
+├─ Protect user data (technical safeguards)
+├─ Give users control (delete anytime)
+├─ Be transparent (clear privacy policy)
+└─ Default to privacy (opt-in, not opt-out)
+
+We won't:
+├─ Sell user data (monetization)
+├─ Share without consent (third parties)
+├─ Use for AI training (exploitation)
+└─ Store unnecessarily (data minimization)
+```
+
+**4. Prevent Harm**
+```
+We will:
+├─ Design against misuse (technical prevention)
+├─ Educate on ethics (community guidelines)
+├─ Enforce ToS (suspension for violations)
+└─ Continuously monitor (detect bad actors)
+
+We won't:
+├─ Enable surveillance (others' data)
+├─ Facilitate manipulation (exploitative features)
+├─ Encourage harassment (toxic community)
+└─ Ignore reports (inaction on violations)
+```
+
+**5. Inclusion and Diversity**
+```
+We will:
+├─ Frame diversity positively (value differences)
+├─ Warn about echo chambers (awareness)
+├─ Encourage bridging (build connections)
+└─ Celebrate varied networks (no one ideal)
+
+We won't:
+├─ Judge network composition (prescriptive)
+├─ Recommend exclusion (isolation)
+├─ Enforce conformity (one right way)
+└─ Penalize political diversity (partisan)
+```
+
+---
+
+### **8.7 Measuring Behavioral Impact**
+
+**Metrics Beyond Engagement:**
+
+**Emotional Health Metrics:**
+```
+Post-insight sentiment:
+├─ Survey: "How did this insight make you feel?"
+│  └─ Track: Curious/Empowered vs. Anxious/Defensive
+├─ NPS by insight type (which insights drive advocacy)
+├─ Churn by insight exposure (uncomfortable insights → churn?)
+└─ Support ticket themes (confusion, distress, gratitude)
+
+Target: 70% report positive emotional impact
+Alert threshold: >20% report negative emotional impact
+```
+
+**Strategic Action Metrics:**
+```
+Post-insight behavior:
+├─ Action completion rate (did they take suggested actions?)
+├─ Return rate after insight (engaged or disengaged?)
+├─ Network health improvement (measurable outcomes)
+└─ Self-reported impact ("This helped me...")
+
+Target: 50% complete at least 1 strategic action within 30 days
+Success: User reports tangible outcome within 90 days
+```
+
+**Misuse Detection Metrics:**
+```
+Platform integrity:
+├─ Bulk action rate (automation detection)
+├─ Report rate (community flags)
+├─ Suspicious patterns (algorithm detection)
+└─ ToS violation rate (policy enforcement)
+
+Target: <1% of users flagged for potential misuse
+Escalation: >5% requires product redesign (too exploitable)
+```
+
+**Long-term Impact Metrics:**
+```
+Identity integration:
+├─ Strategic decision confidence (survey)
+├─ Network intentionality (behavioral)
+├─ Self-awareness depth (qualitative)
+└─ Ambassador emergence (teaching others)
+
+Target: 40% of 12-month users report "changed how I think about my network"
+Success: User becomes product advocate (teaches others PNI thinking)
+```
+
+---
+
+### **8.8 When to Intervene**
+
+**Intervention Decision Framework:**
+
+```
+User exhibits distress signal:
+├─ Support ticket expressing anxiety
+├─ Negative survey response
+├─ Immediate churn after insight
+└─ Social media complaint
+
+Intervention protocol:
+1. Assess severity (mild discomfort vs. acute distress)
+2. Personalized response (founder/team member reaches out)
+3. Offer support (call, extended trial, resource sharing)
+4. Learn and adjust (was this avoidable?)
+
+Always intervene if:
+├─ User expresses harm to self
+├─ User expresses harm to others
+├─ User misinterprets insight dangerously
+└─ Product caused unintended negative outcome
+
+Never intervene if:
+├─ User simply dislikes insight (their choice)
+├─ User disagrees with methodology (healthy skepticism)
+└─ User choosing different path (autonomy)
+```
+
+**Support Escalation:**
+
+```
+Level 1: Automated (Email with resources)
+├─ Trigger: Neutral/slightly negative survey response
+├─ Response: Educational content, FAQs
+└─ Timeline: Immediate
+
+Level 2: Human Touch (Personal email)
+├─ Trigger: Negative survey response or support ticket
+├─ Response: Team member email, offer to help
+└─ Timeline: 24 hours
+
+Level 3: Direct Outreach (Call/video)
+├─ Trigger: Acute distress signal
+├─ Response: Founder/lead reaches out directly
+└─ Timeline: Same day
+
+Level 4: Professional Referral (External support)
+├─ Trigger: Mental health concern
+├─ Response: Suggest professional support
+└─ Timeline: Immediate
+```
+
+---
+
+**Behavioral Strategy Summary:**
+
+We recognize that Personal Network Intelligence is not neutral. It affects how people see themselves. This creates unique responsibilities:
+
+1. **Prepare users emotionally** (uncomfortable truths ahead)
+2. **Support users strategically** (never diagnosis without direction)
+3. **Prevent misuse through design** (technical + ethical safeguards)
+4. **Monitor long-term impact** (how users integrate insights)
+5. **Intervene when necessary** (duty of care)
+
+This isn't just good ethics. It's good business.
+
+Users trust products that care about their wellbeing.
+Trust drives retention, advocacy, and category leadership.
+
+---
+
+## **9. Product Strategy**
+
+*(Condensed from v1.0 - core elements only)*
+
+### **9.1 Product Philosophy**
 
 **Core Beliefs:**
 
-**1. Privacy is non-negotiable**
-- Every feature must pass "no account access" test
-- If feature requires credentials, it's automatically rejected
-- Privacy is our permanent competitive advantage
+1. **Privacy is non-negotiable** (every feature passes "no account access" test)
+2. **Insights over metrics** (interpret data, don't just display it)
+3. **Simplicity above complexity** (complex algorithms, simple interface)
+4. **Truth with compassion** (honest insights with positive framing)
+5. **Continuous revelation** (always something new to discover)
 
-**2. Insights over metrics**
-- We interpret data, not just display it
-- Every number must answer "so what?"
-- Visualization serves understanding, not decoration
+### **9.2 Product Differentiation Strategy**
 
-**3. Simplicity above complexity**
-- Complex algorithms, simple interface
-- "Explain like I'm smart, not technical"
-- Remove features that don't serve core value
+**Differentiation Hierarchy (ranked by importance):**
 
-**4. Truth with compassion**
-- Honest insights (even when uncomfortable)
-- Positive framing ("opportunity" not "failure")
-- Confidence levels (show uncertainty)
-- Direction, not just diagnosis
+1. **Privacy-First Architecture** (most important - permanent moat)
+2. **Relationship-Centric Focus** (unique to PNI category)
+3. **Guided Discovery Experience** (makes complexity accessible)
+4. **Category Leadership** (own "Personal Network Intelligence")
 
-**5. Continuous revelation**
-- Product never feels "complete"
-- Always something new to discover
-- Reward return visits with fresh insights
-
-### **6.2 Product Differentiation Strategy**
-
-**How we differentiate (ranked by importance):**
-
-**1. Privacy-First Architecture (Most Important)**
-```
-Our Approach:
-├─ Manual upload (no account access)
-├─ 80% client-side processing
-├─ Optional 100% local-only mode
-├─ User can delete anytime
-└─ No data selling, no AI training on user data
-
-Why it matters:
-├─ Trust in age of breaches
-├─ Legally bulletproof
-├─ Platform-independent
-└─ Permanent competitive moat (hard to copy credibly)
-
-Messaging: "We don't connect to your accounts. We respect them."
-```
-
-**2. Relationship-Centric Focus**
-```
-Our Approach:
-├─ Network structure (not content metrics)
-├─ Connection quality (not follower count)
-├─ Positioning insights (unique to us)
-└─ Strategic opportunities (actionable)
-
-Why it matters:
-├─ No one else does this for individuals
-├─ Addresses real strategic needs
-└─ Can't be commoditized by metrics APIs
-
-Messaging: "See who you are, not just what you posted"
-```
-
-**3. Guided Discovery Experience**
-```
-Our Approach:
-├─ Progressive reveal (prevent overwhelm)
-├─ Confidence levels (show uncertainty)
-├─ "What this means for you" narratives
-├─ Inline micro-explanations
-└─ Educational, not just functional
-
-Why it matters:
-├─ Makes complex insights accessible
-├─ Builds trust through transparency
-└─ Creates emotional connection
-
-Messaging: "Beautiful insights, not just beautiful graphs"
-```
-
-**4. Category Leadership**
-```
-Our Approach:
-├─ Define "Personal Network Intelligence"
-├─ Thought leadership content
-├─ Original research and data studies
-└─ Community building
-
-Why it matters:
-├─ Own mental real estate
-├─ Set rules of competition
-└─ Margin advantage (category creator charges premium)
-
-Messaging: "The category-defining Personal Network Intelligence platform"
-```
-
-### **6.3 Product Roadmap Philosophy**
+### **9.3 Product Roadmap Philosophy**
 
 **Roadmap Principles:**
 
-**1. Validate before scale**
-- Phase 0: Technical validation (2 weeks)
-- Phase 1: Market validation (3 months)
-- Phase 2: Growth validation (3 months)
-- Phase 3: Scale (6+ months)
+1. **Validate before scale** (Phase 0 → Phase 1 → Phase 2 → Phase 3)
+2. **Core before features** (perfect aha moment first)
+3. **Measure everything** (every feature = hypothesis test)
+4. **Listen but don't just build requests** (infer underlying needs)
 
-**2. Core before features**
-- Perfect the "aha moment" first
-- Don't add features until retention solid
-- Say no to feature requests that don't serve core
+**Feature Prioritization:** Must meet 3 of 4 criteria (serves primary user, strengthens core value, requested by >20%, feasible in 2 weeks)
 
-**3. Measure everything**
-- Every feature launch = hypothesis test
-- Define success criteria before building
-- Kill features that don't deliver
+### **9.4 Platform Strategy**
 
-**4. Listen but don't just build what users ask**
-- Users know their problems, not always solutions
-- "Faster horses" vs. automobiles
-- Infer underlying needs
-
-**Feature Prioritization Framework:**
-
-**Must meet 3 of 4 criteria:**
-1. ✅ Serves primary user segment
-2. ✅ Strengthens core value prop
-3. ✅ Requested by >20% of users
-4. ✅ Feasible within 2-week sprint
-
-**Automatic rejection if:**
-- ❌ Requires account access
-- ❌ Scope creeps toward different category
-- ❌ Benefits <5% of users
-- ❌ Duplicates existing feature
-
-**Build vs. Buy vs. Partner:**
-
-```
-Build if:
-├─ Core differentiator
-├─ IP/competitive advantage
-└─ Simple enough (<4 weeks dev)
-
-Buy if:
-├─ Commodity feature (payments, auth)
-├─ Complex to build (would take >2 months)
-└─ Maintained by vendor (don't want to maintain)
-
-Partner if:
-├─ Complementary product (not competitive)
-├─ Provides user value
-└─ Win-win for both parties
-```
-
-**Examples:**
-- Build: Network visualization, insights engine (core IP)
-- Buy: Stripe (payments), Auth0 (authentication), Sentry (monitoring)
-- Partner: Canva (export designs), Notion (save insights), Zapier (integrations)
-
-### **6.4 Platform Strategy**
-
-**Current:** Web-first (PWA)
-
-**Why web-first:**
-- Fastest to market (no app store approval)
-- Cross-platform (works everywhere)
-- Easy to iterate (deploy anytime)
-- Lower development cost (one codebase)
-
-**Mobile Native (Phase 3+):**
-
-**When to build:**
-- After web product validated (PMF proven)
-- When mobile usage >30% of traffic
-- When mobile experience degraded (file upload limits)
-
-**Which first:**
-- iOS first (higher ARPU, easier development)
-- Android second (larger market, more complexity)
-
-**Desktop App (Phase 3+):**
-
-**When to build:**
-- Power users requesting (>10K node networks)
-- Performance limitations on web
-- Offline use case validated
-
-**Technology:**
-- Electron (cross-platform)
-- Or Tauri (lighter weight)
-
-**Platform Partnerships (Phase 3+):**
-
-**Target partnerships:**
-- Twitter/X: Official "Network Intelligence" integration
-- LinkedIn: Premium feature or partnership
-- Instagram: If they open up
-
-**Approach:**
-- Prove value first (can't partner without traction)
-- Licensing model (revenue share or flat fee)
-- Win-win (we get data access, they get feature)
+- **Current:** Web-first (PWA)
+- **Mobile Native:** Phase 3+ (when usage >30% mobile)
+- **Desktop App:** Phase 3+ (power users, large networks)
+- **Platform Partnerships:** Phase 3+ (after proving value)
 
 ---
 
-## **7. Business Model Strategy**
+## **10. Business Model Strategy**
 
-### **7.1 Monetization Philosophy**
+*(Condensed from v1.0 - core elements only)*
+
+### **10.1 Monetization Philosophy**
 
 **Core Beliefs:**
+1. Users are customers, not products (no ads, no data selling)
+2. Value-based pricing (not cost-plus)
+3. Freemium done right (free tier genuinely useful)
+4. Reduce commitment friction (monthly plans, one-time options)
 
-1. **Users are customers, not products**
-   - No advertising (ever)
-   - No data selling (ever)
-   - Align incentives (we win when users win)
+### **10.2 Pricing Strategy**
 
-2. **Value-based pricing, not cost-plus**
-   - Price based on value delivered
-   - Not based on server costs
-   - Premium for premium experience
+**Free Tier** ("Insight"): $0 - 1 platform, basic insights
+**Pro Tier** ("Strategist"): $12/mo - Unlimited platforms, advanced features
+**Creator Tier** ("Influencer"): $29/mo - White-label, team features
+**One-Time** ("Instant Report"): $12 - Try premium without subscription
 
-3. **Freemium done right**
-   - Free tier genuinely useful (not crippled demo)
-   - Paid tier clear value (not arbitrary limits)
-   - Upgrade feels natural (not forced)
+### **10.3 Revenue Model & Projections**
 
-4. **Reduce commitment friction**
-   - No annual-only plans (Phase 1)
-   - Cancel anytime (no retention dark patterns)
-   - One-time purchase option (try premium without subscription)
+**Year 1 Target:**
+- 10,000 total users (85% free, 12% Pro, 3% Creator)
+- Exit MRR: $28K
+- Exit ARR: $337K
 
-### **7.2 Pricing Strategy**
+**Unit Economics:**
+- ARPU: $8-10/month (blended)
+- CAC: <$30
+- LTV: $270 (18-month average)
+- LTV:CAC: 9:1
+- Gross Margin: 85-90%
 
-**Current Pricing (Launch):**
+---
 
-**Free Tier: "Insight"**
-```
-Price: $0
-Includes:
-├─ Upload 1 platform
-├─ Full visualization (one-time snapshot)
-├─ Basic insights (community detection, engagement circles)
-├─ 1 PDF export per month
-├─ 3 social share cards per month
-└─ Data refresh monthly
+## **11. Growth Strategy**
 
-Limits:
-├─ No historical tracking (only current snapshot)
-├─ No multi-platform merge
-├─ No advanced insights (positioning, AI recommendations)
-└─ No white-label exports
+*(Condensed from v1.0 - core elements only)*
 
-Goal: Validate demand, prove "aha moment"
-Target: 85% of users (10,000 free users at scale)
-```
+### **11.1 Growth Philosophy**
 
-**Pro Tier: "Strategist"**
-```
-Price: $12/month or $120/year (17% discount)
-Includes:
-├─ Unlimited platforms
-├─ Multi-platform unified graph
-├─ Historical tracking (see evolution over time)
-├─ AI-powered recommendations
-├─ All 5 insight views (full access)
-├─ Unlimited PDF exports
-├─ Unlimited social share cards
-├─ Interactive embeds (portfolio website)
-├─ Priority processing
-└─ Email support (24-hour response)
+1. **Product-led growth** over sales-led
+2. **Viral by design**, not afterthought
+3. **Sustainable growth** over growth hacking
+4. **Category education** drives growth
 
-Goal: Primary revenue driver
-Target: 10% of users (1,200 Pro users at scale)
-Revenue: $14.4K MRR from Pro monthly
-```
-
-**Creator Tier: "Influencer"**
-```
-Price: $29/month or $290/year (17% discount)
-Includes:
-├─ Everything in Pro, plus:
-├─ White-label reports (remove branding)
-├─ Audience overlap analysis (compare with others)
-├─ Campaign tracking (before/after analysis)
-├─ Custom branding on all exports
-├─ Team collaboration (3 seats included)
-├─ Priority support (4-hour response)
-├─ Early access to new features
-└─ Dedicated success manager (coming Phase 3)
-
-Goal: Premium segment, high LTV
-Target: 3% of users (360 Creator users at scale)
-Revenue: $10.4K MRR from Creator monthly
-```
-
-**One-Time Purchase: "Instant Insight Report"**
-```
-Price: $12 (one-time)
-Includes:
-├─ One deep analysis (all features unlocked)
-├─ Professional 10-page PDF
-├─ All 5 visualization views (static)
-├─ Top 10 strategic insights
-├─ 3 high-res social share cards
-└─ 30-day online access
-
-Goal: Reduce commitment friction, early revenue
-Target: 5% of free users purchase (500 sales)
-Revenue: $6K one-time (not recurring)
-Conversion: 15-20% upgrade to Pro within 90 days
-```
-
-**Pricing Psychology:**
-
-**Why $12/mo for Pro:**
-- Below "expensive" threshold ($15+)
-- Comparable to Netflix, Spotify (familiar reference)
-- Higher than commodity tools ($5-7/mo)
-- Positions as premium but accessible
-
-**Why $29/mo for Creator:**
-- 2.4x Pro pricing (standard SaaS tiering)
-- Way below agency tools ($99-500/mo)
-- Justifiable for professional creators (ROI clear)
-- Room for enterprise tier above ($99/mo in Phase 3)
-
-**Why $12 one-time:**
-- Same price as one month Pro (clear comparison)
-- Impulse purchase range (<$20)
-- Pays for itself if converts 1/10 to annual Pro ($120)
-
-**Future Pricing Considerations (Phase 3+):**
-
-**Potential additions:**
-- **Team tier**: $79/mo for 10 seats (agencies)
-- **Enterprise tier**: Custom pricing (platform partnerships)
-- **Academic tier**: $5/mo for students/researchers (goodwill + citations)
-- **Lifetime deal**: $299 one-time (early adopter special, limited quantity)
-
-**Pricing experiments to run:**
-- Test $9/mo vs. $12/mo vs. $15/mo (find optimal)
-- Test annual discount (17% vs. 20% vs. 25%)
-- Test one-time price ($9 vs. $12 vs. $15)
-- A/B test feature gating (what drives upgrades?)
-
-### **7.3 Revenue Model & Projections**
-
-**Revenue Streams (Year 1):**
-
-**1. Recurring Subscription Revenue (Primary)**
-```
-Pro monthly: 1,200 users × $12 = $14,400 MRR
-Creator monthly: 360 users × $29 = $10,440 MRR
-Pro annual: 180 users × $10/mo equivalent = $1,800 MRR
-Creator annual: 60 users × $24/mo equivalent = $1,440 MRR
-
-Total Recurring: $28,080 MRR = $337K ARR (Year 1 exit rate)
-```
-
-**2. One-Time Purchase Revenue (Secondary)**
-```
-Assumption: 5% of free users (500 sales) × $12
-Total One-Time: $6,000 (not recurring, Year 1 total)
-```
-
-**3. Future Revenue Streams (Phase 3+)**
-```
-Potential:
-├─ API access (developers, researchers)
-├─ White-label licensing (agencies)
-├─ Platform partnerships (revenue share)
-├─ Enterprise contracts (custom deals)
-└─ Data licensing (anonymized benchmarks)
-
-Not modeled yet (too uncertain)
-```
-
-**Unit Economics (Steady State):**
-
-```
-Average Revenue Per User (ARPU):
-├─ Blended ARPU: $8-10/month (includes free users)
-├─ Paying ARPU: $15/month (weighted average of Pro + Creator)
-
-Customer Acquisition Cost (CAC):
-├─ Target: <$30
-├─ Organic growth (90%): ~$10 (content, time)
-├─ Paid acquisition (10%): ~$50-100 (if we do it)
-
-Customer Lifetime Value (LTV):
-├─ Avg subscription length: 18 months (target)
-├─ LTV: $15/mo × 18 months = $270
-├─ LTV:CAC ratio: $270/$30 = 9:1 (excellent)
-
-Payback Period:
-├─ CAC $30 / $15 monthly revenue = 2 months
-├─ Target: <6 months (we're well under)
-
-Churn Rate:
-├─ Target: <5% monthly (paid users)
-├─ Acceptable: <7% monthly
-├─ Unacceptable: >10% monthly
-```
-
-**Gross Margin Analysis:**
-
-```
-Variable Costs (per user per month):
-├─ Infrastructure (compute, storage, CDN): $0.50
-├─ Payment processing (3% of $12): $0.36
-├─ Support (amortized): $0.20
-├─ Data processing (algorithms): $0.10
-Total Variable Cost: ~$1.20 per user per month
-
-Gross Margin:
-├─ Pro user: ($12 - $1.20) / $12 = 90%
-├─ Creator user: ($29 - $1.20) / $29 = 96%
-├─ Blended: ~85-90% (excellent SaaS margins)
-
-Why margins are high:
-├─ Client-side processing (80% of compute)
-├─ Efficient architecture
-├─ No data storage of raw files
-└─ Self-service model (low support costs)
-```
-
-**Financial Projections (Conservative):**
-
-```
-Year 1 (Launch to Month 12):
-├─ Users: 10,000 total (85% free, 12% Pro, 3% Creator)
-├─ MRR Exit Rate: $28K
-├─ ARR Exit Rate: $337K
-├─ One-time revenue: $6K
-├─ Total revenue Year 1: ~$200K (ramp-up)
-├─ Gross profit: $170K (85% margin)
-└─ Status: Not yet profitable (need ~$300K ARR for profitability)
-
-Year 2 (Growth):
-├─ Users: 50,000 total (same conversion rates)
-├─ MRR: $140K
-├─ ARR: $1.68M
-├─ Gross profit: $1.4M (85% margin)
-├─ Operating expenses: ~$800K (team of 5-7)
-└─ Status: Approaching profitability
-
-Year 3 (Scale):
-├─ Users: 200,000 total
-├─ MRR: $560K
-├─ ARR: $6.7M
-├─ Gross profit: $5.7M
-├─ Operating expenses: ~$2.5M (team of 15-20)
-└─ Status: Profitable, Series A optionality
-```
-
-**Path to Profitability:**
-
-**Break-even point:** ~$300K ARR
-- Assumes: $25K monthly operating expenses (2-3 people, bootstrap)
-- Timeline: Month 9-12 (achievable on current trajectory)
-
-**Default alive:** Yes (if execution matches projections)
-- Conservative revenue projections
-- High gross margins
-- Low burn rate initially
-
-### **7.4 Business Model Risks**
-
-**Risk 1: Free users never convert**
-```
-Scenario: Conversion rate <1% (vs. target 3-5%)
-
-Impact: Revenue 1/3 to 1/5 of projections
-Root cause: Value gap unclear or price too high
-
-Mitigation:
-├─ A/B test pricing ($9 vs. $12 vs. $15)
-├─ Adjust free tier limits (make paid more compelling)
-├─ Better onboarding (show Pro features value)
-└─ Contingency: Accept lower conversion, focus on volume
-```
-
-**Risk 2: High churn kills growth**
-```
-Scenario: Monthly churn >10% (vs. target <5%)
-
-Impact: LTV collapses, unit economics broken
-Root cause: Product not delivering sustained value
-
-Mitigation:
-├─ Cohort analysis (when/why users churn)
-├─ Win-back campaigns (special offers)
-├─ Product improvements (fix value delivery)
-└─ Contingency: Pivot to one-time purchase model
-```
-
-**Risk 3: Infrastructure costs scale poorly**
-```
-Scenario: Variable costs >$5/user/month (vs. target $1.20)
-
-Impact: Gross margins 60% instead of 85%
-Root cause: Algorithmic processing expensive
-
-Mitigation:
-├─ Optimize algorithms (reduce compute)
-├─ Aggressive caching (reduce redundant processing)
-├─ Usage caps (Fair Use Policy)
-└─ Contingency: Increase pricing 20-30%
-```
-
-## **8. Growth Strategy**
-
-### **8.1 Growth Philosophy**
-
-**Core Growth Principles:**
-
-1. **Product-led growth over sales-led**
-   - Product is the primary acquisition channel
-   - Users discover value before talking to sales (no sales in Phase 1-2)
-   - Free tier drives top-of-funnel, product quality drives conversion
-
-2. **Viral by design, not afterthought**
-   - Sharing built into core experience
-   - Every visualization is share-worthy
-   - Network effects in product DNA (comparison features, public gallery)
-
-3. **Sustainable growth over growth hacking**
-   - No dark patterns or manipulation
-   - Organic word-of-mouth primary channel
-   - Paid acquisition only if unit economics support
-
-4. **Category education drives growth**
-   - As category grows, we grow
-   - Rising tide lifts all boats
-   - Invest in education, not just promotion
-
-### **8.2 Growth Model**
+### **11.2 Growth Model**
 
 **Primary Growth Loops:**
+1. **Viral Sharing Loop** (30-50% of signups) - Users share visualizations
+2. **SEO & Content Loop** (20-30% of signups) - Organic search
+3. **Comparison & Network Effects** (10-20% of signups) - Users invite friends
+4. **Community & Ambassador Loop** (10-15% of signups) - Power user evangelism
 
-**Loop 1: Viral Sharing Loop (Most Important)**
+**Target Viral Coefficient:** 0.3-0.5 (each user brings 0.3-0.5 others)
 
-```
-Trigger: User creates visualization
-   ↓
-Action: Shares "My Social DNA" card on social media
-   ↓
-Result: Card has watermark + CTA "Made with Visual Social Graph"
-   ↓
-Viewers: See card, intrigued, click through
-   ↓
-New Users: Sign up and create own visualization
-   ↓
-[Loop repeats]
+### **11.3 Growth Metrics Framework**
 
-Success Metrics:
-├─ Share rate: % of users who share (target: 30%)
-├─ Click-through rate: % of viewers who click (target: 10%)
-├─ Conversion rate: % of clickers who sign up (target: 15%)
-├─ Viral coefficient (k-factor): 0.3-0.5
+**North Star:** Users who achieve "aha moment" within 7 days (40% target)
 
-Optimization Levers:
-├─ Make sharing one-click (reduce friction)
-├─ A/B test card designs (maximize clicks)
-├─ Gamification (share to unlock feature)
-├─ Quality bar (only beautiful graphs shared)
-└─ Social proof (show how many shares)
+**Input Metrics:**
+- Acquisition: Traffic, signup rate (15%), sources
+- Activation: Upload start (60%), completion (80%), aha moment (40%)
+- Retention: D7 (30%), D30 (15%), refresh rate (40%)
+- Revenue: Free→paid (3-5%), churn (<5%), expansion (10%)
+- Referral: Share rate (30%), viral coefficient (0.3-0.5), NPS (50+)
 
-Timeline to effectiveness: 3-6 months
-Expected contribution: 30-50% of new signups
-```
+---
 
-**Loop 2: SEO & Content Loop**
+## **12. Strategy-Grade Metrics** ⭐ NEW
 
-```
-Trigger: User searches "how to visualize twitter network"
-   ↓
-Discovery: Finds our comprehensive guide (ranks #1)
-   ↓
-Education: Reads guide, learns about PNI category
-   ↓
-Action: Clicks CTA "Try Visual Social Graph"
-   ↓
-Conversion: Creates account, uploads data
-   ↓
-Creates more demand: Shares result, talks about it
-   ↓
-[Loop strengthens: More backlinks, higher rankings]
+### **12.1 Beyond Product Metrics**
 
-Success Metrics:
-├─ Organic traffic: Sessions/month (target: 10K by Month 6)
-├─ Keyword rankings: #1-3 for target terms
-├─ Conversion rate: Organic visitors → signup (target: 5-10%)
-├─ Content velocity: 2-3 posts per week
+**The Problem with Product-Centric Metrics:**
 
-Optimization Levers:
-├─ Long-form guides (2000+ words, comprehensive)
-├─ Original research (data studies, unique insights)
-├─ Guest posting (authoritative backlinks)
-├─ Internal linking (SEO structure)
-└─ Update frequency (freshness signals)
+Traditional SaaS metrics measure:
+- Usage (DAU, MAU, session length)
+- Engagement (feature adoption, clicks)
+- Retention (churn rate, LTV)
+- Revenue (MRR, ARR, ARPU)
 
-Timeline to effectiveness: 6-12 months
-Expected contribution: 20-30% of new signups
-```
+**These are necessary but insufficient for intelligence products.**
 
-**Loop 3: Comparison & Network Effects Loop**
+They tell us:
+- ✅ **IF** people use the product
+- ❌ **NOT** whether the product changes behavior
+- ❌ **NOT** whether insights drive better decisions
+- ❌ **NOT** whether category is succeeding
+
+**For Personal Network Intelligence, we need strategy-grade metrics that measure:**
+1. **Decision Quality** (are users making better choices?)
+2. **Behavioral Change** (are users acting differently?)
+3. **Strategic Clarity** (do users understand themselves better?)
+4. **Category Adoption** (is PNI becoming a thing?)
+
+---
+
+### **12.2 Tier 1: Decision Impact Metrics**
+
+**These metrics measure whether our insights improve user decision-making.**
+
+---
+
+**Metric 1: Decision Confidence Increase**
 
 ```
-Trigger: User sees their visualization
-   ↓
-Curiosity: "How do I compare to others?"
-   ↓
-Action: Invites friend to compare networks
-   ↓
-Friend: Signs up to see comparison
-   ↓
-Both: Explore differences, share findings
-   ↓
-More friends: Want to join the comparison
-   ↓
-[Network effects accelerate]
+Definition:
+Change in user confidence about strategic decisions
+before vs. after using Visual Social Graph
 
-Success Metrics:
-├─ Invite rate: % of users who invite (target: 30%)
-├─ Acceptance rate: % of invitees who join (target: 40%)
-├─ Multi-user engagement: Time spent comparing
-├─ Network coefficient: Invites per user
+Measurement:
+├─ Survey on signup: "How confident are you about your social media strategy?"
+│  └─ Scale: 1-10
+├─ Survey at 30 days: "How confident are you now?"
+│  └─ Scale: 1-10
+├─ Calculate: Average confidence increase
+└─ Segment: By insight type exposed to
 
-Features enabling this:
-├─ "Compare with friend" prominent button
-├─ Anonymous comparison (privacy-friendly option)
-├─ Leaderboards (opt-in, competitive element)
-├─ Public gallery (inspiration)
-└─ "Most similar networks" discovery
+Target: +2.5 point increase in confidence (e.g., 5.5 → 8.0)
+Success threshold: +2.0 points
+Failure threshold: +1.0 or less (product not delivering strategic value)
 
-Timeline to effectiveness: 6-12 months (requires scale)
-Expected contribution: 10-20% of new signups
+Hypothesis:
+If Visual Social Graph provides genuine strategic intelligence,
+users should feel significantly more confident about decisions.
+
+Validation:
+├─ Correlate with: Action completion, retention, advocacy
+├─ Control for: Dunning-Kruger effect (false confidence)
+└─ Qualitative follow-up: "Why are you more confident?"
+
+Dashboard tracking:
+├─ Overall confidence delta (all users)
+├─ By user segment (creators vs. professionals)
+├─ By insight type (positioning vs. engagement vs. growth)
+└─ Cohort analysis (does confidence sustain over time?)
 ```
 
-**Loop 4: Community & Ambassador Loop**
+**Why this matters:**
+- Product-market fit signal (if confidence doesn't increase, insights aren't useful)
+- Category validation (PNI should increase strategic clarity)
+- Differentiation measure (vs. analytics tools that increase data, not confidence)
+
+---
+
+**Metric 2: Insight-Driven Action Rate**
 
 ```
-Trigger: Power user loves product
-   ↓
-Engagement: Participates in community (Discord/forum)
-   ↓
-Recognition: Featured as "User of the Week"
-   ↓
-Evangelism: Shares experience, creates content
-   ↓
-Authority: Becomes go-to expert on PNI
-   ↓
-New Users: Discover through their content
-   ↓
-[Loop reinforces: More power users emerge]
+Definition:
+Percentage of users who take strategic action
+directly attributable to an insight
 
-Success Metrics:
-├─ Community size: Active members (target: 500 by Month 12)
-├─ Engagement rate: Daily/weekly active (target: 30%)
-├─ Ambassador content: User-generated tutorials, case studies
-├─ Referral attribution: Signups from ambassadors
+Measurement:
+├─ Track: Insight exposure (user sees specific insight)
+├─ Track: Action attribution (user takes recommended action)
+├─ Track: User confirmation (survey: "Did you do this because of insight?")
+└─ Calculate: (Actions taken / Insights shown) × 100
 
-Optimization Levers:
-├─ Recognition program (spotlight users)
-├─ Ambassador perks (lifetime Pro, early access)
-├─ Co-marketing (featured case studies)
-├─ Community events (monthly webinars)
-└─ Platform (Discord, Circle, or custom)
+Target: 40% of insights lead to action within 30 days
+Success threshold: 30%
+Failure threshold: <20% (insights aren't actionable enough)
 
-Timeline to effectiveness: 12+ months
-Expected contribution: 10-15% of new signups
+Action types:
+├─ Network management (follow/unfollow based on insight)
+├─ Content strategy (change topics, tone, frequency)
+├─ Engagement patterns (engage with specific accounts)
+├─ Collaboration (reach out to bridge accounts)
+└─ Positioning adjustments (refine personal brand)
+
+Tracking mechanism:
+├─ In-app: "I did this" button on insight cards
+├─ Survey: "Which insights did you act on?"
+├─ Behavioral: Detect action patterns (e.g., engagement spike with recommended accounts)
+└─ Follow-up: "What happened when you took this action?"
+
+Dashboard tracking:
+├─ Action rate by insight type (which drive most action?)
+├─ Action completion time (immediate vs. delayed)
+├─ Action outcomes (self-reported success)
+└─ Non-action reasons ("Why didn't you act on this insight?")
 ```
 
-### **8.3 Growth Metrics Framework**
+**Why this matters:**
+- Value delivery measure (insights must drive action, not just awareness)
+- Product iteration signal (which insights are most actionable?)
+- ROI justification (users paying for insights that change behavior)
 
-**North Star Metric:** Users who achieve "aha moment" within 7 days
-- Why: Predicts retention and word-of-mouth
-- Target: 40% of signups
+---
 
-**Input Metrics (What Drives North Star):**
-
-```
-Acquisition:
-├─ Traffic: Unique visitors to landing page
-├─ Signup rate: Visitors → accounts (target: 15%)
-└─ Traffic sources: Organic, social, referral, paid
-
-Activation:
-├─ Upload start rate: Signups → begin upload (target: 60%)
-├─ Upload completion rate: Start → finish (target: 80%)
-├─ Visualization load rate: Complete → see graph (target: 95%)
-└─ Aha moment rate: See graph → feel revelation (target: 40%)
-
-Retention:
-├─ D1 retention: Return next day (target: 40%)
-├─ D7 retention: Return within week (target: 30%)
-├─ D30 retention: Return within month (target: 15%)
-└─ Data refresh rate: Upload new data (target: 40% monthly)
-
-Revenue:
-├─ Free → paid conversion: Within 90 days (target: 3-5%)
-├─ One-time purchase rate: Free users (target: 5%)
-├─ Expansion revenue: Pro → Creator (target: 10%)
-└─ Churn rate: Monthly (target: <5%)
-
-Referral:
-├─ Share rate: Users who share (target: 30%)
-├─ Viral coefficient: New users per existing (target: 0.3-0.5)
-├─ Invite rate: Users who invite friends (target: 30%)
-└─ NPS score: Recommendation likelihood (target: 50+)
-```
-
-**Growth Stages & Goals:**
+**Metric 3: Strategic Decision Outcome Score**
 
 ```
-Stage 1: Product-Market Fit (Months 0-6)
-Goal: Validate "aha moment" exists and is repeatable
-Metrics:
-├─ 500 total users (beta)
-├─ 40% achieve aha moment
-├─ NPS >50
-└─ Qualitative feedback: "This changed how I see myself"
+Definition:
+User-reported success of decisions
+made based on Visual Social Graph insights
 
-Stage 2: Repeatable Growth (Months 6-12)
-Goal: Prove acquisition channels work
-Metrics:
-├─ 10,000 total users
-├─ 20% month-over-month growth
-├─ 3-5% free → paid conversion
-└─ CAC <$30
+Measurement:
+├─ Track: Decision made (user commits to strategy based on insight)
+├─ Follow-up: 30, 60, 90 days later
+├─ Survey: "How did that decision work out?"
+│  └─ Scale: -2 (much worse) to +2 (much better)
+├─ Calculate: Average outcome score
+└─ Control: Compare to decisions made without VSG insights
 
-Stage 3: Scaling (Months 12-24)
-Goal: Scale proven channels
-Metrics:
-├─ 100,000 total users
-├─ 30% month-over-month growth
-├─ Viral coefficient >0.4
-└─ $1M+ ARR
+Target: +1.2 average outcome score (users report positive outcomes)
+Success threshold: +0.8
+Failure threshold: +0.3 or less (insights don't lead to better outcomes)
 
-Stage 4: Market Leadership (Months 24-36)
-Goal: Dominate category
-Metrics:
-├─ 500,000 total users
-├─ "Visual Social Graph" = "Personal Network Intelligence"
-├─ Profitable or Series A raised
-└─ $10M ARR
+Decision types tracked:
+├─ Collaboration decisions (who to partner with)
+├─ Content strategy (what to post about)
+├─ Network pruning (who to unfollow)
+├─ Platform allocation (where to focus time)
+└─ Professional decisions (job changes, speaking opportunities)
+
+Long-term tracking:
+├─ 30-day: Immediate outcomes (did action work?)
+├─ 90-day: Strategic outcomes (was it right decision?)
+├─ 180-day: Career/business impact (measurable results?)
+└─ 365-day: Life impact (looking back, glad I did it?)
+
+Dashboard tracking:
+├─ Outcome score by decision type
+├─ Time to outcome (how long until results?)
+├─ Outcome variance (how predictable are results?)
+└─ Regret rate (users who wish they hadn't acted on insight)
 ```
 
-### **8.4 Growth Experiments Roadmap**
+**Why this matters:**
+- Ultimate validation (do our insights actually improve outcomes?)
+- Long-term value proof (justify subscription renewal)
+- Category credibility (PNI must deliver real strategic value)
 
-**Month 1-3: Foundation**
+---
 
-```
-Experiment 1: Landing page messaging
-├─ Hypothesis: Privacy-first messaging converts better
-├─ Test: "No account access" prominent vs. buried
-├─ Success: >20% lift in signup rate
-├─ Timeline: 2 weeks
+### **12.3 Tier 2: Behavioral Change Metrics**
 
-Experiment 2: Guided reveal timing
-├─ Hypothesis: Slower reveal = higher aha moment rate
-├─ Test: 5-stage (30 sec) vs. 3-stage (15 sec) vs. instant
-├─ Success: >10% lift in aha moment rate
-├─ Timeline: 2 weeks
+**These metrics measure whether users' network behavior becomes more intentional.**
 
-Experiment 3: Share card designs
-├─ Hypothesis: Minimalist design gets more clicks
-├─ Test: 5 different card layouts
-├─ Success: >30% lift in click-through rate
-├─ Timeline: 4 weeks (requires traffic)
-```
+---
 
-**Month 4-6: Optimization**
+**Metric 4: Network Intentionality Index**
 
 ```
-Experiment 4: Viral incentives
-├─ Hypothesis: "Share to unlock" increases sharing
-├─ Test: No incentive vs. unlock feature vs. discount
-├─ Success: Viral coefficient >0.3
-├─ Timeline: 4 weeks
+Definition:
+Degree to which user's network actions
+become more deliberate (vs. random) over time
 
-Experiment 5: Onboarding emails
-├─ Hypothesis: Educational emails reduce drop-off
-├─ Test: No emails vs. 3-email sequence vs. 7-email
-├─ Success: >15% lift in D7 retention
-├─ Timeline: 3 weeks
+Measurement:
+├─ Baseline: User behavior before VSG (random patterns)
+├─ Post-VSG: User behavior after insights (strategic patterns)
+├─ Calculate: Intentionality score (0-100)
+│  └─ Based on: Action-insight alignment, strategic consistency
+└─ Track: Change over time (increasing intentionality)
 
-Experiment 6: Pricing
-├─ Hypothesis: $12/mo is optimal
-├─ Test: $9 vs. $12 vs. $15 (different cohorts)
-├─ Success: Maximize revenue per cohort
-├─ Timeline: 8 weeks (need volume)
+Intentionality signals:
+├─ Engagement becomes selective (focus on high-value connections)
+├─ Follows align with positioning (strategic account selection)
+├─ Content addresses gaps (identified through insights)
+├─ Collaboration with bridge accounts (recommended connections)
+└─ Network pruning (removes ghost followers)
+
+Calculation methodology:
+├─ Pre-VSG: Random engagement score (baseline)
+├─ Post-VSG: Strategic engagement score
+├─ Intentionality Index = (Strategic - Random) / Random × 100
+└─ Track monthly (is intentionality increasing?)
+
+Target: 40% increase in intentionality by Month 3
+Success threshold: 30% increase
+Failure threshold: <15% increase (behavior not changing)
+
+Dashboard tracking:
+├─ Intentionality index over time (cohort analysis)
+├─ By user segment (who becomes most intentional?)
+├─ By insight type (which insights drive intentionality?)
+└─ Correlation with outcomes (does intentionality predict success?)
 ```
 
-**Month 7-12: Scale**
+**Why this matters:**
+- Behavioral proof (users not just learning, but changing)
+- Retention predictor (intentional users stay longer)
+- Category validation (PNI should make networks more strategic)
+
+---
+
+**Metric 5: Relationship Quality Improvement**
 
 ```
-Experiment 7: Paid acquisition
-├─ Hypothesis: Paid ads can be profitable
-├─ Test: Twitter ads vs. LinkedIn vs. Instagram
-├─ Success: CAC <$30 with LTV >$200
-├─ Timeline: 8 weeks, $5K budget
+Definition:
+Measurable improvement in network relationship quality
+(engagement depth, reciprocity, value)
 
-Experiment 8: Community features
-├─ Hypothesis: Public gallery increases retention
-├─ Test: Opt-in vs. opt-out vs. mandatory
-├─ Success: >20% lift in D30 retention
-├─ Timeline: 4 weeks
+Measurement:
+├─ Track: Baseline relationship metrics (before VSG)
+│  ├─ Engagement depth (comments vs. likes)
+│  ├─ Reciprocity rate (mutual engagement)
+│  ├─ Conversation length (thread depth)
+│  └─ Value signals (meaningful interactions)
+├─ Track: Post-VSG relationship metrics (after insights)
+├─ Calculate: Quality improvement score
+└─ Control: Compare to non-users (platform trends)
 
-Experiment 9: Referral program
-├─ Hypothesis: Incentives increase referrals
-├─ Test: No reward vs. discount vs. free month
-├─ Success: >50% lift in referral rate
-├─ Timeline: 6 weeks
+Target: 25% improvement in relationship quality by Month 6
+Success threshold: 15% improvement
+Failure threshold: <10% improvement (not changing behavior)
+
+Quality dimensions:
+├─ Depth: Comments (meaningful) vs. likes (superficial)
+├─ Reciprocity: Mutual engagement vs. one-way
+├─ Duration: Sustained relationships vs. transient
+├─ Value: Strategic connections vs. random
+└─ Diversity: Exposure to different perspectives
+
+Data sources:
+├─ User self-report (survey)
+├─ Platform data (from subsequent uploads)
+├─ Behavioral signals (in-app actions)
+└─ Qualitative feedback (testimonials)
+
+Dashboard tracking:
+├─ Quality score over time (improving?)
+├─ By relationship type (superfans vs. bridges vs. ghosts)
+├─ By action taken (which behaviors drive quality?)
+└─ Network health correlation (quality → retention?)
 ```
 
-### **8.5 Growth Team & Resources**
+**Why this matters:**
+- Real-world impact (better relationships = better outcomes)
+- Beyond vanity metrics (quality vs. quantity)
+- Long-term value proof (relationships compound over time)
 
-**Phase 1 (Months 0-6): Founder-led**
+---
+
+**Metric 6: Random Networking Behavior Reduction**
+
 ```
-Team:
-└─ Founder (full-time): Product, growth, content
+Definition:
+Decrease in low-value, random network actions
+(follows without strategy, engagement without purpose)
 
-Focus:
-├─ Product-market fit validation
-├─ Content creation (SEO)
-├─ Community engagement
-└─ Manual outreach (beta users)
+Measurement:
+├─ Baseline: Pre-VSG random behavior rate
+│  ├─ Follows without clear reason
+│  ├─ Engagement without relationship
+│  ├─ Platform hopping without strategy
+│  └─ Content without positioning
+├─ Post-VSG: Strategic behavior rate
+├─ Calculate: Random behavior reduction %
+└─ Track: Sustained change (not temporary)
 
-Budget: $0-2K/month (tools, hosting)
+Target: 40% reduction in random behavior by Month 3
+Success threshold: 30% reduction
+Failure threshold: <15% reduction (still acting randomly)
+
+Random behavior indicators:
+├─ Follow-unfollow churn (impulsive decisions)
+├─ Scattered engagement (no pattern)
+├─ Inconsistent content (no strategic focus)
+├─ Platform promiscuity (spreading thin)
+└─ Reactive posting (no planning)
+
+Strategic behavior indicators:
+├─ Deliberate follows (aligned with positioning)
+├─ Focused engagement (high-value connections)
+├─ Consistent content (clear themes)
+├─ Platform prioritization (strategic allocation)
+└─ Proactive planning (content calendar)
+
+Dashboard tracking:
+├─ Random behavior score over time
+├─ By user segment (who becomes most strategic?)
+├─ Correlation with outcomes (less random = better results?)
+└─ Relapse rate (users reverting to random behavior)
 ```
 
-**Phase 2 (Months 6-12): First growth hire**
+**Why this matters:**
+- Efficiency gain (less wasted effort)
+- Strategic maturity (from random to intentional)
+- Product value proof (VSG changes how users think about networks)
+
+---
+
+### **12.4 Tier 3: Category Adoption Metrics**
+
+**These metrics measure whether Personal Network Intelligence is becoming a recognized category.**
+
+---
+
+**Metric 7: Category Awareness Score**
+
 ```
-Team:
-├─ Founder: Product, strategy
-└─ Growth marketer (contractor → full-time)
+Definition:
+Market recognition of "Personal Network Intelligence"
+as a distinct software category
 
-Focus:
-├─ Content scaling (2-3 posts/week)
-├─ SEO optimization
-├─ Growth experiments
-└─ Community management
+Measurement:
+├─ Search volume: "Personal Network Intelligence" (Google Trends)
+├─ Media mentions: Category name in articles
+├─ Competitor positioning: Others claiming PNI category
+├─ User language: "PNI tool" in testimonials
+└─ Calculate: Category awareness index (0-100)
 
-Budget: $5-10K/month (salary + tools)
+Target: 40/100 awareness score by Year 2
+Success threshold: 25/100 (emerging category)
+Failure threshold: <10/100 (category not forming)
+
+Data sources:
+├─ Google Trends (search interest over time)
+├─ Media monitoring (TechCrunch, Wired, etc.)
+├─ Social listening (Twitter, LinkedIn mentions)
+├─ User surveys ("How would you describe VSG?")
+└─ Competitor analysis (are they using PNI language?)
+
+Category maturity stages:
+├─ Stage 1: No awareness ("What's PNI?")
+├─ Stage 2: Concept awareness ("Interesting idea")
+├─ Stage 3: Product association ("VSG is PNI")
+├─ Stage 4: Generic category ("PNI tools include...")
+└─ Stage 5: Dominant brand ("PNI = Visual Social Graph")
+
+Dashboard tracking:
+├─ Awareness score over time (trending up?)
+├─ By geography (where is category strongest?)
+├─ By audience (creators vs. professionals)
+└─ Competitor validation (are they copying category language?)
 ```
 
-**Phase 3 (Months 12-24): Growth team**
-```
-Team:
-├─ Founder: Product, strategy
-├─ Growth lead: Strategy, experiments
-├─ Content marketer: SEO, blog
-├─ Community manager: Engagement, support
-└─ Designer: Share cards, marketing assets
+**Why this matters:**
+- Category creation proof (is PNI becoming real?)
+- Brand moat (if we own category, we own market)
+- Market expansion (category growth drives company growth)
 
-Budget: $30-50K/month (salaries + paid acquisition)
+---
+
+**Metric 8: "PNI Thinking" Adoption Rate**
+
+```
+Definition:
+Users adopting Personal Network Intelligence
+as mental framework (not just using product)
+
+Measurement:
+├─ Survey: "Do you think about your network differently now?"
+├─ Behavioral: User teaches PNI concepts to others
+├─ Language: User uses PNI terminology naturally
+├─ Advocacy: User evangelizes PNI philosophy
+└─ Calculate: "PNI Thinking" adoption rate %
+
+Target: 50% of active users adopt "PNI Thinking" by Month 12
+Success threshold: 35%
+Failure threshold: <20% (product used, mindset not changed)
+
+"PNI Thinking" indicators:
+├─ User explains network in structural terms (not just metrics)
+├─ User identifies positioning without prompts
+├─ User recommends VSG using category language
+├─ User applies PNI to offline relationships
+└─ User creates content about PNI concepts
+
+Measurement methods:
+├─ Survey: "How has VSG changed how you think?"
+├─ Testimonials: Analyze language used
+├─ Social media: Monitor user posts about VSG
+├─ Referral attribution: How do they describe us?
+└─ Community: Observe discussions (PNI language?)
+
+Dashboard tracking:
+├─ Adoption rate over time (growing?)
+├─ By user tenure (does it increase with usage?)
+├─ By engagement level (power users more likely?)
+└─ Correlation with: Retention, advocacy, upgrades
+```
+
+**Why this matters:**
+- Deepest product-market fit (changed mental models)
+- Strongest retention predictor (mindset stickier than features)
+- Category spreading (users become PNI evangelists)
+
+---
+
+**Metric 9: Market Education Velocity**
+
+```
+Definition:
+Rate at which market understanding
+of Personal Network Intelligence increases
+
+Measurement:
+├─ Content performance (SEO, engagement)
+├─ Speaking opportunities (inbound requests)
+├─ Media coverage (unsolicited mentions)
+├─ Academic citations (research papers)
+├─ Job postings (companies seeking "PNI skills")
+└─ Calculate: Education velocity score
+
+Target: 3x increase in education velocity Year 1→2
+Success threshold: 2x increase
+Failure threshold: <1.5x increase (education not scaling)
+
+Education velocity components:
+├─ Organic reach: Blog traffic, video views
+├─ Earned media: Press mentions, podcast appearances
+├─ Community growth: Forum activity, events
+├─ Competitive validation: Others entering space
+└─ Academic adoption: Papers, courses, citations
+
+Tracking:
+├─ Monthly: Content metrics (traffic, engagement)
+├─ Quarterly: Media analysis (mentions, sentiment)
+├─ Semi-annually: Market surveys (awareness)
+└─ Annually: Category assessment (maturity stage)
+
+Dashboard tracking:
+├─ Education velocity index over time
+├─ By channel (which drives most education?)
+├─ By geography (where is education fastest?)
+└─ ROI analysis (education spend vs. awareness gained)
+```
+
+**Why this matters:**
+- Category creation indicator (is market learning?)
+- Scalability measure (can we educate beyond product?)
+- Long-term moat (educated market = higher barriers)
+
+---
+
+### **12.5 Metric Implementation Strategy**
+
+**Phased Rollout:**
+
+```
+Phase 0 (Weeks 1-2): Technical Spike
+├─ No strategy-grade metrics yet (product not live)
+└─ Focus: Technical validation only
+
+Phase 1 (Months 1-3): Foundation + Basic Metrics
+├─ Implement: Decision Confidence Increase
+├─ Implement: Insight-Driven Action Rate
+├─ Baseline: Network Intentionality (for future tracking)
+└─ Survey infrastructure: Onboarding + 30-day follow-up
+
+Phase 2 (Months 4-9): Expanded Metrics
+├─ Implement: Strategic Decision Outcome Score
+├─ Implement: Relationship Quality Improvement
+├─ Implement: Random Behavior Reduction
+└─ Longitudinal tracking: 90-day, 180-day cohorts
+
+Phase 3 (Months 10-24): Category Metrics
+├─ Implement: Category Awareness Score
+├─ Implement: "PNI Thinking" Adoption Rate
+├─ Implement: Market Education Velocity
+└─ Competitive analysis: Track category formation
+```
+
+**Data Collection Infrastructure:**
+
+```
+Surveys:
+├─ Onboarding: Baseline confidence, goals, behaviors
+├─ Day 7: Initial reaction, aha moment, actions taken
+├─ Day 30: Confidence change, decisions made
+├─ Day 90: Outcomes, behavioral change, satisfaction
+├─ Day 180: Long-term impact, advocacy
+└─ Annual: Comprehensive impact assessment
+
+Behavioral Tracking:
+├─ In-app: Feature usage, insight engagement, action completion
+├─ Platform data: Subsequent uploads (relationship quality)
+├─ Attribution: Link insights to actions to outcomes
+└─ Control groups: Non-users (platform trends)
+
+External Data:
+├─ Google Trends: Category search volume
+├─ Media monitoring: Mentions, sentiment
+├─ Competitive analysis: Market positioning
+├─ Academic tracking: Citations, papers
+└─ Social listening: User language, evangelism
+```
+
+**Dashboard Structure:**
+
+```
+Executive Dashboard:
+├─ North Star: Aha moment rate (40% target)
+├─ Category Health: Awareness score, PNI thinking adoption
+├─ Impact Proof: Confidence increase, outcome scores
+└─ Business Health: MRR, retention, NPS
+
+Product Dashboard:
+├─ Decision Impact: Confidence, actions, outcomes
+├─ Behavioral Change: Intentionality, quality, randomness
+└─ Feature Performance: Which insights drive most value?
+
+Growth Dashboard:
+├─ Acquisition: Channels, conversion, CAC
+├─ Activation: Upload rate, aha moment rate
+├─ Retention: Cohorts, churn, reactivation
+└─ Revenue: Conversions, ARPU, LTV
+
+Category Dashboard:
+├─ Awareness: Search, media, competitors
+├─ Education: Content reach, speaking, citations
+└─ Adoption: User language, evangelism, market maturity
 ```
 
 ---
 
-## **9. Risk Management Framework**
+### **12.6 Why Strategy-Grade Metrics Matter**
 
-### **9.1 Risk Assessment Methodology**
+**The Traditional Trap:**
+
+Most SaaS companies measure:
+- Users signed up (vanity)
+- Features used (activity)
+- Revenue generated (outcome)
+
+But miss:
+- **Did we change behavior?** (impact)
+- **Did we improve decisions?** (value)
+- **Did we create a category?** (legacy)
+
+**For Personal Network Intelligence:**
+
+We're not just building a product.
+We're creating a category.
+We're changing how people think about networks.
+
+**Strategy-grade metrics prove:**
+1. **To users:** You made better decisions because of us
+2. **To investors:** We're creating defensible category
+3. **To team:** We're having real impact
+4. **To ourselves:** This is working (or it isn't)
+
+**The Honest Test:**
+
+If all product metrics are great (usage, revenue, retention)
+but strategy-grade metrics are flat (no behavioral change, no category adoption),
+then we've built a successful product in the wrong category.
+
+We're a features in someone else's category.
+Not a category-defining company.
+
+Strategy-grade metrics keep us honest.
+
+---
+
+## **13. Risk Management Framework**
+
+*(This section remains largely unchanged from v1.0, as the risk framework was already comprehensive. Highlighting key elements only.)*
+
+### **13.1 Risk Assessment Methodology**
 
 **Risk Scoring:**
-```
-Likelihood: Low (1) | Medium (2) | High (3)
-Impact: Low (1) | Medium (2) | High (3)
-Risk Score = Likelihood × Impact (1-9)
-
-Priority:
-├─ Critical (8-9): Immediate mitigation required
-├─ High (6-7): Active monitoring and mitigation
-├─ Medium (4-5): Periodic review and planning
-└─ Low (1-3): Acknowledge and accept
-```
-
-**Risk Categories:**
-1. Technical Risks (product functionality)
-2. Market Risks (demand, competition)
-3. Business Risks (monetization, operations)
-4. Strategic Risks (positioning, timing)
-5. External Risks (platform, regulatory, macro)
-
-### **9.2 Critical Risks (Score 8-9)**
-
-**Risk 1: Platform Format Changes**
-
-```
-Category: Technical
-Likelihood: High (3) - Instagram changed 2024, Twitter frequently changes
-Impact: High (3) - Users can't upload, product breaks
-Risk Score: 9 (CRITICAL)
-
-Description:
-Social platforms change data export formats without notice.
-Parsers break, users frustrated, negative reviews.
-
-Early Warning Signals:
-├─ Parser failure rate spikes (>10%)
-├─ User support tickets cluster around one platform
-├─ Social media chatter about export changes
-└─ Platform changelog mentions (if public)
-
-Mitigation Strategies:
-├─ Parser versioning system (already planned)
-├─ Automated format detection (graceful degradation)
-├─ Platform monitoring (track changes proactively)
-├─ Community reporting (users flag issues)
-└─ 24-hour emergency response SLA
-
-Contingency Plan:
-├─ Immediate acknowledgment to users (status page)
-├─ Emergency parser update (24-hour target)
-├─ Temporary workaround (manual CSV upload)
-├─ Free Pro month for affected users (goodwill)
-└─ Platform diversification (reduce single-platform dependency)
-
-Residual Risk After Mitigation: Medium (6)
-Review Frequency: Monthly
-Owner: Engineering lead
-```
-
-**Risk 2: User Download Friction**
-
-```
-Category: Business
-Likelihood: High (3) - Manual upload is friction
-Impact: High (3) - No uploads = no business
-Risk Score: 9 (CRITICAL)
-
-Description:
-Users abandon during data download process.
-Conversion rate <20% (vs. target 60%).
-
-Early Warning Signals:
-├─ Landing page → download instructions <40%
-├─ Upload start rate <60%
-├─ Support tickets: "This is too much work"
-└─ Churn surveys mention friction
-
-Mitigation Strategies:
-├─ Exceptional landing page (show value clearly)
-├─ Video tutorials (reduce perceived complexity)
-├─ Wait-time engagement (sample network)
-├─ Email nudges (gentle reminders)
-├─ Clear time expectations (2-10 min, not hours)
-└─ Category education (explain why this is better)
-
-Contingency Plans:
-├─ A/B test messaging aggressively (find what works)
-├─ Reduce friction: Bookmarklet for instant preview
-├─ Alternative approach: Browser extension (Phase 2 evaluation)
-├─ Accept niche: Highly motivated users only
-└─ Pivot: OAuth option alongside manual (compromise privacy)
-
-Decision Point:
-├─ If completion <20% after 3 months → Pivot required
-├─ If 20-40% → Optimize aggressively
-└─ If >40% → On track
-
-Residual Risk After Mitigation: Medium-High (6-7)
-Review Frequency: Weekly (Phase 1)
-Owner: Product lead / Founder
-```
-
-### **9.3 High Risks (Score 6-7)**
-
-**Risk 3: Insights Feel Uncomfortable**
-
-```
-Category: Business
-Likelihood: Medium (2) - Truth can hurt
-Impact: High (3) - Negative sentiment, poor retention
-Risk Score: 6 (HIGH)
-
-Description:
-Users find insights uncomfortable ("I'm in echo chamber", "Ghost followers").
-Negative reviews, poor NPS, word-of-mouth damage.
-
-Early Warning Signals:
-├─ Negative sentiment in feedback
-├─ Support tickets about "inaccurate" insights (defensive)
-├─ Churn surveys: "Made me feel bad"
-└─ Social media complaints
-
-Mitigation Strategies:
-├─ Positive framing ("Opportunities" not "Failures")
-├─ Confidence levels (show uncertainty, not absolute truth)
-├─ "What this means for you" narratives (end on direction)
-├─ Opt-in for tough insights (user controls vulnerability)
-├─ Educational framing (data, not judgment)
-└─ Celebrate positives prominently
-
-Monitoring:
-├─ Sentiment analysis (NPS comments, support tickets)
-├─ A/B test framing (measure emotional response)
-├─ User interviews (qualitative understanding)
-
-Contingency Plan:
-├─ "Encouragement mode" (more positive framing)
-├─ User testimonials (show how truth helped)
-├─ Accept: Some users prefer comfort over truth (filter them)
-
-Residual Risk: Medium (4)
-Review Frequency: Monthly
-Owner: Product lead
-```
-
-**Risk 4: Competition Emerges**
-
-```
-Category: Market
-Likelihood: Medium (2) - After we prove model
-Impact: High (3) - Market share split, pricing pressure
-Risk Score: 6 (HIGH)
-
-Description:
-Well-funded competitor copies approach, moves faster with capital advantage.
-
-Early Warning Signals:
-├─ Product Hunt launches (similar products)
-├─ Analytics tools add network features
-├─ Platform native features announced
-└─ Social media chatter about alternatives
-
-Mitigation Strategies:
-├─ Brand moat (category ownership, content)
-├─ Privacy positioning (hard to copy credibly)
-├─ Execution excellence (10x better product)
-├─ Community building (network effects)
-├─ Continuous innovation (stay 12 months ahead)
-└─ Speed (land grab before competition)
-
-Competitive Response Playbook:
-├─ Monitor competitive launches (alerts)
-├─ Differentiate messaging (emphasize unique value)
-├─ Double down on retention (CAC war is expensive)
-├─ Raise capital if needed (match resources)
-└─ Consider acquisition (if strategic fit)
-
-Residual Risk: Medium (4-5)
-Review Frequency: Quarterly
-Owner: Founder / Strategy lead
-```
-
-**Risk 5: Insufficient Market Size**
-
-```
-Category: Market
-Likelihood: Low-Medium (2) - Addressable market is large
-Impact: High (3) - Business not viable
-Risk Score: 6 (HIGH)
-
-Description:
-Addressable market smaller than projected.
-Can't reach 10K paying users for $1M ARR.
-
-Validation Signals:
-├─ Organic growth rate (too slow = insufficient demand)
-├─ Paid acquisition cost (too high = weak demand)
-├─ Market saturation (plateau too early)
-└─ Competitive activity (lack thereof = no one can monetize)
-
-Mitigation Strategies:
-├─ Multiple user segments (creators, professionals, researchers)
-├─ Adjacent markets (if primary insufficient)
-├─ Enterprise pivot (teams, agencies, platforms)
-└─ Platform partnerships (licensing, white-label)
-
-Market Expansion Options:
-├─ Geographic expansion (non-English markets)
-├─ Platform expansion (TikTok, Threads, new platforms)
-├─ Use case expansion (sales, recruiting, journalism)
-└─ B2B pivot (sell to platforms or agencies)
-
-Decision Point:
-├─ If can't reach 5K users in 12 months → Market too small
-├─ If CAC >$100 persistently → Demand insufficient
-└─ Evaluate pivot or shut down
-
-Residual Risk: Low-Medium (3-4)
-Review Frequency: Quarterly
-Owner: Founder
-```
-
-### **9.4 Medium Risks (Score 4-5)**
-
-**Risk 6: Infrastructure Costs Scale Poorly**
-
-```
-Risk Score: 4 (MEDIUM)
-Likelihood: Low (2) × Impact: Medium (2)
-
-Mitigation:
-├─ Client-side processing (80% in browser)
-├─ Aggressive caching (Redis)
-├─ Usage caps (Fair Use Policy)
-├─ Optimized algorithms
-└─ Monitor cost per user (monthly)
-
-Target: Gross margins >80%
-Review: Monthly
-```
-
-**Risk 7: Support Overwhelms Team**
-
-```
-Risk Score: 4 (MEDIUM)
-Likelihood: Medium (2) × Impact: Medium (2)
-
-Mitigation:
-├─ Comprehensive help docs (self-service)
-├─ In-app education (reduce need)
-├─ Community forum (user-to-user)
-├─ AI chatbot (common questions)
-└─ Hire support at 5K users
-
-Target: <5% of users need human support
-Review: Monthly
-```
-
-**Risk 8: Churn Rate Too High**
-
-```
-Risk Score: 4 (MEDIUM)
-Likelihood: Medium (2) × Impact: Medium (2)
-
-Mitigation:
-├─ Aha moment optimization (prove value fast)
-├─ Return triggers (email, notifications)
-├─ Community engagement (reasons to return)
-├─ Product improvements (continuous value)
-└─ Win-back campaigns
-
-Target: <5% monthly churn (paid users)
-Review: Weekly (paid users), Monthly (free users)
-```
-
-### **9.5 External Risks (Uncontrollable)**
-
-**Risk 9: Platform Restricts Data Exports**
-
-```
-Likelihood: Low (1) - GDPR/CCPA legally mandate
-Impact: High (3)
-Risk Score: 3 (LOW but catastrophic if occurs)
-
-Why unlikely:
-├─ GDPR Article 20 (right to data portability)
-├─ CCPA Section 1798.100 (consumer rights)
-├─ Legal liability for platforms
-└─ User backlash if restricted
-
-Monitoring:
-├─ Platform policy changes
-├─ Legal/regulatory developments
-├─ User complaints about exports
-
-Response if occurs:
-├─ Legal advocacy (GDPR/CCPA violation)
-├─ Community pressure (user rights campaign)
-├─ Partnership approach (official API access)
-└─ Worst case: Browser extension (circumvent UX barriers)
-
-Insurance: Multi-platform diversification
-```
-
-**Risk 10: Economic Recession**
-
-```
-Likelihood: Medium (2) - Macro uncertainty
-Impact: Medium (2)
-Risk Score: 4 (MEDIUM)
-
-Impact scenarios:
-├─ Users cut discretionary spending
-├─ Conversion rates decline
-├─ Churn increases (prioritize essentials)
-└─ Paid acquisition less effective
-
-Mitigation:
-├─ Low price point ($12/mo = defensible)
-├─ Clear ROI (for creators, this pays for itself)
-├─ Annual plans (lock in revenue)
-├─ Flexible payment (pause/resume subscriptions)
-└─ Freemium safety net (downgrade vs. churn)
-
-Advantages in recession:
-├─ Helps users optimize (get more from current audience)
-├─ Cheaper than alternatives (agencies, consultants)
-├─ Self-improvement spending resilient
-```
-
-**Risk 11: AI Disruption**
-
-```
-Likelihood: Medium (2) - AI advancing rapidly
-Impact: Medium (2)
-Risk Score: 4 (MEDIUM)
-
-Threat scenarios:
-├─ AI tools commoditize insights
-├─ ChatGPT adds network analysis
-├─ Platform native AI features
-└─ Automated strategy tools
-
-Our defensibility:
-├─ Visualization (AI can't replace, only enhance)
-├─ Privacy architecture (AI needs data, we don't compromise)
-├─ Strategic narrative (human touch, empathy)
-├─ Data access (we have the graph, AI doesn't)
-└─ User trust (brand moat)
-
-Opportunity:
-├─ Integrate AI (better recommendations)
-├─ Use AI to enhance, not replace
-├─ Position as "AI-powered but human-centric"
-```
-
-### **9.6 Risk Monitoring Dashboard**
-
-**Weekly Review (Operational Risks):**
-```
-Metrics to monitor:
-├─ Parser success rate (>95% target)
-├─ Upload completion rate (>60% target)
-├─ Aha moment rate (>40% target)
-├─ Paid churn rate (<5% target)
-└─ Support ticket volume (<5% of users)
-
-Alert triggers:
-├─ Any metric >20% off target
-├─ Sudden spikes or drops (>30% change week-over-week)
-└─ User sentiment shift (NPS drop >10 points)
-```
-
-**Monthly Review (Tactical Risks):**
-```
-Review:
-├─ All High risks (6-7 score)
-├─ Growth metrics (vs. targets)
-├─ Competitive landscape (new entrants)
-├─ Infrastructure costs (per user)
-└─ Feature adoption rates
-
-Actions:
-├─ Update mitigation strategies
-├─ Adjust resource allocation
-└─ Escalate to quarterly review if needed
-```
-
-**Quarterly Review (Strategic Risks):**
-```
-Deep dive:
-├─ Market validation (demand signals)
-├─ Competitive positioning (are we winning?)
-├─ Category progress (ownership metrics)
-├─ Financial health (runway, unit economics)
-└─ External factors (macro, regulatory, platform)
-
-Outcomes:
-├─ Strategic plan adjustments
-├─ Resource reallocation
-├─ Go/pivot/stop decisions
-└─ Board/investor updates
-```
+- Likelihood: Low (1) | Medium (2) | High (3)
+- Impact: Low (1) | Medium (2) | High (3)
+- Risk Score = Likelihood × Impact (1-9)
+
+**Priority:**
+- Critical (8-9): Immediate mitigation required
+- High (6-7): Active monitoring and mitigation
+- Medium (4-5): Periodic review and planning
+- Low (1-3): Acknowledge and accept
+
+### **13.2 Critical Risks Summary**
+
+**Risk 1: Platform Format Changes** (Score: 9)
+- Mitigation: Parser versioning system, 24-hour response SLA
+
+**Risk 2: User Download Friction** (Score: 9)
+- Mitigation: Exceptional UX, wait-time engagement, education
+- Decision point: <20% completion after 3 months → Pivot
+
+**Risk 3: Insights Feel Uncomfortable** (Score: 6)
+- Mitigation: Positive framing, confidence levels, "What this means for you"
+- **Enhanced:** Behavioral Strategy (Section 8) provides comprehensive framework
+
+**Risk 4: Competition Emerges** (Score: 6)
+- Mitigation: Brand moat, privacy positioning, execution excellence
+- **Enhanced:** Section 4 ("Why Incumbents Cannot Win") provides structural defense
+
+**Risk 5: Insufficient Market Size** (Score: 6)
+- Mitigation: Multiple segments, adjacent markets, platform partnerships
 
 ---
 
-## **10. Strategic Roadmap**
+## **14. Strategic Roadmap**
 
-### **10.1 Three-Year Strategic Journey**
+*(Condensed from v1.0 - key milestones only)*
+
+### **14.1 Three-Year Journey**
 
 **Year 1 (2026): Validation & Foundation**
-
-**Q1 (Jan-Mar): Technical & Market Validation**
-```
-Strategic Goals:
-├─ Prove technical feasibility (Phase 0)
-├─ Launch beta to 50 users (Phase 1)
-├─ Validate "aha moment" exists (>40% rate)
-└─ Establish product-market fit signals
-
-Key Initiatives:
-├─ Phase 0 Technical Spike (2 weeks)
-├─ Beta program (hand-picked 50 users)
-├─ Category content creation (10 foundational posts)
-└─ Community building (Discord/Circle launch)
-
-Success Criteria:
-├─ Go/No-Go decision (data-driven)
-├─ 40%+ aha moment rate
-├─ NPS >50 among beta users
-└─ Qualitative validation (user testimonials)
-
-Risks to Manage:
-├─ Technical validation fails → Pivot parser approach
-├─ Users won't download → Reduce friction immediately
-└─ No aha moment → Redesign reveal experience
-```
-
-**Q2 (Apr-Jun): Launch & Initial Growth**
-```
-Strategic Goals:
-├─ Public launch (Product Hunt)
-├─ First 1,000 users acquired
-├─ Validate acquisition channels
-└─ Establish category positioning
-
-Key Initiatives:
-├─ Product Hunt launch (Top 5 goal)
-├─ Content marketing ramp-up (2-3 posts/week)
-├─ Viral loop optimization (share features)
-├─ Press outreach (TechCrunch, Wired, etc.)
-└─ SEO foundation (keyword research, optimization)
-
-Success Criteria:
-├─ 1,000 total users
-├─ 3-5% free → paid conversion
-├─ Viral coefficient >0.2 (early signal)
-└─ Organic traffic 1K visitors/month
-
-Risks to Manage:
-├─ Poor launch reception → Messaging pivot
-├─ Low conversion → Pricing experiments
-└─ Competition emerges → Differentiation emphasis
-```
-
-**Q3 (Jul-Sep): Optimization & Scaling**
-```
-Strategic Goals:
-├─ 10,000 users (10x growth from Q2)
-├─ $10K MRR achieved
-├─ Viral loops validated (k>0.3)
-└─ Retention metrics healthy (>15% D30)
-
-Key Initiatives:
-├─ Growth experiments (pricing, viral incentives)
-├─ Community scaling (500+ members)
-├─ Feature releases (all 5 insight views)
-├─ Ambassador program (10-20 advocates)
-└─ First growth hire (contractor → full-time)
-
-Success Criteria:
-├─ 10,000 users
-├─ $10K MRR
-├─ 20%+ month-over-month growth
-└─ CAC <$30
-
-Risks to Manage:
-├─ Growth plateau → New channel testing
-├─ High churn → Retention focus
-└─ Infrastructure costs → Optimization sprint
-```
-
-**Q4 (Oct-Dec): Profitability Path**
-```
-Strategic Goals:
-├─ 25,000 users
-├─ $25K MRR (approaching break-even)
-├─ Category leadership established
-└─ Foundation for 2027 scale
-
-Key Initiatives:
-├─ Paid acquisition testing ($5K budget)
-├─ Enterprise exploration (first partnerships)
-├─ Platform partnerships outreach (LinkedIn, Twitter)
-├─ Year-end campaign (annual plans push)
-└─ 2027 planning & fundraising prep (if needed)
-
-Success Criteria:
-├─ 25,000 users
-├─ $25K MRR (83% toward break-even)
-├─ NPS >50
-└─ Gross margins >80%
-
-Risks to Manage:
-├─ Seasonality (Q4 slower?) → Holiday campaigns
-├─ Team burnout → Hire support
-└─ Competition intensifies → Brand investment
-```
-
----
+- Q1: Technical validation (Phase 0), Beta launch (50 users)
+- Q2: Public launch (Product Hunt), 1,000 users
+- Q3: Optimize growth (10,000 users, $10K MRR)
+- Q4: Profitability path (25,000 users, $25K MRR)
 
 **Year 2 (2027): Growth & Profitability**
-
-**Q1 (Jan-Mar): Break-Even Achievement**
-```
-Strategic Goals:
-├─ 50,000 users (2x Year 1 exit)
-├─ $50K MRR (break-even achieved)
-├─ Multi-platform dominance (Instagram, LinkedIn, Twitter all supported)
-└─ International expansion begins
-
-Key Initiatives:
-├─ Team expansion (5-7 people)
-├─ Paid acquisition scaling (if ROI positive)
-├─ Platform partnerships (official API access pursuit)
-├─ International marketing (UK, Canada, Australia)
-└─ Desktop app exploration (power user demand)
-
-Success Criteria:
-├─ Operating cash flow positive
-├─ 30%+ MoM growth sustained
-├─ Customer success stories (10+ case studies)
-└─ Media recognition (category creator acknowledged)
-```
-
-**Q2-Q4 (Apr-Dec): Scale & Market Leadership**
-```
-Strategic Goals:
-├─ 200,000 users (Year 2 exit)
-├─ $200K MRR ($2.4M ARR)
-├─ Category ownership ("Visual Social Graph" = "Personal Network Intelligence")
-└─ Series A readiness (if venture path) or sustained profitability (if bootstrap)
-
-Key Initiatives:
-├─ Real-time features (optional, privacy-preserving)
-├─ Team collaboration (multi-user features)
-├─ Enterprise tier launch (agencies, platforms)
-├─ API access (developers, researchers)
-└─ Mobile native apps (iOS, Android)
-
-Success Criteria:
-├─ Profitable at scale (>$1M EBITDA)
-├─ Market leader positioning (surveys, press)
-├─ Platform partnerships signed (1-2 major)
-└─ Defensible moats established (brand, data, community)
-```
-
----
+- Q1: Break-even (50,000 users, $50K MRR)
+- Q2-Q4: Scale (200,000 users, $200K MRR / $2.4M ARR)
 
 **Year 3 (2028): Dominance & Optionality**
-
-**Strategic Goals:**
-```
-├─ 500,000+ users
-├─ $10M ARR (830K MRR)
-├─ Category completely owned (competitors validate our thesis)
-├─ Series A raised ($10-20M) OR profitably scaling
-└─ Strategic optionality (acquisition interest, IPO path, continue independent)
-
-Key Initiatives:
-├─ Predictive analytics (network evolution forecasting)
-├─ White-label licensing (platforms, agencies)
-├─ Academic partnerships (research network)
-├─ International expansion (non-English markets)
-├─ Adjacent categories (recruiting, sales, journalism)
-└─ Platform ecosystem (integrations, API partners)
-
-Success Criteria:
-├─ Dominant market position (3x nearest competitor)
-├─ Strong unit economics (LTV:CAC >5:1)
-├─ Category synonymous with brand (like "Stripe" for payments)
-└─ Strategic options available (grow independently, exit, or scale with capital)
-```
-
-### **10.2 Strategic Milestones**
-
-**Key Milestones (Celebration Moments):**
-
-```
-Month 2: First 100 users
-Month 6: First 1,000 users, Product Hunt Top 5
-Month 9: First $10K MRR
-Month 12: 10,000 users, Category content leader (100+ posts)
-Month 18: Break-even achieved, 50K users
-Month 24: $100K MRR, Team of 10, Series A or profitability
-Month 36: $500K MRR, Market leader, Strategic optionality
-```
-
-**Category Milestones (External Validation):**
-
-```
-"Personal Network Intelligence" appears in:
-├─ Tech press articles (Month 6)
-├─ Academic papers (Month 12)
-├─ Competitor positioning (Month 18)
-├─ Job descriptions (Month 24)
-└─ Common vocabulary (Month 36)
-
-Signal: We created a category that persists beyond us
-```
+- 500,000+ users, $10M ARR
+- Category completely owned
+- Series A or profitably scaling
+- Strategic optionality (exit, scale, continue)
 
 ---
 
-## **11. Decision Frameworks**
+## **15. Decision Frameworks**
 
-### **11.1 Go/No-Go Decision Framework**
+*(Condensed from v1.0 - key frameworks only)*
 
-**Phase 0 → Phase 1 Decision (Week 2)**
+### **15.1 Go/No-Go Framework**
 
-```
-GO if ALL of:
-✅ Parser success rate >95% (technical feasibility)
-✅ Upload-to-visualization <60 seconds (performance acceptable)
-✅ 4/5 test users feel "aha moment" (value validated)
-✅ No critical UX blockers (usable)
+**Phase 0 → Phase 1:**
+- GO if: Parser success >95%, performance <60s, 4/5 feel aha moment
+- PIVOT if: Aha moment 2/5, upload friction severe
+- NO-GO if: Parsers broken (<80%), no aha moment (0-1/5)
 
-PIVOT if:
-⚠️ Parsers work but performance poor → Optimize architecture
-⚠️ Aha moment 2/5 → Redesign reveal experience
-⚠️ Upload friction severe → Explore browser extension
+**Phase 1 → Phase 2:**
+- GO if: 3 of 4 (upload >40%, aha >30%, NPS >40, conversion >1%)
+- PIVOT if: Metrics below targets but fixable
+- NO-GO if: Upload <20%, aha <20%, NPS <20
 
-NO-GO if:
-❌ Parsers fundamentally broken (<80% success)
-❌ Performance unacceptable (>2 min processing)
-❌ No aha moment (0-1/5 users)
-❌ Browser can't handle workload
-```
+**Phase 2 → Phase 3:**
+- GO if: 3 of 4 (1K users, viral coefficient >0.2, D30 retention >10%, conversion 3%+)
+- PIVOT if: Growth slow but improving
+- NO-GO if: Can't reach 1K in 6 months, no viral growth
 
-**Phase 1 → Phase 2 Decision (Month 3)**
+### **15.2 Feature Prioritization Framework**
 
-```
-GO if 3 of 4:
-✅ Upload completion rate >40% (users willing to do manual work)
-✅ Aha moment rate >30% (value delivery working)
-✅ NPS >40 (users would recommend)
-✅ Free → paid conversion >1% (monetization viable)
-
-PIVOT if:
-⚠️ Upload completion 20-40% → Major UX overhaul
-⚠️ Aha moment 20-30% → Insight optimization
-⚠️ Conversion <1% → Pricing experiments
-
-NO-GO if:
-❌ Upload completion <20% (fundamental friction problem)
-❌ Aha moment <20% (product doesn't deliver value)
-❌ NPS <20 (users actively unhappy)
-```
-
-**Phase 2 → Phase 3 Decision (Month 6)**
-
-```
-GO if 3 of 4:
-✅ 1,000+ users acquired (demand validated)
-✅ Viral coefficient >0.2 (growth potential)
-✅ D30 retention >10% (product sticky)
-✅ Free → paid 3%+ (monetization working)
-
-PIVOT if:
-⚠️ Growth slow → Channel experiments
-⚠️ Retention weak → Feature additions
-⚠️ Conversion low → Value prop clarification
-
-NO-GO if:
-❌ Can't reach 1,000 users in 6 months (insufficient demand)
-❌ No organic growth (viral coefficient <0.1)
-❌ Retention terrible (<5% D30)
-```
-
-### **11.2 Feature Prioritization Framework**
-
-**"Should we build this feature?" Decision Tree:**
-
-```
-Question 1: Does it require account access?
-├─ YES → Automatic NO (violates privacy principle)
-└─ NO → Continue
-
-Question 2: Does it serve primary user segment?
-├─ NO → Reconsider or defer
-└─ YES → Continue
-
-Question 3: Does it strengthen core value proposition?
-├─ NO → Nice-to-have (lower priority)
-└─ YES → Continue
-
-Question 4: Is it requested by >20% of active users?
-├─ NO → Validate demand first (survey, prototype)
-└─ YES → Continue
-
-Question 5: Can we build it in <2 weeks?
-├─ NO → Break into smaller pieces or defer
-└─ YES → BUILD IT
-
-Minimum: Must pass Questions 1, 2, and 3
-Ideal: Passes all 5 questions
-```
-
-**Feature Scoring (Alternative Method):**
-
-```
-Score each dimension 1-10:
-
-Strategic Fit (weight: 30%)
-├─ Aligns with vision
-├─ Differentiates from competition
-└─ Advances category positioning
-
-User Value (weight: 30%)
-├─ Solves real pain point
-├─ Measurable impact (aha moment, retention)
-└─ Requested by users
-
-Feasibility (weight: 20%)
-├─ Technical complexity
-├─ Time to build
-└─ Maintenance burden
-
-Business Impact (weight: 20%)
-├─ Drives acquisition
-├─ Improves retention
-└─ Increases monetization
-
-Total Score: (Strategic × 0.3) + (Value × 0.3) + (Feasibility × 0.2) + (Business × 0.2)
-
-Threshold:
-├─ >8.0 → Build now (high priority)
-├─ 6.0-8.0 → Build soon (roadmap)
-├─ 4.0-6.0 → Consider (backlog)
-└─ <4.0 → Reject (don't build)
-```
-
-### **11.3 Pricing Decision Framework**
-
-**"Should we change pricing?" Decision Tree:**
-
-```
-Trigger:
-├─ Conversion rate significantly off target (>50% variance)
-├─ Competitive pricing pressure
-├─ Cost structure change (margins compressed)
-└─ Value delivery increase (new features)
-
-Analysis Required:
-├─ Cohort analysis (does price correlate with LTV?)
-├─ Willingness-to-pay survey (ask users directly)
-├─ Competitive benchmarking (market rates)
-└─ A/B test results (empirical data)
-
-Decision:
-├─ Increase price IF: Value delivered increased AND competitive positioning supports
-├─ Decrease price IF: Conversion weak AND lower price improves LTV:CAC
-├─ Maintain price IF: Unit economics healthy AND no strong signal to change
-└─ Add tier IF: Distinct user segment with different needs
-
-Implementation:
-├─ Grandfather existing users (respect loyalty)
-├─ Clear communication (explain rationale)
-├─ A/B test first (validate hypothesis)
-└─ Monitor closely (revert if negative impact)
-```
-
-### **11.4 Pivot vs. Persevere Framework**
-
-**"Should we pivot?" Major Decision**
-
-```
-Pivot triggers (any 2 of 3):
-├─ Fundamental assumption proven false (e.g., users won't download)
-├─ Unit economics broken beyond repair (CAC > LTV)
-└─ Market insufficient (can't reach 5K users in 12 months)
-
-Evaluation period:
-├─ Phase 1-2: Pivot quickly (2-3 months data)
-├─ Phase 3+: Persevere longer (6 months data, more inertia)
-
-Pivot options:
-├─ Customer segment pivot (B2C → B2B)
-├─ Feature pivot (core value prop change)
-├─ Technology pivot (manual → automated)
-├─ Business model pivot (freemium → enterprise)
-└─ Market pivot (creators → researchers)
-
-Persevere if:
-├─ Metrics trending right direction (even if below target)
-├─ Qualitative signals strong (users love it)
-├─ Clear path to improvement (know what to fix)
-└─ Sufficient runway (6+ months cash)
-
-Shut down if:
-├─ No path to profitability (even with perfect execution)
-├─ Founder motivation gone (burnout, other opportunities)
-├─ Market evaporated (external shock)
-└─ Legal/regulatory impossibility
-```
+**Decision Tree:**
+1. Requires account access? → NO (Tier 1 constraint violation)
+2. Serves primary user segment? → YES (continue)
+3. Strengthens core value prop? → YES (continue)
+4. Requested by >20% of users? → YES (continue)
+5. Feasible in <2 weeks? → YES (BUILD IT)
 
 ---
 
-## **12. Strategic Assumptions & Validation**
+## **16. Strategic Assumptions & Validation**
 
-### **12.1 Critical Strategic Assumptions**
+*(Core assumptions from v1.0 - validation timeline)*
 
-**These assumptions underpin our entire strategy. If false, strategy must change.**
+### **16.1 Critical Assumptions**
 
-**Assumption 1: Personal Network Intelligence is a real category**
+**Assumption 1: PNI is a real category**
+- Validate by: Month 6 (aha moment >40%, return >30%, conversion >1%)
+- If false: Pivot to traditional analytics
 
-```
-Belief: Users want to understand their network structure, not just metrics
-
-Validation signals (need 3 of 4):
-✅ Users achieve aha moment (>40% rate)
-✅ Users return for updates (>30% D30 retention)
-✅ Users pay for deeper insights (3-5% conversion)
-✅ Competitive validation (others enter space)
-
-If false:
-→ Pivot to traditional analytics (metrics-focused)
-→ Or: Focus on specific use case (recruiting, sales, etc.)
-
-Timeline: Validate by Month 6
-```
-
-**Assumption 2: Privacy-first approach is competitive advantage**
-
-```
-Belief: "No account access" builds trust and differentiates us permanently
-
-Validation signals (need 3 of 4):
-✅ Users prefer manual upload (survey >70%)
-✅ Privacy mentioned in testimonials (organic)
-✅ Low churn due to trust (not cited in exit surveys)
-✅ Competitive differentiation works (win competitors on this)
-
-If false:
-→ Add OAuth option alongside manual (user choice)
-→ Or: Emphasize other differentiators (insights quality, UX)
-
-Timeline: Validate by Month 6
-```
+**Assumption 2: Privacy-first is competitive advantage**
+- Validate by: Month 6 (users prefer manual >70%, privacy mentioned organically)
+- If false: Add OAuth alongside manual
 
 **Assumption 3: Manual upload friction is acceptable**
+- Validate by: Month 3 (completion rate >60%)
+- If false: Reduce friction or pivot to extension
 
-```
-Belief: Users motivated by insights will complete 5-10 min download process
+**Assumption 4: Freemium model works**
+- Validate by: Month 9 (conversion 3-5%, churn <5%)
+- If false: Adjust pricing or pivot to one-time purchase
 
-Validation signals (need 2 of 3):
-✅ Upload completion rate >60%
-✅ Support tickets about process <10% of users
-✅ Positive sentiment about "worth it" in feedback
-
-If false:
-→ Reduce friction aggressively (better UX, wait-time engagement)
-→ Or: Pivot to browser extension or bookmarklet
-→ Or: Accept niche product (highly motivated users only)
-
-Timeline: Validate by Month 3
-```
-
-**Assumption 4: Freemium model works for this product**
-
-```
-Belief: Free tier validates, paid tiers monetize (3-5% conversion)
-
-Validation signals (need 2 of 3):
-✅ Free → paid conversion 3-5%
-✅ Low churn (<5% monthly) on paid tiers
-✅ Clear value gap (users understand why to upgrade)
-
-If false:
-→ Adjust free tier limits (make paid more compelling)
-→ Or: Pricing experiments (lower price to increase volume)
-→ Or: Pivot to pure one-time purchase model
-
-Timeline: Validate by Month 9
-```
-
-**Assumption 5: Creators are the right initial market**
-
-```
-Belief: Micro-influencers have highest pain and willingness to pay
-
-Validation signals (need 2 of 3):
-✅ Creator segment converts best (vs. professionals)
-✅ Creator LTV highest (stay longest, upgrade most)
-✅ Creator advocacy strongest (refer others)
-
-If false:
-→ Pivot to professionals/LinkedIn focus
-→ Or: Serve multiple segments equally (no primary focus)
-
-Timeline: Validate by Month 6
-```
-
-### **12.2 Secondary Assumptions**
-
-**These are important but not business-critical. We can adjust if wrong.**
-
-**Assumption 6: Viral loops drive significant growth**
-
-```
-Belief: Users sharing visualizations creates viral acquisition
-
-Validation: Viral coefficient >0.3 by Month 9
-If false: Focus on other channels (SEO, content, paid)
-Risk: Low (other channels can work)
-```
-
-**Assumption 7: Users want ongoing insights (not one-time)**
-
-```
-Belief: Users return monthly to refresh data
-
-Validation: >40% return within 30 days
-If false: Position as annual/quarterly checkup, or pure one-time purchase
-Risk: Medium (affects retention and LTV)
-```
-
-**Assumption 8: Multi-platform merge creates unique value**
-
-```
-Belief: Seeing Twitter + LinkedIn + Instagram together provides insights
-
-Validation: Multi-platform upload rate >30% of users
-If false: Focus on single-platform excellence first
-Risk: Low (single-platform still valuable)
-```
-
-**Assumption 9: Market timing is right**
-
-```
-Belief: Creator economy matured, privacy concerns peaked, platforms restricting APIs → now is optimal time
-
-Validation: Growth rate, competitive activity, user feedback
-If false: May be too early (educate more) or too late (missed window)
-Risk: Medium (affects speed of adoption)
-```
-
-**Assumption 10: We can build this with current resources**
-
-```
-Belief: Founder(s) can execute Phase 1-2 without significant funding
-
-Validation: Ship beta by Month 3, reach 1K users by Month 6
-If false: Raise pre-seed or seed funding, or recruit technical co-founder
-Risk: High (execution risk)
-```
-
-### **12.3 Validation Roadmap**
-
-**Phase 0 (Weeks 1-2): Technical Validation**
-```
-Validate:
-├─ Parsers work (Assumption: technical feasibility)
-├─ Performance acceptable (Assumption: browser can handle it)
-├─ Aha moment exists (Assumption: value is real)
-└─ UX is usable (Assumption: no critical blockers)
-
-Method: Build prototype, test with 5 users
-Timeline: 2 weeks
-Decision: Go/No-Go to Phase 1
-```
-
-**Phase 1 (Months 1-3): Market Validation**
-```
-Validate:
-├─ Users will download data (Assumption 3)
-├─ Category resonates (Assumption 1)
-├─ Privacy positioning works (Assumption 2)
-└─ Target market is right (Assumption 5)
-
-Method: Beta with 50 users, surveys, interviews
-Timeline: 3 months
-Decision: Go/No-Go to Phase 2
-```
-
-**Phase 2 (Months 4-9): Monetization Validation**
-```
-Validate:
-├─ Freemium converts (Assumption 4)
-├─ Retention is healthy (Assumption 7)
-├─ Viral loops work (Assumption 6)
-└─ Growth channels identified (Assumption 9)
-
-Method: Public launch, 1K+ users, A/B tests
-Timeline: 6 months
-Decision: Go/No-Go to Phase 3 (scale)
-```
+**Assumption 5: Creators are right initial market**
+- Validate by: Month 6 (creator segment converts best, highest LTV)
+- If false: Pivot to professionals or multi-segment
 
 ---
 
-## **13. Conclusion — Strategic Intent**
+## **17. Conclusion — Strategic Intent**
 
-### **13.1 Our Strategic Bet**
+### **17.1 What Changed in v1.1**
+
+**From v1.0 to v1.1 (Category Leadership Edition):**
+
+1. **Added: "Why Incumbents Cannot Win This Category"** (Section 4)
+   - Structural analysis of competitive defense
+   - Explains why platforms, analytics vendors, CRMs, and AI cannot own PNI
+   - Positions constraints as permanent moats
+
+2. **Added: "Strategic Constraints as Weapons"** (Section 5)
+   - Codifies non-negotiable constraints (Tier 1)
+   - Defines strong commitments (Tier 2)
+   - Creates hierarchy of flexibility
+   - Shows how constraints become competitive advantages
+
+3. **Added: "Behavioral Strategy & Responsibility"** (Section 8)
+   - Addresses emotional resistance to insights
+   - Provides strategic support after uncomfortable truths
+   - Prevents misuse through design
+   - Measures long-term behavioral impact
+
+4. **Added: "Strategy-Grade Metrics"** (Section 12)
+   - Beyond product metrics to impact metrics
+   - Decision quality, behavioral change, category adoption
+   - Measures what actually matters long-term
+
+**Result:** PSD evolved from "Foundational Strategy" to "Category Leadership Strategy"
+
+---
+
+### **17.2 Our Strategic Bet (Reaffirmed)**
 
 **We are betting that:**
 
-1. **Personal Network Intelligence is a real category with real demand**
-   - Not just analytics with graphs
-   - Fundamental human need to understand relationships
+1. Personal Network Intelligence is a real category with real demand
+2. Privacy-first is the right long-term approach (despite short-term friction)
+3. Individual creators are the beachhead market
+4. Freemium SaaS is the right business model
+5. Now is the right time (creator economy mature, privacy concerns peaked)
 
-2. **Privacy-first is the right long-term approach**
-   - Despite short-term friction
-   - Builds trust that competitors can't match
+**This bet is now structurally defended:**
+- Incumbents cannot win (Section 4)
+- Constraints weaponized (Section 5)
+- Behavioral risks managed (Section 8)
+- Impact measurable (Section 12)
 
-3. **Individual creators are the beachhead market**
-   - Before enterprise, before platforms
-   - Prove value at individual level first
+**This isn't just strategy.
+This is strategic constitution.
+This is how we win the category.**
 
-4. **Freemium SaaS is the right business model**
-   - Free tier validates demand
-   - Paid tiers monetize value sustainably
+---
 
-5. **Now is the right time**
-   - Creator economy mature
-   - Privacy concerns peaked
-   - Platform restrictions create opportunity
-   - No dominant competitor
-
-**This bet is informed by:**
-- Market research (creator economy growth, analytics market size)
-- Competitive analysis (gap in market for individuals)
-- Technical validation (feasible with current technology)
-- User research (pain is real, willingness to pay exists)
-
-**This bet is falsifiable:**
-- Clear metrics define success/failure
-- Validation milestones with go/no-go decisions
-- Pivot triggers if assumptions proven false
-
-### **13.2 What Success Looks Like (3 Years)**
-
-**Market Success:**
-- Visual Social Graph = Personal Network Intelligence (category ownership)
-- 500,000+ users globally
-- Competitors validating category (imitation = validation)
-- "Best Personal Network Intelligence Tool" awards
-
-**Business Success:**
-- $10M ARR (Annual Recurring Revenue)
-- 80%+ gross margins (software-level economics)
-- Profitability OR Series A raised ($10-20M)
-- Team of 20-30 people (sustainable organization)
-
-**Product Success:**
-- 40%+ aha moment rate sustained
-- <5% monthly churn (paid users)
-- NPS >50 (users love us)
-- Category-defining features (others copy us)
-
-**Impact Success:**
-- Users making better strategic decisions (testimonials, case studies)
-- Careers advanced through network understanding
-- Businesses grown through relationship insights
-- Research enabled (academic citations)
-
-### **13.3 What Failure Looks Like (Decision Points)**
-
-**Early Failure (Months 0-6):**
-- Can't validate core assumptions (no aha moment, won't download data)
-- Can't reach 1,000 users in 6 months (insufficient demand)
-- Unit economics broken (CAC >> LTV)
-- Decision: Pivot or shut down
-
-**Mid-Stage Failure (Months 6-18):**
-- Growth plateaus <10K users (market too small)
-- Churn rate unacceptable (>10% monthly)
-- Can't achieve profitability path (burn >> revenue)
-- Decision: Major pivot or wind down
-
-**Late-Stage Failure (Months 18-36):**
-- Competitor dominates (we become #3-5 player)
-- Category fails to materialize (no one cares about PNI)
-- Platform restrictions make product impossible
-- Decision: Acquisition, pivot, or graceful exit
-
-**Acceptable outcomes:**
-- Profitable niche product (10K-50K users, $1-5M ARR)
-- Acquisition by platform or competitor ($5-20M)
-- Continued independent growth (default alive)
-
-**Unacceptable outcomes:**
-- Years of work with no traction (vanity metrics, no revenue)
-- Burn through capital with no path to sustainability
-- Reputation damage (poor product quality, privacy breach)
-
-### **13.4 Strategic Commitments**
-
-**We commit to:**
-
-1. **Ruthless prioritization**
-   - Focus on core value proposition
-   - Say no to feature bloat
-   - Kill features that don't deliver
-
-2. **Transparent communication**
-   - Honest with users (confidence levels, uncertainty)
-   - Honest with team (metrics, challenges)
-   - Honest with ourselves (pivot triggers clear)
-
-3. **User-first product development**
-   - Solve real problems, not imagined ones
-   - Listen to users but don't just build what they ask
-   - "Aha moment" is North Star, not vanity metrics
-
-4. **Privacy as non-negotiable principle**
-   - Never compromise on "no account access"
-   - Build trust through actions, not just words
-   - Make it a competitive advantage, not constraint
-
-5. **Category creation through education**
-   - Invest in content, thought leadership, research
-   - Build the rising tide that lifts all boats
-   - Own "Personal Network Intelligence" in collective consciousness
-
-6. **Sustainable business building**
-   - Profitability over growth-at-all-costs
-   - Unit economics matter from day one
-   - Default alive, not default dead
-
-### **13.5 The Path Forward**
+### **17.3 The Path Forward**
 
 **Immediate next steps:**
 
-1. **Finalize PRD Executive Edition** ✓
-2. **Finalize this Product Strategy Document** ✓
-3. **Execute Phase 0 Technical Spike** (2 weeks, January 2026)
-4. **Go/No-Go Decision** (data-driven, end of Week 2)
-5. **If GO: Launch Phase 1** (February-March 2026)
+1. **Finalize this Product Strategy Document v1.1** ✓
+2. **Execute Phase 0 Technical Spike** (2 weeks, January 2026)
+3. **Go/No-Go Decision** (data-driven, end of Week 2)
+4. **If GO: Launch Phase 1** (February-March 2026)
 
-**The journey:**
-- Month 0-6: Validate (prove this is real)
-- Month 6-12: Grow (prove it scales)
-- Month 12-24: Scale (become category leader)
-- Month 24-36: Dominate (strategic optionality)
+**Strategic discipline:**
+- This document constrains us more than v1.0
+- That's intentional
+- Constraints create focus
+- Focus creates category leadership
 
 **The mindset:**
-- "Ultrathink" at every step (question assumptions, obsess over details, craft with care)
-- Move fast but measure everything (speed with intentionality)
-- Build in public (community is our moat)
-- Stay humble (we're wrong until proven right)
+- "Ultrathink" philosophy applied to strategy
+- Question everything, but commit to answers
+- Plan like Da Vinci, execute like Jobs
+- Build category, not just product
 
 ---
 
 ## **Appendix: Strategic Resources**
 
-### **A. Further Reading**
+### **A. Document Relationships**
 
-**Category Creation:**
-- "Play Bigger" by Al Ramadan (category design framework)
-- "Crossing the Chasm" by Geoffrey Moore (market adoption)
-- "Blue Ocean Strategy" by Chan Kim (uncontested market space)
+```
+Strategic Hierarchy:
 
-**Product Strategy:**
-- "Good Strategy/Bad Strategy" by Richard Rumelt
-- "Inspired" by Marty Cagan (product management)
-- "The Lean Startup" by Eric Ries (validation methodology)
+Product Strategy Document (this) — Constitutional level
+    ↓ constrains
+Product Requirements Document — Execution contract
+    ↓ guides
+Product Roadmap — Tactical timeline
+    ↓ drives
+Feature Specifications — Implementation details
 
-**Growth:**
-- "Traction" by Gabriel Weinberg (19 growth channels)
-- "Hacking Growth" by Sean Ellis (growth hacking)
-- "Crossing the Chasm" by Geoffrey Moore (adoption curve)
+Changes flow up, not down:
+├─ Market learning updates PSD (quarterly)
+├─ PSD updates constrain PRD (on major version)
+├─ PRD constrains roadmap (on release planning)
+└─ Roadmap drives features (continuously)
+```
 
-**Privacy & Trust:**
-- "The Age of Surveillance Capitalism" by Shoshana Zuboff
-- GDPR/CCPA regulations (legal foundations)
+### **B. Review & Update Cadence**
 
-### **B. Strategic Questions for Ongoing Review**
+```
+Product Strategy Document:
+├─ Minor updates: Quarterly (market dynamics, metrics)
+├─ Major updates: Annually (assumptions, constraints)
+├─ Constitutional changes: Rarely (Tier 1 constraints)
+└─ Owner: Founder / CEO
 
-**Quarterly strategic review questions:**
+Triggers for major review:
+├─ Market validation contradicts assumptions
+├─ Competitor fundamentally changes landscape
+├─ Technology shift enables new approaches
+├─ Pivot under consideration
+└─ Series A fundraising preparation
+```
 
-1. Are we winning? (market share, competitive position)
-2. Are users delighted? (NPS, retention, testimonials)
-3. Are unit economics improving? (LTV:CAC, gross margin)
-4. Are we creating the category? (brand awareness, thought leadership)
-5. What surprised us this quarter? (update assumptions)
-6. What would we do differently? (continuous improvement)
-7. Should we pivot? (honest assessment of triggers)
-8. What's our biggest risk? (proactive mitigation)
-9. Where should we invest next? (resource allocation)
-10. Are we having fun? (founder sustainability)
+### **C. Success Definition (Updated)**
+
+**By August 2026 (6 months post-launch):**
+- ✅ 10,000 total users
+- ✅ $10K Monthly Recurring Revenue
+- ✅ 40% achieve "aha moment" within 7 days
+- ✅ 3-5% free → paid conversion
+- ✅ <5% monthly churn (paid users)
+- ✅ **+2.0 point increase in decision confidence** (NEW)
+- ✅ **30% insight-driven action rate** (NEW)
+- ✅ **25/100 category awareness score** (NEW)
+
+**This means:** Product-market fit achieved, category emerging, ready to scale
 
 ---
 
 ## **Document Status**
 
-- **Version:** 1.0
+- **Version:** 1.1 (Category Leadership Edition)
 - **Date:** December 2025
-- **Status:** Living Document (quarterly review)
+- **Status:** Strategic Constitution (quarterly review)
+- **Pages:** 95 (v1.0: 85 pages)
+- **Confidence:** 90% (was 85% in v1.0)
 - **Owner:** Founder / Product Strategy
 - **Next Review:** March 2026 (post-Phase 1)
-- **Confidence:** 85% (will increase with validation)
+- **Maturity:** Category Leadership level (was Foundational level)
 
 ---
 
-**End of Product Strategy Document v1.0**
+**End of Product Strategy Document v1.1**
 
-*"Strategy is about making choices, trade-offs; it's about deliberately choosing to be different."* — Michael Porter
+*"Strategy is choosing what not to become."*
+*"Constraints don't limit us. Constraints define us."*
+*"Category creators don't compete. They define the rules."*
 
 *December 2025*
 *Visual Social Graph*
+*Personal Network Intelligence*
