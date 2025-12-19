@@ -9,8 +9,8 @@
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
-| 1.0 | Dec 2024 | Initial PRD | Visual Social Graph Team |
-| 2.0 | Dec 2024 | Technical validation, corrected file formats, added technical spike | Visual Social Graph Team |
+| 1.0 | Dec 2025 | Initial PRD | Visual Social Graph Team |
+| 2.0 | Dec 2025 | Technical validation, corrected file formats, added technical spike | Visual Social Graph Team |
 | 2.1 | Dec 2025 | Strategic refinement, category definition, enhanced risk framework | Visual Social Graph Team |
 
 ---
