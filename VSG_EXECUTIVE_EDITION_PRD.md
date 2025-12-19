@@ -9,8 +9,8 @@
 
 | Version | Date | Changes | Pages |
 |---------|------|---------|-------|
-| 1.0 | Dec 2024 | Initial PRD | 80 |
-| 2.0 | Dec 2024 | Technical validation | 95 |
+| 1.0 | Dec 2025 | Initial PRD | 80 |
+| 2.0 | Dec 2025 | Technical validation | 95 |
 | 2.1 | Dec 2025 | Strategic refinement | 110 |
 | 2.1-E | Dec 2025 | Executive edition (condensed) | 35 |
 
