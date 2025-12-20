@@ -265,7 +265,7 @@ User Journey:
 - **Growth Opportunities:** Bridge accounts, collaborations
 
 **3. Actionable Insights**
-- AI-powered recommendations
+- Algorithm-powered recommendations
 - Confidence levels (High/Medium/Low)
 - "What this means for you" narratives
 - Strategic actions (specific, executable)
