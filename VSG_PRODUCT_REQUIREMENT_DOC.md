@@ -878,7 +878,7 @@ Dashboard with key metrics:
 
 **5. Growth Opportunities**
 ```
-AI-powered insights:
+Algorithm-powered insights:
 
 🎯 Bridge Accounts (Confidence: High)
 "These accounts connect you to new audiences:
@@ -1345,7 +1345,7 @@ Revenue model:
 ✓ Social share cards (3 per month)
 ✗ No historical tracking
 ✗ No multi-platform merge
-✗ No AI recommendations
+✗ No algorithm-powered recommendations
 ✗ No interactive embeds
 ✗ No white-label reports
 ```
@@ -1355,7 +1355,7 @@ Revenue model:
 ✓ Unlimited platforms
 ✓ Multi-platform unified graph
 ✓ Historical tracking (see evolution)
-✓ AI-powered recommendations
+✓ Algorithm-powered recommendations
 ✓ Advanced insights (all 5 views with full confidence)
 ✓ Priority processing
 ✓ Unlimited exports
@@ -2069,8 +2069,8 @@ Week 9-10: Multi-Platform Support
 Week 11-12: Advanced Insights
 ├─ All 5 visualization views (fully interactive)
 ├─ Full insights engine (all algorithms)
-├─ AI-powered recommendations
-│  └─ GPT-4 integration for narrative generation
+├─ Algorithm-powered recommendations
+│  └─ Template-based narrative generation (privacy-first, no external AI)
 ├─ Temporal analysis (network evolution)
 │  └─ Compare monthly snapshots
 ├─ Micro-explanation system

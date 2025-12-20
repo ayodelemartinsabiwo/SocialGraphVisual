@@ -319,7 +319,7 @@ REQUIREMENT SRS-C3.1: 80% Processing Client-Side
 │  ├─ Graph construction (nodes, edges, basic metrics)
 │  └─ Visualization (D3.js rendering)
 ├─ Server-side (20%):
-│  ├─ AI recommendations (computationally intensive)
+│  ├─ Algorithm-powered recommendations (large networks)
 │  ├─ Historical comparisons (database queries)
 │  └─ PDF generation (headless Chrome)
 ├─ Validation: Measure network traffic (upload 100MB → <10MB to server)
@@ -398,7 +398,7 @@ Server-Side Fallback (Opt-In):
 Implementation Priority:
 ├─ Phase 1: Memory guardrails + warnings (client-side)
 ├─ Phase 2: Server-side fallback (opt-in, Pro feature)
-├─ Phase 3: Automatic fallback suggestion (AI-powered device detection)
+├─ Phase 3: Automatic fallback suggestion (algorithm-based device detection)
 
 Acceptance criteria:
 ├─ No browser crashes: Memory limits enforced
@@ -422,7 +422,7 @@ REQUIREMENT SRS-C4.1: Feature Gating Architecture
 │  └─ Frontend: Hide/disable gated features
 ├─ Tiers:
 │  ├─ Free: 1 platform, basic insights, 1 PDF/month
-│  ├─ Pro: Unlimited platforms, all insights, AI recommendations, unlimited exports
+│  ├─ Pro: Unlimited platforms, all insights, algorithm-powered recommendations, unlimited exports
 │  └─ Creator: White-label, team features, API access
 ├─ Validation: Test each tier's feature availability
 
@@ -1069,7 +1069,7 @@ SRS-NF4: API Response Time
 │  ├─ Metadata queries: <200ms (p95)
 │  ├─ Graph retrieval: <500ms (p95)
 │  ├─ Insight generation: <2s (p95)
-│  ├─ AI recommendations: <10s (p95)
+│  ├─ Algorithm-powered recommendations: <500ms (p95)
 │  └─ Export generation: <30s (p95)
 ├─ Optimization: Caching (Redis), indexing, connection pooling
 ├─ Monitoring: APM (Sentry), alerts if p95 exceeds budget
