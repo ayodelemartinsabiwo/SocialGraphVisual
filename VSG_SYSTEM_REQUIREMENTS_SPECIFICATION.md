@@ -340,8 +340,68 @@ REQUIREMENT SRS-C3.3: Minimal Server Data Transfer
 │  ├─ Tweet/post content
 │  └─ Full follower lists
 ├─ Validation: Network inspection, user preview before upload
-```
 
+REQUIREMENT SRS-C3.4: Resource Guardrails & Server-Side Fallback
+├─ Priority: P1 (high, Phase 1)
+├─ Description: System SHALL protect low-end devices and provide fallback
+├─ Rationale: Robustness on constrained devices, accessibility
+
+Memory Guardrails (Client-Side):
+├─ Detection: Monitor heap size via performance.memory API (Chrome)
+├─ Thresholds:
+│  ├─ Warning: 80% of available memory (estimated 1.5GB on 2GB device)
+│  ├─ Critical: 90% of available memory
+│  └─ Abort: 95% of available memory (prevent browser crash)
+├─ Actions:
+│  ├─ Warning: "Your device may struggle with this network size. Reduce?"
+│  ├─ Critical: Auto-enable sampling (reduce to 2K most important nodes)
+│  └─ Abort: "Network too large for your device. Try server-side processing?"
+├─ User choice: Can override warning (advanced users)
+
+Device Detection:
+├─ RAM estimation:
+│  ├─ navigator.deviceMemory (if available)
+│  ├─ Heuristic: Browser type + viewport size
+│  └─ Conservative fallback: Assume 4GB if unknown
+├─ CPU estimation:
+│  ├─ navigator.hardwareConcurrency (core count)
+│  └─ Performance baseline test (simple computation timing)
+├─ Recommendation:
+│  ├─ <4GB RAM: Suggest server-side fallback
+│  ├─ 4-8GB RAM: Client-side with sampling if needed
+│  └─ >8GB RAM: Full client-side processing
+
+Server-Side Fallback (Opt-In):
+├─ Trigger: User opts in or client detects failure
+├─ Implementation:
+│  ├─ Upload ZIP to server (same Tus protocol)
+│  ├─ Server parses (Node.js, same parser code)
+│  ├─ Server generates graph (same algorithm)
+│  ├─ Server stores graph (PostgreSQL)
+│  └─ Client fetches and visualizes (lighter load)
+├─ Privacy consideration:
+│  ├─ User explicitly opts in ("Process on server instead?")
+│  ├─ Server deletes raw file after processing (same as client-side)
+│  ├─ Anonymized graph still stored (same as client-side)
+│  └─ Trade-off accepted: Privacy slightly reduced for accessibility
+├─ Performance: Server can handle larger networks (no browser limits)
+├─ Tier gating (Phase 2+):
+│  ├─ Free: Client-side only (educational limitation)
+│  ├─ Pro: Server-side fallback available
+│  └─ Creator: Priority server-side processing
+
+Implementation Priority:
+├─ Phase 1: Memory guardrails + warnings (client-side)
+├─ Phase 2: Server-side fallback (opt-in, Pro feature)
+├─ Phase 3: Automatic fallback suggestion (AI-powered device detection)
+
+Acceptance criteria:
+├─ No browser crashes: Memory limits enforced
+├─ Graceful degradation: Sampling enabled automatically if needed
+├─ User choice: Can opt for server-side processing
+├─ Privacy: Opt-in explicit, process documented
+└─ Testing: Validated on 4GB RAM devices (low-end laptops, tablets)
+```
 ---
 
 ### **3.2 Tier 2 Constraints (Strong Commitments)**
@@ -709,6 +769,93 @@ SRS-F5.4: Growth Opportunity Identification
 │  └─ Timing insights: Best posting times
 ├─ AI enhancement: Prioritization, specificity, personalization
 ├─ Acceptance: >40% try suggestions, >50% report positive results
+
+REQUIREMENT SRS-F5.5: AI Cost Control & Abuse Prevention
+├─ Priority: P1 (high, Phase 2)
+├─ Description: AI recommendation usage SHALL be rate-limited and budget-controlled
+├─ Rationale: Prevent cost overruns, abuse, margin erosion
+
+Per-Tier AI Quotas:
+├─ Free tier:
+│  ├─ AI recommendations: 0 per month (feature gated)
+│  ├─ Upsell: "Upgrade to Pro for AI-powered recommendations"
+│  └─ Rationale: AI is premium feature, protects margins
+├─ Pro tier ($12/mo):
+│  ├─ AI recommendations: 20 per month (refresh monthly)
+│  ├─ Cost per recommendation: ~$0.02 (Claude API)
+│  ├─ Total cost: $0.40/month per Pro user
+│  ├─ Margin: Acceptable ($12 - $0.40 = $11.60 gross margin)
+│  └─ Reset: 1st of each month
+├─ Creator tier ($29/mo):
+│  ├─ AI recommendations: 100 per month
+│  ├─ Cost: $2/month per Creator user
+│  ├─ Margin: Acceptable ($29 - $2 = $27 gross margin)
+│  └─ Justification: Higher-tier users expect more AI value
+├─ Display: Show quota usage ("15/20 AI insights used this month")
+
+Rate Limiting:
+├─ Per-user: Max 5 AI requests per hour (prevent spam)
+├─ Per-account: Max 1 request per 5 minutes (prevent accidental rapid fire)
+├─ Burst: Allow brief bursts (queue up to 3 requests)
+├─ Feedback: "AI recommendation generating... (this uses 1 of your 20 monthly insights)"
+└─ Error: "You've reached your hourly limit. Try again in X minutes."
+
+Budget Ceiling (Company-Wide):
+├─ Monthly AI budget: $500 (Phase 2), $2,000 (Phase 3), $10,000 (Phase 4)
+├─ Calculation:
+│  ├─ Phase 2: 1,000 users × 10% Pro × 20 requests × $0.02 = $40
+│  ├─ Phase 3: 10,000 users × 20% Pro × 20 requests × $0.02 = $800
+│  └─ Phase 4: 100,000 users × 30% Pro × 20 requests × $0.02 = $12,000
+├─ Monitoring: Real-time tracking (PostHog or custom dashboard)
+├─ Alerts:
+│  ├─ 50% of budget: Warning (Slack notification)
+│  ├─ 80% of budget: Critical (review usage patterns)
+│  └─ 100% of budget: Circuit breaker activated
+├─ Circuit breaker:
+│  ├─ Action: Disable AI recommendations temporarily (show cached/algorithmic only)
+│  ├─ User message: "AI insights temporarily unavailable. Algorithmic insights shown."
+│  ├─ Resolution: Investigate (abuse? unexpected spike? budget too low?)
+│  └─ Recovery: Manual re-enable after budget adjusted
+
+Abuse Prevention:
+├─ Patterns:
+│  ├─ Same user requesting same recommendation repeatedly
+│  ├─ Automated API calls (if API access enabled Phase 4+)
+│  └─ Account sharing (multiple IPs using same account rapidly)
+├─ Detection:
+│  ├─ Redis: Track requests per user per hour
+│  ├─ Fingerprinting: IP + user agent + timing patterns
+│  └─ Anomaly detection: Spike in requests from single account
+├─ Actions:
+│  ├─ Warning: "Unusual activity detected. Rate limit applied."
+│  ├─ Temporary throttle: Reduce quota to 5/month
+│  └─ Investigation: Manual review if pattern continues
+
+Caching (Cost Optimization):
+├─ Strategy: Cache AI recommendations for similar graphs
+├─ Cache key: Graph structure hash (anonymized)
+├─ Similarity threshold: >90% node/edge overlap
+├─ TTL: 7 days (recommendations stay fresh)
+├─ Benefit: Reduce redundant AI calls (if multiple users have similar networks)
+├─ Privacy: Cache key is anonymized hash (no user data in key)
+├─ Estimated savings: 10-20% reduction in API calls (Phase 3+)
+
+Cost Tracking Dashboard (Internal):
+├─ Metrics:
+│  ├─ Total AI spend (current month)
+│  ├─ AI spend per user (cohort analysis)
+│  ├─ Cache hit rate (optimization effectiveness)
+│  └─ Budget utilization (% of ceiling used)
+├─ Alerts: Automated (Slack/email)
+├─ Review: Monthly finance + product review
+└─ Adjustment: Increase budget or adjust quotas based on data
+
+Acceptance criteria:
+├─ Quotas enforced: Users cannot exceed tier limits
+├─ Budget protected: Circuit breaker prevents overruns
+├─ User experience: Clear quota visibility, graceful degradation
+├─ Monitoring: Real-time cost tracking dashboard
+└─ Margin safe: AI cost <10% of subscription revenue per tier
 ```
 
 ---
@@ -1056,6 +1203,92 @@ CREATE INDEX idx_insights_graph_id ON insights(graph_id);
 - Backups: Purged from backups within 90 days
 - Logs: 90-day retention
 
+---
+
+## **6.1.1 Amendment 1.1: Graph Data Storage Strategy (Section 6.1.1 - NEW)**
+
+```
+REQUIREMENT SRS-D1.1: Graph Lifecycle & Versioning Strategy
+├─ Priority: P0 (critical, Phase 1)
+├─ Description: Graph data SHALL be versioned and lifecycle-managed
+├─ Rationale: Enable historical comparison, prevent data loss, control storage costs
+
+Graph Storage Model:
+├─ Immutability: Graphs are immutable (never updated, only created)
+├─ Versioning: Each upload creates new graph record
+├─ Relationship: One upload → one graph (1:1, not 1:many)
+├─ Recalculation: Creates new graph, old graph retained (configurable retention)
+
+Graph Record Lifecycle:
+├─ Creation:
+│  ├─ User uploads → Upload record created (status: processing)
+│  ├─ Parser completes → Graph record created
+│  ├─ Insights generated → Linked to graph_id
+│  └─ Status: Upload marked complete
+├─ Update (re-upload same platform):
+│  ├─ New upload record created
+│  ├─ New graph record created
+│  ├─ Old graph retained (for historical comparison)
+│  └─ Default view: Latest graph (user can view history)
+├─ Deletion:
+│  ├─ User deletes account → Cascade delete all graphs
+│  ├─ User deletes specific graph → Soft delete (deleted_at)
+│  └─ Retention: 30 days (can recover), then hard delete
+
+Graph Size Limits:
+├─ JSONB field size: PostgreSQL max 1GB (theoretical)
+├─ Practical limit: 10MB per graph (handles 50K nodes with metadata)
+├─ Enforcement:
+│  ├─ Client-side: Warn if graph >5K nodes (likely >5MB)
+│  ├─ Server-side: Reject if serialized graph >10MB
+│  └─ Mitigation: Sampling for very large networks (>10K nodes)
+├─ Storage projection:
+│  ├─ Typical graph: 100KB-1MB (1K-5K nodes)
+│  ├─ Large graph: 1MB-5MB (5K-10K nodes)
+│  └─ Very large: 5MB-10MB (10K-50K nodes, sampled)
+
+Historical Comparison (Phase 3):
+├─ Feature: "Compare with previous snapshot"
+├─ Implementation:
+│  ├─ Query: Fetch two graph records (current + previous)
+│  ├─ Analysis: Diff nodes/edges (added, removed, changed)
+│  ├─ Visualization: Highlight changes (green: new, red: removed)
+│  └─ Insight: "Your network grew by X%, you gained Y connections in Z community"
+├─ Retention: Keep last 12 snapshots (monthly refresh recommended)
+├─ Storage cost: Acceptable (12 graphs × 1MB avg = 12MB per user)
+
+Data Model Update:
+-- Graphs table (enhanced)
+CREATE TABLE graphs (
+  id UUID PRIMARY KEY,
+  upload_id UUID REFERENCES uploads(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  platform VARCHAR(20) NOT NULL,
+  node_count INTEGER NOT NULL,
+  edge_count INTEGER NOT NULL,
+  graph_data JSONB NOT NULL, -- Immutable, versioned
+  graph_size_bytes INTEGER NOT NULL, -- Track size for monitoring
+  is_latest BOOLEAN DEFAULT TRUE, -- Flag for latest graph per platform
+  created_at TIMESTAMP DEFAULT NOW(),
+  deleted_at TIMESTAMP -- Soft delete
+);
+
+-- Index for historical queries
+CREATE INDEX idx_graphs_user_platform_latest ON graphs(user_id, platform, is_latest);
+CREATE INDEX idx_graphs_user_created ON graphs(user_id, created_at DESC);
+
+-- Constraint: Only one latest graph per user per platform
+CREATE UNIQUE INDEX idx_graphs_latest_per_platform 
+  ON graphs(user_id, platform) 
+  WHERE is_latest = TRUE AND deleted_at IS NULL;
+
+Acceptance criteria:
+├─ Immutability: Graphs never updated (only created)
+├─ Versioning: Historical graphs retrievable
+├─ Size enforcement: Reject if >10MB
+├─ Performance: Historical queries <500ms
+└─ Storage: Predictable cost (12MB per user for history)
+```
 ---
 
 ### **6.2 File Storage**
@@ -1634,6 +1867,18 @@ R6 (Browser Limitations):
 3. **Review Cycle:** Weekly review during active development
 
 **This SRS is the technical constitution. All implementation decisions must align with it, or the SRS must be updated with clear rationale documented.**
+
+## **Change Log:**
+```
+v1.1 (December 2025):
+├─ Added: SRS-D1.1 (Graph Lifecycle & Versioning Strategy)
+├─ Enhanced: SRS-C3.4 (Resource Guardrails & Server-Side Fallback)
+├─ Added: SRS-F5.5 (AI Cost Control & Abuse Prevention)
+└─ Rationale: Address strategic assessment gaps (storage clarity, device robustness, cost control)
+```
+
+v1.0 (December 2025):
+└─ Initial complete SRS (comprehensive, condensed)
 
 ---
 
