@@ -1,5 +1,5 @@
 # **Visual Social Graph: System Requirements Specification**
-## **Version 1.0 - Complete Technical Foundation**
+## **Version 1.2 - Algorithm-First Technical Foundation**
 
 *"Architecture is frozen music. Every line of code should sing."*
 
@@ -9,7 +9,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Version** | 1.0 (Complete & Condensed) |
+| **Version** | 1.2 (Algorithm-First Edition) |
 | **Date** | December 2025 |
 | **Status** | Living Document - Technical Foundation |
 | **Owner** | Engineering / Architecture |
@@ -23,7 +23,7 @@ Product Strategy Document v1.1 (strategic constitution)
     ↓ constrains
 Product Requirements Document v2.1-E (what we're building)
     ↓ defines
-System Requirements Specification v1.0 (THIS DOCUMENT - how we build it)
+System Requirements Specification v1.2 (THIS DOCUMENT - how we build it)
     ↓ guides
 Architecture Document (technical design)
     ↓ implements
@@ -158,9 +158,10 @@ Phase 4 (Leadership):
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │  Next.js Frontend (React 18)                           │ │
 │  │  ├─ File Upload (Tus resumable)                        │ │
-│  │  ├─ Web Worker (80% processing - privacy-first)       │ │
-│  │  ├─ D3.js Visualization (force-directed graph)        │ │
-│  │  └─ Export Generator (client-side)                    │ │
+│  │  ├─ Web Worker (80% processing - privacy-first)        │ │
+│  │  ├─ D3.js Visualization (force-directed graph)         │ │
+│  │  ├─ Template Renderer (client-side narratives)         │ │
+│  │  └─ Export Generator (client-side)                     │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                    ↕ HTTPS (JWT auth)                        │
 └─────────────────────────────────────────────────────────────┘
@@ -170,7 +171,11 @@ Phase 4 (Leadership):
 │              API Backend (Node.js + Express)                 │
 │  ├─ Auth Service (magic link, Google OAuth)                 │
 │  ├─ Upload Service (Tus protocol)                           │
-│  ├─ Analysis Service (graph algorithms, AI)                 │
+│  ├─ Insight Engine (algorithms + templates)                 │
+│  │  ├─ Graph Algorithms (graphology ecosystem)              │
+│  │  ├─ Statistical Analysis (simple-statistics)            │
+│  │  ├─ Template Engine (rule-based narrative generation)   │
+│  │  └─ Action Generator (conditional suggestions)          │
 │  ├─ Export Service (PDF generation)                         │
 │  └─ Webhook Service (Stripe)                                │
 │                    ↕ SQL queries                             │
@@ -179,19 +184,19 @@ Phase 4 (Leadership):
                          ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                    Data Layer                                │
-│  ├─ PostgreSQL (metadata, user data)                        │
+│  ├─ PostgreSQL (metadata, user data, templates)             │
 │  ├─ Cloudflare R2 (temporary file storage)                  │
-│  └─ Redis (sessions, job queue)                             │
+│  └─ Redis (sessions, job queue, metrics cache)              │
 └─────────────────────────────────────────────────────────────┘
                          │
                          ↓
 ┌─────────────────────────────────────────────────────────────┐
-│               External Services                              │
+│               External Services (Privacy-Preserved)          │
 │  ├─ Sentry (error tracking)                                 │
 │  ├─ PostHog (privacy-friendly analytics)                    │
 │  ├─ Resend (transactional email)                            │
-│  ├─ Stripe (payments)                                       │
-│  └─ Anthropic Claude API (AI recommendations)               │
+│  └─ Stripe (payments)                                       │
+│  [NO external AI APIs - all processing on-premise]          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -210,7 +215,7 @@ Phase 4 (Leadership):
 **In Scope:**
 - File upload/parsing (Twitter, Instagram, LinkedIn)
 - Network visualization (D3.js force-directed)
-- Insight generation (algorithms + AI)
+- Insight generation (algorithms + templates)
 - Export (PDF, social cards, CSV/JSON)
 - Authentication (magic link, Google OAuth for VSG only)
 - Payments (Stripe)
@@ -720,142 +725,247 @@ SRS-F4.5: Confidence Levels
 
 ---
 
-### **4.5 AI-Powered Recommendations**
+### **4.5 Algorithm-Powered Recommendations**
+
+*"Elegance is achieved not when there's nothing left to add, but when there's nothing left to take away." - Aligned with CLAUDE_ACE.md philosophy*
+
+**Design Philosophy:**
+
+This section replaces external AI APIs with an algorithm-first, template-driven approach that:
+- Strengthens privacy positioning (no data sent to third parties)
+- Eliminates unpredictable API costs ($0 vs $500-$10K/month)
+- Reduces latency (500ms vs 10s)
+- Increases reliability (no external dependencies)
 
 ```
-SRS-F5.1: AI Recommendation Engine
+SRS-F5.1: Algorithm-Powered Insight Engine
 ├─ Priority: P1 (high, Phase 2)
-├─ Provider: Anthropic Claude API (Sonnet)
-├─ Fallback: OpenAI GPT-4
+├─ Description: Generate personalized recommendations using graph algorithms
+│  and template-based narrative synthesis (NO external AI APIs)
+├─ Rationale:
+│  ├─ Privacy: No user data sent to third-party AI providers
+│  ├─ Cost: $0 per recommendation (vs $0.01-0.05 with AI APIs)
+│  ├─ Latency: <500ms (vs <10s with AI APIs)
+│  ├─ Reliability: No external API dependencies
+│  └─ Philosophy: "Simplify Ruthlessly" (CLAUDE_ACE.md)
+│
 ├─ Architecture:
-│  ├─ Client: Sends anonymized graph + user goal
-│  ├─ Server: Graph analysis → LLM synthesis
-│  ├─ Response: Structured recommendations + actions
-│  └─ Privacy: No raw usernames sent to AI
-├─ Cost: ~$0.01-0.05 per recommendation
-├─ Acceptance: Personalized >80%, <10s generation, privacy-safe
+│  ├─ Layer 1: Graph Algorithms
+│  │  ├─ Library: graphology + graphology-communities + graphology-metrics
+│  │  ├─ Algorithms: Louvain, betweenness, PageRank, Jaccard similarity
+│  │  └─ Performance: <5s for 5K nodes
+│  ├─ Layer 2: Statistical Analysis
+│  │  ├─ Library: simple-statistics (or custom)
+│  │  ├─ Functions: percentiles, distributions, significance tests
+│  │  └─ Purpose: Confidence scoring, threshold detection
+│  ├─ Layer 3: Template Engine
+│  │  ├─ Implementation: Custom TypeScript module
+│  │  ├─ Templates: 150+ pre-written narrative patterns
+│  │  ├─ Selection: Rule-based matching (metrics → template)
+│  │  └─ Interpolation: Variable substitution (names, numbers, %)
+│  ├─ Layer 4: Action Generator
+│  │  ├─ Implementation: Rule-based decision tree
+│  │  ├─ Actions: 50+ pre-defined actionable suggestions
+│  │  └─ Prioritization: Based on impact score (calculated)
+│  └─ Output: Structured recommendation object (JSON)
+│
+├─ Privacy Guarantee:
+│  ├─ All processing on VSG infrastructure
+│  ├─ No data transmitted to external AI services
+│  ├─ User data never leaves controlled environment
+│  └─ Marketing claim: "100% AI-free insights"
+│
+├─ Performance Requirements:
+│  ├─ Latency: <500ms (p95) for full recommendation set
+│  ├─ Throughput: 100 concurrent requests
+│  └─ Memory: <100MB per request
+│
+├─ Acceptance Criteria:
+│  ├─ Recommendations rated "helpful" by >70% of users
+│  ├─ Latency <500ms for 95th percentile
+│  ├─ Zero external API calls for recommendations
+│  └─ Template coverage: All insight types have 10+ variants
 
-SRS-F5.2: Bridge Account Recommendations
+SRS-F5.2: Bridge Account Recommendations (Algorithm-Based)
 ├─ Priority: P1 (high, Phase 2)
-├─ Structure:
-│  ├─ Identification: High betweenness accounts
-│  ├─ Strategic value: "Connects you to X communities"
-│  ├─ Specific action: "Reply to next 3 posts with [suggestions]"
-│  ├─ Draft ideas: 3 tailored comment suggestions
-│  └─ Expected outcome: "15-20% reach increase"
-├─ Acceptance: >30% engagement rate, >70% find helpful
+├─ Description: Identify and explain high-value bridge accounts
+│  using betweenness centrality and template narratives
+│
+├─ Algorithm:
+│  ├─ Metric: Betweenness centrality (graphology-metrics)
+│  ├─ Threshold: Top 5% of betweenness scores = "bridge"
+│  ├─ Secondary: Communities connected (from Louvain)
+│  └─ Tertiary: Engagement rate with user
+│
+├─ Confidence Scoring:
+│  ├─ High (>80%): Betweenness > 0.3, connects 3+ communities
+│  ├─ Medium (50-80%): Betweenness 0.15-0.3, connects 2 communities
+│  └─ Low (<50%): Betweenness < 0.15, limited bridge characteristics
+│
+├─ Template Categories:
+│  ├─ high_value_bridge (10 variants)
+│  ├─ medium_value_bridge (8 variants)
+│  ├─ emerging_bridge (6 variants)
+│  └─ potential_bridge (5 variants)
+│
+├─ Example Output:
+│  {
+│    type: "bridge_accounts",
+│    accounts: [{ id, displayName, betweenness, communitiesConnected }],
+│    narrative: "Sarah is a critical bridge connecting 3 distinct
+│               communities in your network...",
+│    confidence: "high",
+│    actions: ["Engage thoughtfully with Sarah's next 3 posts", ...],
+│    dataPoints: { betweenness: 0.42, percentile: 95, communitiesConnected: 3 }
+│  }
+│
+├─ Acceptance: Identified bridges match user intuition >80%, actions specific
 
-SRS-F5.3: Collaboration Suggestions
+SRS-F5.3: Collaboration Suggestions (Algorithm-Based)
 ├─ Priority: P2 (medium, Phase 2-3)
-├─ Analysis:
-│  ├─ Audience overlap: Jaccard similarity
-│  ├─ Content complementarity: Topic analysis
-│  └─ Engagement patterns: Similar styles
-├─ Suggestion:
-│  ├─ Partner identification: @user4
-│  ├─ Synergy data: "67% overlap, complementary content"
-│  ├─ Collaboration type: Joint newsletter, podcast, workshop
-│  ├─ Intro message: Draft proposal
-│  └─ Expected outcome: "10-20% audience expansion"
-├─ Privacy: Both parties opt-in before sharing
-├─ Acceptance: Relevant >70%, >5% lead to collaborations
+├─ Description: Identify high-synergy accounts for collaboration
+│  using audience overlap and engagement pattern analysis
+│
+├─ Algorithms:
+│  ├─ Audience Overlap: Jaccard similarity coefficient
+│  │  └─ J(A,B) = |A ∩ B| / |A ∪ B|
+│  ├─ Engagement Similarity: Cosine similarity of engagement vectors
+│  ├─ Community Alignment: Shared community membership
+│  └─ Complementarity Score: Inverse topic overlap
+│
+├─ Scoring Formula:
+│  synergy_score = (0.4 * audience_overlap + 0.3 * engagement_similarity +
+│                   0.2 * community_alignment + 0.1 * complementarity)
+│
+├─ Thresholds:
+│  ├─ High synergy: score > 0.7
+│  ├─ Medium synergy: score 0.4-0.7
+│  └─ Low synergy: score < 0.4 (not shown)
+│
+├─ Template Categories:
+│  ├─ high_synergy_collab (8 variants)
+│  ├─ complementary_collab (6 variants)
+│  ├─ audience_expansion (6 variants)
+│  └─ intro_message_templates (5 variants)
+│
+├─ Privacy: Only analyzes accounts in user's own network
+├─ Acceptance: Suggestions feel relevant to >70% of users
 
-SRS-F5.4: Growth Opportunity Identification
+SRS-F5.4: Growth Opportunity Identification (Algorithm-Based)
 ├─ Priority: P1 (high, Phase 2)
-├─ Types:
-│  ├─ Untapped segments: Followers who don't engage
-│  ├─ Underutilized connections: Communities you ignore
-│  ├─ Content gaps: Topics network wants, you don't post
-│  └─ Timing insights: Best posting times
-├─ AI enhancement: Prioritization, specificity, personalization
-├─ Acceptance: >40% try suggestions, >50% report positive results
+├─ Description: Identify untapped segments and growth opportunities
+│  using engagement analysis and network structure
+│
+├─ Opportunity Types:
+│  ├─ Untapped Followers: High follower count, low engagement
+│  │  ├─ Detection: Followers with engagement_rate < 1%
+│  │  └─ Recommendation: Re-engagement or cleanup
+│  ├─ Underutilized Communities: Communities with low interaction
+│  │  ├─ Detection: Community with user engagement < 5%
+│  │  └─ Recommendation: Targeted content or strategic exit
+│  ├─ Bridge Opportunities: Potential connections to new communities
+│  │  ├─ Detection: Accounts with high betweenness to unconnected communities
+│  │  └─ Recommendation: Strategic engagement to expand reach
+│  └─ Engagement Optimization: Timing and format insights
+│     ├─ Detection: Engagement variance by post time/type
+│     └─ Recommendation: Optimal posting strategy
+│
+├─ Prioritization Algorithm:
+│  priority_score = (impact_potential * 0.5 + effort_inverse * 0.3 + confidence * 0.2)
+│
+├─ Template Categories (per opportunity type):
+│  ├─ untapped_followers (10 variants)
+│  ├─ dormant_community (8 variants)
+│  ├─ bridge_opportunity (8 variants)
+│  └─ engagement_timing (6 variants)
+│
+├─ Acceptance: >40% of users try suggestions, >50% report positive results
 
-REQUIREMENT SRS-F5.5: AI Cost Control & Abuse Prevention
+SRS-F5.5: Insight Engine Performance & Monitoring
 ├─ Priority: P1 (high, Phase 2)
-├─ Description: AI recommendation usage SHALL be rate-limited and budget-controlled
-├─ Rationale: Prevent cost overruns, abuse, margin erosion
+├─ Description: Performance requirements for algorithm-based insight generation
+│  (NO external API cost management needed - simplified from AI version)
+│
+├─ Cost Structure (SIMPLIFIED):
+│  ├─ Per recommendation: $0.00 (no external API)
+│  ├─ Infrastructure: Included in existing server costs
+│  ├─ Storage: Templates in PostgreSQL (negligible)
+│  └─ Total: Predictable, no usage-based surprises
+│
+├─ Performance Requirements:
+│  ├─ Latency:
+│  │  ├─ Single insight: <100ms (p95)
+│  │  ├─ Full recommendation set: <500ms (p95)
+│  │  └─ Large network (>5K nodes): <2s (p95)
+│  ├─ Throughput: 100 concurrent recommendation requests
+│  ├─ Memory: <100MB per request
+│  └─ CPU: <2s CPU time per request
+│
+├─ Caching Strategy:
+│  ├─ Graph metrics: Cache per graph_id (Redis, 1-hour TTL)
+│  ├─ Templates: Cache in memory (loaded at startup)
+│  └─ Full recommendations: Cache per graph_id + insight_type (Redis, 15-min TTL)
+│
+├─ Rate Limiting (Abuse Prevention):
+│  ├─ Per-user: 60 recommendation requests per hour
+│  ├─ Per-account: 10 requests per minute
+│  └─ Rationale: Prevent scraping, ensure fair usage
+│
+├─ Monitoring:
+│  ├─ Metrics: Latency (p50, p95, p99), throughput, error rate
+│  ├─ Alerts: Latency >1s (p95), error rate >1%
+│  └─ Dashboard: Grafana or PostHog custom dashboard
+│
+├─ Acceptance Criteria:
+│  ├─ Zero external API dependencies for recommendations
+│  ├─ Latency <500ms for 95th percentile
+│  ├─ 99.9% availability (matches overall SLA)
+│  └─ Predictable cost (no usage-based surprises)
 
-Per-Tier AI Quotas:
-├─ Free tier:
-│  ├─ AI recommendations: 0 per month (feature gated)
-│  ├─ Upsell: "Upgrade to Pro for AI-powered recommendations"
-│  └─ Rationale: AI is premium feature, protects margins
-├─ Pro tier ($12/mo):
-│  ├─ AI recommendations: 20 per month (refresh monthly)
-│  ├─ Cost per recommendation: ~$0.02 (Claude API)
-│  ├─ Total cost: $0.40/month per Pro user
-│  ├─ Margin: Acceptable ($12 - $0.40 = $11.60 gross margin)
-│  └─ Reset: 1st of each month
-├─ Creator tier ($29/mo):
-│  ├─ AI recommendations: 100 per month
-│  ├─ Cost: $2/month per Creator user
-│  ├─ Margin: Acceptable ($29 - $2 = $27 gross margin)
-│  └─ Justification: Higher-tier users expect more AI value
-├─ Display: Show quota usage ("15/20 AI insights used this month")
-
-Rate Limiting:
-├─ Per-user: Max 5 AI requests per hour (prevent spam)
-├─ Per-account: Max 1 request per 5 minutes (prevent accidental rapid fire)
-├─ Burst: Allow brief bursts (queue up to 3 requests)
-├─ Feedback: "AI recommendation generating... (this uses 1 of your 20 monthly insights)"
-└─ Error: "You've reached your hourly limit. Try again in X minutes."
-
-Budget Ceiling (Company-Wide):
-├─ Monthly AI budget: $500 (Phase 2), $2,000 (Phase 3), $10,000 (Phase 4)
-├─ Calculation:
-│  ├─ Phase 2: 1,000 users × 10% Pro × 20 requests × $0.02 = $40
-│  ├─ Phase 3: 10,000 users × 20% Pro × 20 requests × $0.02 = $800
-│  └─ Phase 4: 100,000 users × 30% Pro × 20 requests × $0.02 = $12,000
-├─ Monitoring: Real-time tracking (PostHog or custom dashboard)
-├─ Alerts:
-│  ├─ 50% of budget: Warning (Slack notification)
-│  ├─ 80% of budget: Critical (review usage patterns)
-│  └─ 100% of budget: Circuit breaker activated
-├─ Circuit breaker:
-│  ├─ Action: Disable AI recommendations temporarily (show cached/algorithmic only)
-│  ├─ User message: "AI insights temporarily unavailable. Algorithmic insights shown."
-│  ├─ Resolution: Investigate (abuse? unexpected spike? budget too low?)
-│  └─ Recovery: Manual re-enable after budget adjusted
-
-Abuse Prevention:
-├─ Patterns:
-│  ├─ Same user requesting same recommendation repeatedly
-│  ├─ Automated API calls (if API access enabled Phase 4+)
-│  └─ Account sharing (multiple IPs using same account rapidly)
-├─ Detection:
-│  ├─ Redis: Track requests per user per hour
-│  ├─ Fingerprinting: IP + user agent + timing patterns
-│  └─ Anomaly detection: Spike in requests from single account
-├─ Actions:
-│  ├─ Warning: "Unusual activity detected. Rate limit applied."
-│  ├─ Temporary throttle: Reduce quota to 5/month
-│  └─ Investigation: Manual review if pattern continues
-
-Caching (Cost Optimization):
-├─ Strategy: Cache AI recommendations for similar graphs
-├─ Cache key: Graph structure hash (anonymized)
-├─ Similarity threshold: >90% node/edge overlap
-├─ TTL: 7 days (recommendations stay fresh)
-├─ Benefit: Reduce redundant AI calls (if multiple users have similar networks)
-├─ Privacy: Cache key is anonymized hash (no user data in key)
-├─ Estimated savings: 10-20% reduction in API calls (Phase 3+)
-
-Cost Tracking Dashboard (Internal):
-├─ Metrics:
-│  ├─ Total AI spend (current month)
-│  ├─ AI spend per user (cohort analysis)
-│  ├─ Cache hit rate (optimization effectiveness)
-│  └─ Budget utilization (% of ceiling used)
-├─ Alerts: Automated (Slack/email)
-├─ Review: Monthly finance + product review
-└─ Adjustment: Increase budget or adjust quotas based on data
-
-Acceptance criteria:
-├─ Quotas enforced: Users cannot exceed tier limits
-├─ Budget protected: Circuit breaker prevents overruns
-├─ User experience: Clear quota visibility, graceful degradation
-├─ Monitoring: Real-time cost tracking dashboard
-└─ Margin safe: AI cost <10% of subscription revenue per tier
+SRS-F5.6: Template Library Architecture
+├─ Priority: P1 (high, Phase 2)
+├─ Description: Structure and management of narrative templates
+│
+├─ Template Count by Phase:
+│  ├─ Phase 1 (MVP): 30 core templates
+│  ├─ Phase 2 (Enhancement): 150+ templates
+│  └─ Phase 3 (Scale): 300+ templates with dynamic assembly
+│
+├─ Template Structure:
+│  /templates
+│  ├─ /bridge_accounts (29 templates)
+│  ├─ /collaboration (25 templates)
+│  ├─ /growth_opportunities (41 templates)
+│  ├─ /engagement (37 templates)
+│  ├─ /community (25 templates)
+│  └─ /confidence (12 templates)
+│
+├─ Template Schema:
+│  {
+│    id: string,
+│    category: string,
+│    subcategory: string,
+│    narrative: string,       // With {variable} placeholders
+│    conditions: [...],       // Selection criteria
+│    tone: "professional" | "casual" | "motivational",
+│    platform: "twitter" | "linkedin" | "instagram" | "all"
+│  }
+│
+├─ Selection Algorithm:
+│  ├─ Filter by conditions (metrics match)
+│  ├─ Score by relevance (tone, platform, freshness)
+│  ├─ Add randomness for variety (top 3 candidates)
+│  └─ Track usage to avoid repetition
+│
+├─ Interpolation Engine:
+│  ├─ Variables: {name}, {count}, {percentage}, {communities}
+│  ├─ Formatting: Numbers (locale), percentages, lists
+│  └─ Fallback: Keep placeholder if variable missing
+│
+├─ Acceptance:
+│  ├─ Same user sees same template <10% of time
+│  ├─ Narratives read naturally (user testing)
+│  └─ No "template not found" errors
 ```
 
 ---
@@ -1595,7 +1705,7 @@ Benefits:
 **Must-Have:**
 - **All Phase 1** (complete)
 - **Advanced Insights:** SRS-F4.3, F4.4 (key connectors, echo chamber)
-- **AI Recommendations:** SRS-F5.1, F5.2, F5.4 (engine, bridges, growth)
+- **Algorithm-Powered Insights:** SRS-F5.1, F5.2, F5.4 (engine, bridges, growth)
 - **Export:** SRS-F6.1, F6.2, F6.3, F6.4 (PDF, social cards, data export, sharing)
 - **Monetization:** SRS-C4.1, C4.2 (feature gating, Stripe)
 - **Compliance:** SRS-NF13, NF14 (GDPR, CCPA)
@@ -1719,7 +1829,12 @@ Monitoring:
 
 Email: Resend (transactional)
 Payments: Stripe (checkout, webhooks, portal)
-AI: Anthropic Claude API (recommendations)
+
+Insight Engine (Algorithm-First):
+├─ Graph Analysis: graphology + graphology-communities + graphology-metrics
+├─ Statistics: simple-statistics
+├─ Templates: Custom TypeScript engine (PostgreSQL storage)
+└─ [NO external AI APIs - privacy preserved]
 ```
 
 ---
@@ -1850,7 +1965,7 @@ R6 (Browser Limitations):
 
 ## **Document Status**
 
-**Version:** 1.0 (Complete & Condensed)
+**Version:** 1.2 (Algorithm-First Edition)
 **Date:** December 2025
 **Status:** Living Document - Technical Foundation
 **Owner:** Engineering / Architecture
@@ -1870,19 +1985,44 @@ R6 (Browser Limitations):
 
 ## **Change Log:**
 ```
+v1.2 (December 2025) - Algorithm-First Edition:
+├─ REPLACED: Section 4.5 "AI-Powered Recommendations" → "Algorithm-Powered Recommendations"
+│  ├─ Removed: External AI API dependencies (Anthropic Claude, OpenAI)
+│  ├─ Added: SRS-F5.1 Algorithm-Powered Insight Engine
+│  ├─ Added: SRS-F5.6 Template Library Architecture
+│  └─ Simplified: SRS-F5.5 (removed AI cost management, kept abuse prevention)
+├─ UPDATED: Section 2.1 Architecture Diagram
+│  ├─ Added: Insight Engine with 4-layer architecture
+│  ├─ Added: Template Renderer (client-side)
+│  └─ Removed: Anthropic Claude API from External Services
+├─ UPDATED: Section 11.3 Technology Stack
+│  ├─ Added: graphology ecosystem for graph algorithms
+│  ├─ Added: simple-statistics for statistical analysis
+│  ├─ Added: Custom template engine
+│  └─ Removed: AI API references
+├─ UPDATED: Section 10.3 Phase 2 Requirements
+│  └─ Changed: "AI Recommendations" → "Algorithm-Powered Insights"
+├─ Rationale:
+│  ├─ Privacy: 100% on-premise processing, no data to third parties
+│  ├─ Cost: $0/recommendation vs $500-$10K/month API budget
+│  ├─ Performance: <500ms vs <10s latency
+│  ├─ Reliability: No external API dependencies
+│  └─ Philosophy: "Simplify Ruthlessly" (CLAUDE_ACE.md)
+└─ Reference: VSG_SRS_AMENDMENT_ALGORITHM_FIRST.md for detailed rationale
+
 v1.1 (December 2025):
 ├─ Added: SRS-D1.1 (Graph Lifecycle & Versioning Strategy)
 ├─ Enhanced: SRS-C3.4 (Resource Guardrails & Server-Side Fallback)
 ├─ Added: SRS-F5.5 (AI Cost Control & Abuse Prevention)
 └─ Rationale: Address strategic assessment gaps (storage clarity, device robustness, cost control)
-```
 
 v1.0 (December 2025):
 └─ Initial complete SRS (comprehensive, condensed)
+```
 
 ---
 
-**End of System Requirements Specification v1.0**
+**End of System Requirements Specification v1.2**
 
 *"Architecture is frozen music. Every line of code should sing."*
 
