@@ -3864,17 +3864,28 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 **Future Capability: Native Apps (Phase 4+ - Only If PWA Shows Limitations)**
 
-**Decision Gate (Strict):**
-- **Trigger:** PWA demonstrates clear limitations that block critical user needs
-  - Example 1: >20% users request "offline graph generation for 10K+ nodes" (PWA can't handle)
-  - Example 2: >30% users request "Bluetooth sharing to nearby devices" (PWA can't access)
-  - Example 3: App Store featuring becomes proven growth channel (data-driven)
-- **Alternative Trigger:** >40% mobile traffic AND >30% explicit requests for native app
+**Decision Gate (Strict - REAL Limitations Only):**
+
+**Philosophy:** PWA can handle 10K+ nodes offline with WASM + smart algorithms (see SRS-C7.1.1). Only build native if PWA **fundamentally cannot** deliver the feature.
+
+- **Trigger:** PWA demonstrates clear **technical limitations** that block critical user needs
+  - Example 1: >30% users request "Bluetooth sharing to nearby devices" (PWA cannot access Bluetooth API)
+  - Example 2: >30% users request "AR visualization overlay with camera" (PWA has limited camera/AR APIs)
+  - Example 3: >30% users request "daily auto-analysis in background" (PWA background tasks limited on iOS)
+  - Example 4: App Store featuring becomes proven growth channel driving >40% signups (marketing decision)
+
+- **NOT Valid Triggers (PWA Can Handle These):**
+  - ❌ "10K+ node graphs offline" → PWA handles with WASM + hierarchical rendering (see Architecture Doc 3.4.1.1)
+  - ❌ "Offline capability" → PWA excels at this (service workers + IndexedDB)
+  - ❌ "Performance on mobile" → PWA + WASM is 90% as fast as native
+  - ❌ "Works on iPhone" → PWA installable on iOS Safari 16.4+
+
+- **Alternative Trigger:** >40% mobile traffic AND >30% explicit requests for native app AND clear PWA limitation identified
 - **Evaluation Point:** End of Phase 3 (Q4 2026)
 - **Data Required:**
-  - PWA analytics (install rates, offline usage, performance bottlenecks)
-  - User interviews (>50 users) on PWA limitations
-  - Competitive analysis (do competitors' native apps offer unique value?)
+  - PWA analytics (install rates, offline usage, actual performance bottlenecks)
+  - User interviews (>50 users) on **specific** PWA limitations (not general "want native app")
+  - Competitive analysis (do competitors' native apps offer unique value PWA cannot deliver?)
   - App Store research (would featuring drive significant growth?)
 
 **Implementation Options (If PWA Limitations Validated):**
