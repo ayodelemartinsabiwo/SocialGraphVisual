@@ -521,7 +521,7 @@ Question 2: Which acquisition channels work best?
 └─ Implications: Double down on best channels, kill ineffective ones
 
 Question 3: What drives upgrades to paid?
-├─ Hypothesis: Advanced insights (positioning, AI recommendations)
+├─ Hypothesis: Advanced insights (positioning, algorithm-powered recommendations)
 ├─ Evidence: Conversion rate by feature exposure, user surveys
 ├─ Answer by: Week 14
 └─ Implications: Adjust feature gating and pricing for Phase 3
@@ -675,7 +675,7 @@ Question 2: What's the optimal pricing?
 └─ Implications: Adjust pricing for Phase 4 if data suggests
 
 Question 3: Which features drive retention?
-├─ Hypothesis: Historical tracking and AI recommendations
+├─ Hypothesis: Historical tracking and algorithm-powered recommendations
 ├─ Evidence: Feature usage correlation with retention
 ├─ Answer by: Week 26
 └─ Implications: Prioritize retention-driving features
@@ -1439,7 +1439,7 @@ Next steps: _______________________________________________
 **Learning Objectives:**
 1. Which user segment converts and retains best? (Creators vs. professionals?)
 2. What's the optimal pricing? ($9 vs. $12 vs. $15/mo?)
-3. Which features drive retention? (Historical tracking? AI recommendations?)
+3. Which features drive retention? (Historical tracking? Algorithm-powered recommendations?)
 4. Is category ownership achievable? (Brand awareness, user language)
 
 ---
