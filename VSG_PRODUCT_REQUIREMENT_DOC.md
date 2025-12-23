@@ -3686,4 +3686,276 @@ Let's make social media more intentional, one visualization at a time.
 
 ---
 
+## **Appendix B: Future Capabilities Under Evaluation**
+
+This appendix documents capabilities intentionally deferred to later phases. Each capability has specific **decision gates** that trigger re-evaluation based on validated user demand or market signals.
+
+### **B.1 Real-Time Data Updates (Phase 3+ - Demand-Driven)**
+
+**Current State (Phase 1-2):**
+- Manual upload only (ZIP file download from platforms)
+- Users can re-upload anytime for updates
+- Historical comparison available for repeat uploads
+
+**Future Capability:**
+- Automated or semi-automated data refresh (daily, weekly)
+- Notification when network changes significantly
+- Real-time collaboration detection
+
+**Decision Gate:**
+- **Trigger:** >30% of Pro users request more frequent updates (via surveys, support tickets, feature votes)
+- **Evaluation Point:** End of Phase 2 (August 2026)
+- **Data Required:** User research interviews, feature request volume, competitor analysis
+
+**Implementation Options (If Validated):**
+1. **Browser Extension (Primary Option)**
+   - Extract visible data from social media pages
+   - User-controlled data collection
+   - Pros: Privacy-preserving, user control
+   - Cons: Platform resistance, maintenance burden
+   - Cost: $50K-$150K development, $20K-$50K annual maintenance
+   - Timeline: 6-9 months
+
+2. **Weekly/Daily Re-Upload UX (Low-Cost Option)**
+   - Streamlined re-upload flow (remember last upload)
+   - Email reminders to download fresh data
+   - One-click update comparison
+   - Pros: Maintains privacy promise, minimal development
+   - Cons: Still manual, user friction
+   - Cost: $5K-$10K UX improvements
+   - Timeline: 2-4 weeks
+
+3. **OAuth Integration (Unlikely)**
+   - Would violate core privacy promise
+   - Only if users overwhelmingly demand and accept privacy trade-off
+   - Requires fundamental architecture change
+   - NOT RECOMMENDED unless user research strongly contradicts assumptions
+
+**Success Metrics (If Built):**
+- >60% of Pro users enable real-time updates
+- Update completion rate >80%
+- Retention improvement >10% vs manual-only
+
+---
+
+### **B.2 Collaboration Features (Phase 3+ - Enterprise Demand)**
+
+**Current State (Phase 1-2):**
+- Single-user experience only
+- Individual network analysis
+
+**Future Capability:**
+- Shared dashboards (teams, agencies)
+- Collaborative gap analysis (find mutual connections)
+- Team network mapping (organizational view)
+- Role-based access control
+
+**Decision Gate:**
+- **Trigger:** >50 inbound requests from agencies, teams, or enterprises
+- **Evaluation Point:** Phase 3 (Q3-Q4 2026)
+- **Data Required:** Enterprise sales pipeline, team use case validation
+
+**Implementation Options (If Validated):**
+1. **Shared Workspaces**
+   - Multi-user access to network visualizations
+   - Commenting and annotations
+   - Shared insight libraries
+   - Pros: Natural upsell to enterprise tier
+   - Cons: Complex permissions model
+   - Cost: $80K-$120K development
+   - Timeline: 4-6 months
+
+2. **Network Overlap Analysis**
+   - Compare two users' networks (privacy-preserving)
+   - Find mutual connections for collaboration
+   - Identify introduction opportunities
+   - Pros: Unique value proposition
+   - Cons: Privacy implications (requires consent)
+   - Cost: $30K-$50K development
+   - Timeline: 2-3 months
+
+**Pricing Model (If Built):**
+- New tier: Enterprise ($99-$299/month)
+- Seat-based pricing (5-50 users)
+- Annual contracts preferred
+
+**Success Metrics (If Built):**
+- >10 enterprise customers within 6 months
+- Average contract value >$2K/year
+- Team retention >80%
+
+---
+
+### **B.3 Internationalization - Content Translation (Phase 3+ - Traffic-Driven)**
+
+**Current State (Phase 1-2):**
+- English-only UI
+- i18n architecture in place (next-i18next)
+- All strings externalized in /locales/en/common.json
+- Ready for translation when demand emerges
+
+**Future Capability:**
+- Multi-language support (Spanish, French, Portuguese, Japanese, German)
+- Localized insights and narratives
+- Region-specific network patterns
+
+**Decision Gates (Per Language):**
+- **Spanish:** >10% traffic from Latin America/Spain
+- **French:** >10% traffic from France/Quebec
+- **Portuguese:** >10% traffic from Brazil
+- **Japanese:** Creator market emergence in Japan OR >5% traffic
+- **German:** >10% traffic from Germany/Austria/Switzerland
+
+**Evaluation Point:** Monthly traffic review starting Phase 3 (Q3 2026)
+
+**Implementation Process (Per Language):**
+1. Export English strings from /locales/en/common.json
+2. Professional translation service (Lokalise, Crowdin)
+3. Native speaker QA testing
+4. Deploy via CI/CD
+5. Monitor conversion rates by language
+
+**Cost Estimate (Per Language):**
+- Initial translation: $500-$1,500 (depends on word count)
+- Quarterly maintenance: $100-$300 (new features)
+- Native QA testing: $200-$500
+
+**Success Metrics (Per Language):**
+- Conversion rate improvement >20% for that locale
+- Retention improvement >15% for that locale
+- User satisfaction score >4.5/5 for translation quality
+
+---
+
+### **B.4 Mobile Native Apps (Phase 4 - Validation Required)**
+
+**Current State (Phase 1-2):**
+- Mobile-aware responsive design (works on tablets)
+- Progressive Web App (PWA) for mobile web
+- Touch-optimized graph interactions
+
+**Future Capability:**
+- Native iOS app (App Store)
+- Native Android app (Google Play)
+- Offline-first architecture
+- Push notifications for network changes
+
+**Decision Gate:**
+- **Trigger:** >40% of traffic from mobile devices AND >20% user requests for native app
+- **Evaluation Point:** End of Phase 3 (Q4 2026)
+- **Data Required:** Mobile analytics, app store research, competitive landscape
+
+**Implementation Options (If Validated):**
+1. **React Native (Recommended)**
+   - Share codebase with web (React components)
+   - Single development team
+   - Pros: Code reuse, faster development
+   - Cons: Performance trade-offs, native feel
+   - Cost: $100K-$200K development
+   - Timeline: 6-12 months
+
+2. **Native iOS + Android (Premium Option)**
+   - Separate Swift (iOS) and Kotlin (Android) codebases
+   - Best performance and native UX
+   - Pros: Premium quality, App Store featuring potential
+   - Cons: 2x development cost, separate teams
+   - Cost: $250K-$400K development
+   - Timeline: 12-18 months
+
+**Success Metrics (If Built):**
+- App Store rating >4.3/5
+- Mobile conversion rate >5% (vs 3% web)
+- Mobile retention >25% (vs 15% web)
+- App Store featuring (organic discovery)
+
+---
+
+### **B.5 API Access for Developers (Phase 3+ - Creator Demand)**
+
+**Current State (Phase 1-2):**
+- No public API
+- Internal APIs for frontend only
+
+**Future Capability:**
+- REST API for network data
+- Webhooks for real-time updates
+- Developer documentation and SDKs
+- OAuth for third-party apps
+
+**Decision Gate:**
+- **Trigger:** >100 Creator tier users AND >30 API access requests
+- **Evaluation Point:** Phase 3 (Q3-Q4 2026)
+- **Data Required:** Creator use case interviews, integration partner interest
+
+**Use Cases (If Built):**
+- Personal websites (embed network visualizations)
+- Portfolio sites (showcase influence metrics)
+- Custom dashboards (agency tools)
+- Research projects (academic studies)
+
+**Pricing Model (If Built):**
+- Included in Creator tier ($29/month)
+- Rate limits: 1,000 requests/day (Creator), 10,000/day (Enterprise)
+- Overage: $0.01 per additional request
+
+**Cost Estimate:**
+- API development: $40K-$60K
+- Documentation + developer portal: $15K-$25K
+- Ongoing support: $10K-$20K annually
+
+**Success Metrics (If Built):**
+- >30% of Creator users enable API access
+- API-enabled users have 2x retention
+- Developer ecosystem grows organically (third-party tools)
+
+---
+
+### **Evaluation Framework**
+
+All future capabilities follow this evaluation process:
+
+**1. Signal Detection (Ongoing)**
+- Monitor support tickets for feature requests
+- Track user surveys and NPS feedback
+- Analyze competitor launches
+- Review traffic patterns and demographics
+
+**2. Validation (When Trigger Reached)**
+- User interviews (>20 with target segment)
+- Prototype testing (low-fidelity mockups)
+- Pricing research (willingness to pay)
+- Technical spike (feasibility, cost estimate)
+
+**3. Go/No-Go Decision**
+- ROI projection (revenue vs cost)
+- Strategic alignment (core vs nice-to-have)
+- Resource availability (team capacity)
+- Risk assessment (technical, legal, competitive)
+
+**4. Phased Rollout (If Approved)**
+- Alpha: 10-20 users, invite-only
+- Beta: 100-200 users, waitlist
+- General Availability: All users, promoted in-app
+- Iteration: Based on usage data and feedback
+
+**5. Sunset Criteria**
+- Usage <10% of target segment after 6 months
+- Maintenance cost >30% of revenue generated
+- Strategic misalignment (better alternatives emerge)
+
+---
+
+### **Philosophy: Build When Validated, Not When Imagined**
+
+These capabilities are documented not because we plan to build them, but because we plan to **recognize the right moment to build them**.
+
+Each deferred capability represents a **validated hypothesis** that we're willing to test, but only when:
+1. User demand is proven (not assumed)
+2. Business case is clear (revenue > cost)
+3. Strategic timing is right (not premature optimization)
+
+This approach ensures we stay focused on Phase 1-2 core experience while remaining prepared to capitalize on validated opportunities as they emerge.
+
+---
+
 *This PRD represents 6 months of strategic thinking condensed into actionable clarity.*

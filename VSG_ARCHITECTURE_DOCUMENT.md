@@ -1055,6 +1055,516 @@ export function useParserWorker() {
 
 ---
 
+### **3.4 Mobile-Aware & Internationalization Architecture**
+
+#### **3.4.1 Responsive Design Implementation**
+
+**Design Constraints (SRS-C7.1, SRS-C7.2 Implementation):**
+
+```typescript
+// tailwind.config.js - Breakpoint Strategy
+
+module.exports = {
+  theme: {
+    screens: {
+      // Mobile-first breakpoints (SRS requirement)
+      'sm': '640px',    // Large phones
+      'md': '768px',    // Tablets (iPad minimum)
+      'lg': '1024px',   // Desktop
+      'xl': '1440px',   // Large desktop
+    },
+    extend: {
+      spacing: {
+        // Touch target minimum: 44px (iOS) / 48px (Material)
+        'touch-min': '44px',
+        'touch-recommended': '48px',
+      },
+      fontSize: {
+        // Readable without zoom on mobile
+        'body': ['16px', { lineHeight: '1.5' }],
+      }
+    }
+  }
+}
+```
+
+**Touch-First Interaction Patterns:**
+
+```typescript
+// /components/ui/Button.tsx - Touch-Accessible Component
+
+interface ButtonProps {
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'ghost';
+  children: React.ReactNode;
+  onClick: () => void;
+}
+
+export function Button({ size = 'md', variant, children, onClick }: ButtonProps) {
+  // Minimum touch target enforcement
+  const sizeClasses = {
+    sm: 'min-h-[44px] px-3',     // Meets iOS minimum
+    md: 'min-h-[48px] px-4',     // Recommended size
+    lg: 'min-h-[56px] px-6'      // Comfortable target
+  };
+
+  return (
+    <button
+      className={`${sizeClasses[size]} rounded-lg transition-colors
+        // Touch feedback (no hover dependency)
+        active:scale-95 active:opacity-90
+        // Focus visible for keyboard navigation
+        focus-visible:ring-2 focus-visible:ring-offset-2`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+**Graph Visualization Touch Support:**
+
+```typescript
+// /components/visualization/GraphCanvas.tsx - Touch Gesture Handling
+
+import { useGesture } from '@use-gesture/react';
+
+export function GraphCanvas({ graph }: GraphCanvasProps) {
+  const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 });
+
+  // Support both mouse and touch gestures
+  const bind = useGesture({
+    // Pan gesture (drag)
+    onDrag: ({ offset: [x, y] }) => {
+      setTransform(prev => ({ ...prev, x, y }));
+    },
+    // Pinch gesture (zoom on mobile)
+    onPinch: ({ offset: [scale] }) => {
+      setTransform(prev => ({ ...prev, scale: Math.max(0.5, Math.min(3, scale)) }));
+    },
+    // Wheel (zoom on desktop)
+    onWheel: ({ delta: [, dy] }) => {
+      setTransform(prev => ({
+        ...prev,
+        scale: Math.max(0.5, Math.min(3, prev.scale - dy * 0.001))
+      }));
+    }
+  });
+
+  return (
+    <div {...bind()} className="touch-none select-none">
+      {/* Canvas rendering with transform */}
+      <svg
+        viewBox={`${-transform.x} ${-transform.y} ${width / transform.scale} ${height / transform.scale}`}
+        className="w-full h-full"
+      >
+        {/* Graph nodes and edges */}
+      </svg>
+    </div>
+  );
+}
+```
+
+**Progressive Enhancement Strategy:**
+
+```typescript
+// /lib/utils/device-detection.ts
+
+export function getDeviceCapabilities() {
+  // Detect device capabilities
+  const capabilities = {
+    // RAM estimation (Chrome only)
+    memory: (navigator as any).deviceMemory || 4, // GB, default 4
+
+    // CPU cores
+    cores: navigator.hardwareConcurrency || 4,
+
+    // Touch support
+    hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+
+    // Screen size category
+    screenCategory: window.innerWidth < 768 ? 'mobile' :
+                   window.innerWidth < 1024 ? 'tablet' : 'desktop',
+
+    // Network speed (experimental)
+    connection: (navigator as any).connection?.effectiveType || '4g'
+  };
+
+  return capabilities;
+}
+
+export function getRecommendedSettings(capabilities: ReturnType<typeof getDeviceCapabilities>) {
+  // Tablet considerations (SRS-C7.1)
+  if (capabilities.screenCategory === 'tablet') {
+    return {
+      maxNodes: 2000,              // Limit for smooth rendering
+      enableAnimations: true,      // Tablets can handle animations
+      renderMode: 'svg',          // SVG works well on tablets
+      enableTooltips: true,       // Touch-friendly tooltips
+      forceSimulation: {
+        alpha: 0.3,              // Lighter simulation
+        iterations: 100          // Fewer iterations
+      }
+    };
+  }
+
+  // Desktop (full capabilities)
+  if (capabilities.screenCategory === 'desktop') {
+    return {
+      maxNodes: 5000,
+      enableAnimations: true,
+      renderMode: 'canvas',        // Canvas for performance
+      enableTooltips: true,
+      forceSimulation: {
+        alpha: 1.0,
+        iterations: 300
+      }
+    };
+  }
+
+  // Mobile (conservative settings)
+  return {
+    maxNodes: 500,                 // Very limited
+    enableAnimations: false,       // Battery saving
+    renderMode: 'svg',            // Better compatibility
+    enableTooltips: false,        // Avoid hover dependency
+    forceSimulation: {
+      alpha: 0.1,
+      iterations: 50
+    }
+  };
+}
+```
+
+**Responsive Layout Examples:**
+
+```tsx
+// /app/dashboard/page.tsx - Mobile-Aware Dashboard
+
+export default function DashboardPage() {
+  return (
+    <div className="p-4 md:p-6 lg:p-8">
+      {/* Stack vertically on mobile, grid on desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatCard title="Networks" value={5} />
+        <StatCard title="Total Nodes" value={1234} />
+        <StatCard title="Insights" value={42} />
+      </div>
+
+      {/* Full-width on mobile, sidebar on desktop */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-[1fr,300px] gap-6">
+        <RecentGraphs />
+        <ActivityFeed className="hidden lg:block" />
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+#### **3.4.2 Internationalization (i18n) Architecture**
+
+**Implementation (SRS-T11.5.1, SRS-T11.5.2):**
+
+```bash
+# Install dependencies
+npm install next-i18next i18next react-i18next
+```
+
+**Configuration:**
+
+```javascript
+// next-i18next.config.js
+
+module.exports = {
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'], // Phase 1: English only
+    // Future locales (Phase 3+): ['en', 'es', 'fr', 'pt-BR', 'ja', 'de']
+    localeDetection: true,
+  },
+  localePath: './public/locales',
+  reloadOnPrerender: process.env.NODE_ENV === 'development'
+};
+```
+
+**String Externalization:**
+
+```json
+// /public/locales/en/common.json
+
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "upload": "Upload Data",
+    "insights": "Insights",
+    "settings": "Settings"
+  },
+  "upload": {
+    "title": "Upload Your Network Data",
+    "description": "Drag and drop your ZIP file here, or click to browse",
+    "button": "Select File",
+    "progress": "Uploading... {{percent}}%",
+    "success": "Upload successful! Processing your network...",
+    "error": "Upload failed: {{message}}"
+  },
+  "insights": {
+    "community": {
+      "title": "Community Structure",
+      "description": "Your network has {{count}} distinct communities",
+      "recommendation": "Focus on {{communityName}} for maximum reach"
+    },
+    "bridge": {
+      "title": "Bridge Accounts",
+      "description": "{{accountName}} connects {{count}} communities",
+      "action": "Consider collaborating with this account"
+    }
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email",
+    "fileSize": "File size must be less than {{maxSize}}MB",
+    "fileType": "Only ZIP files are accepted"
+  }
+}
+```
+
+**Usage in Components:**
+
+```typescript
+// /components/upload/FileUploader.tsx
+
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+export function FileUploader() {
+  const { t } = useTranslation('common');
+
+  return (
+    <div>
+      <h2>{t('upload.title')}</h2>
+      <p>{t('upload.description')}</p>
+      <button>{t('upload.button')}</button>
+    </div>
+  );
+}
+
+// Server-side translation loading (Next.js App Router)
+export async function getStaticProps({ locale }: { locale: string }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common']))
+    }
+  };
+}
+```
+
+**Locale-Aware Formatting:**
+
+```typescript
+// /lib/utils/formatting.ts
+
+export function formatNumber(value: number, locale = 'en-US'): string {
+  return new Intl.NumberFormat(locale).format(value);
+  // en-US: 1,234.56
+  // de-DE: 1.234,56
+  // fr-FR: 1 234,56
+}
+
+export function formatDate(date: Date, locale = 'en-US'): string {
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+  // en-US: "December 23, 2025"
+  // de-DE: "23. Dezember 2025"
+  // ja-JP: "2025年12月23日"
+}
+
+export function formatCurrency(amount: number, currency = 'USD', locale = 'en-US'): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency
+  }).format(amount);
+  // en-US: "$9.99"
+  // de-DE: "9,99 €"
+  // ja-JP: "¥999"
+}
+
+export function formatRelativeTime(date: Date, locale = 'en-US'): string {
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+  const diffInSeconds = (date.getTime() - Date.now()) / 1000;
+
+  if (Math.abs(diffInSeconds) < 60) {
+    return rtf.format(Math.round(diffInSeconds), 'second');
+  }
+  if (Math.abs(diffInSeconds) < 3600) {
+    return rtf.format(Math.round(diffInSeconds / 60), 'minute');
+  }
+  if (Math.abs(diffInSeconds) < 86400) {
+    return rtf.format(Math.round(diffInSeconds / 3600), 'hour');
+  }
+  return rtf.format(Math.round(diffInSeconds / 86400), 'day');
+  // en-US: "2 hours ago"
+  // de-DE: "vor 2 Stunden"
+  // ja-JP: "2時間前"
+}
+```
+
+**RTL Support (CSS Logical Properties):**
+
+```css
+/* Traditional approach (hardcoded direction) */
+.card {
+  margin-left: 1rem;    /* Breaks in RTL languages */
+  padding-right: 2rem;  /* Breaks in RTL languages */
+}
+
+/* i18n-ready approach (logical properties) */
+.card {
+  margin-inline-start: 1rem;   /* Adapts to text direction */
+  padding-inline-end: 2rem;    /* Adapts to text direction */
+}
+```
+
+**Language Switcher Component (Future):**
+
+```typescript
+// /components/settings/LanguageSwitcher.tsx
+
+import { useRouter } from 'next/router';
+import { useTranslation } from 'next-i18next';
+
+export function LanguageSwitcher() {
+  const router = useRouter();
+  const { t } = useTranslation('common');
+
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    // Future (Phase 3+):
+    // { code: 'es', name: 'Español', flag: '🇪🇸' },
+    // { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    // { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
+    // { code: 'ja', name: '日本語', flag: '🇯🇵' },
+    // { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  ];
+
+  const changeLanguage = (locale: string) => {
+    router.push(router.pathname, router.asPath, { locale });
+  };
+
+  return (
+    <select
+      value={router.locale}
+      onChange={(e) => changeLanguage(e.target.value)}
+      className="border rounded-lg px-3 py-2"
+    >
+      {languages.map(lang => (
+        <option key={lang.code} value={lang.code}>
+          {lang.flag} {lang.name}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+**Locale Detection Strategy:**
+
+```typescript
+// /lib/utils/locale-detection.ts
+
+export function detectUserLocale(): string {
+  // Priority 1: User preference (logged in)
+  const userPreference = getUserPreferenceFromDatabase();
+  if (userPreference) return userPreference;
+
+  // Priority 2: Browser language
+  const browserLang = navigator.language || (navigator as any).userLanguage;
+  if (browserLang) {
+    // Map browser language to supported locale
+    const supportedLocales = ['en', 'es', 'fr', 'pt-BR', 'ja', 'de'];
+    const match = supportedLocales.find(locale => browserLang.startsWith(locale.split('-')[0]));
+    if (match) return match;
+  }
+
+  // Priority 3: Geolocation (Cloudflare header)
+  const country = getCloudflareCountryHeader();
+  const countryLocaleMap: Record<string, string> = {
+    'US': 'en', 'GB': 'en', 'CA': 'en',
+    'ES': 'es', 'MX': 'es', 'AR': 'es',
+    'FR': 'fr', 'BE': 'fr',
+    'BR': 'pt-BR',
+    'JP': 'ja',
+    'DE': 'de', 'AT': 'de', 'CH': 'de'
+  };
+  if (country && countryLocaleMap[country]) {
+    return countryLocaleMap[country];
+  }
+
+  // Fallback: English
+  return 'en';
+}
+```
+
+**Translation Workflow (Phase 3+):**
+
+```bash
+# 1. Extract translatable strings
+npm run i18n:extract
+
+# 2. Upload to translation service (e.g., Lokalise, Crowdin)
+npm run i18n:upload
+
+# 3. Translators work on platform
+
+# 4. Download translated strings
+npm run i18n:download
+
+# 5. Commit and deploy
+git add public/locales/
+git commit -m "Add Spanish translations"
+git push
+```
+
+**CI/CD Validation:**
+
+```yaml
+# .github/workflows/i18n-check.yml
+
+name: i18n Validation
+on: [pull_request]
+
+jobs:
+  check-hardcoded-strings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check for hardcoded strings in JSX
+        run: |
+          # Fail if any JSX contains hardcoded English text
+          if grep -r ">[A-Z][a-z].*</" app/ components/; then
+            echo "Error: Hardcoded strings found in JSX. Use t() function."
+            exit 1
+          fi
+
+      - name: Validate translation keys
+        run: npm run i18n:validate
+        # Ensures all t() keys exist in en/common.json
+```
+
+**Phase 1 Acceptance:**
+- ✅ All UI strings use `t()` function (zero hardcoded text)
+- ✅ Numbers/dates formatted with `Intl` API
+- ✅ CSS uses logical properties (RTL-ready)
+- ✅ Language switcher component exists (even if only English)
+- ✅ CI/CD fails on hardcoded strings
+
+---
+
 ## **4. Backend Architecture**
 
 ### **4.1 Technology Stack**
