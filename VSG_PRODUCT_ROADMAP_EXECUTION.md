@@ -1645,7 +1645,7 @@ All 5 insight views (from PRD):
 │  ├─ Color by content type (if detectable)
 │  ├─ Hover: Shows post preview + stats
 │  └─ Insight: "Your [X] posts get 3x engagement"
-└─ View 5: Growth Opportunities (NEW - AI-powered)
+└─ View 5: Growth Opportunities (NEW - Algorithm-powered)
     ├─ Bridge accounts (high betweenness)
     ├─ Untapped segments (followers who don't engage)
     ├─ Collaboration potential (high audience overlap)
@@ -1673,12 +1673,12 @@ Export & sharing:
     └─ Download image (PNG, high-res)
 ```
 
-**AI-powered recommendations (Growth Opportunities view):**
+**Algorithm-powered recommendations (Growth Opportunities view):**
 
 This is the "killer feature" that differentiates us from static graph tools.
 
 ```javascript
-// AI recommendation engine (simplified architecture)
+// Algorithm-powered recommendation engine (simplified architecture)
 
 class RecommendationEngine {
   async generateRecommendations(graph, user) {
@@ -1764,7 +1764,7 @@ Confidence: High (based on audience analysis)"
 
 **Deliverable:**
 - All 5 insight views (complete, polished)
-- AI recommendation engine (bridge accounts, collaborations, untapped segments)
+- Algorithm-powered recommendation engine (bridge accounts, collaborations, untapped segments)
 - Export features (PDF, social cards, raw data)
 - Sharing features (one-click to Twitter, LinkedIn, etc.)
 
@@ -2118,7 +2118,7 @@ Pro feature gating:
 │  ├─ Unlimited platforms
 │  ├─ All 5 insight views (positioning, content resonance, growth opportunities)
 │  ├─ Historical tracking (see network evolution)
-│  ├─ AI-powered recommendations
+│  ├─ Algorithm-powered recommendations
 │  ├─ Unlimited exports
 │  └─ Priority support (24-hour response)
 ├─ Creator tier adds:
@@ -2131,7 +2131,7 @@ Upgrade prompts:
 ├─ In-app:
 │  ├─ "Unlock Positioning Map" (preview + upgrade CTA)
 │  ├─ "See historical growth" (teaser + upgrade CTA)
-│  └─ "Get AI recommendations" (preview + upgrade CTA)
+│  └─ "Get smart recommendations" (preview + upgrade CTA)
 ├─ Email:
 │  ├─ Day 7: "Ready to unlock all insights?" (after aha moment)
 │  ├─ Day 14: "Users who upgrade see 3x value" (social proof)
@@ -2311,7 +2311,7 @@ Even if metrics pass, validate qualitatively:
 
 **Product:**
 - All 5 insight views (complete feature set)
-- AI recommendation engine (bridge accounts, collaborations, opportunities)
+- Algorithm-powered recommendation engine (bridge accounts, collaborations, opportunities)
 - Export features (PDF, social cards, CSV/JSON)
 - Sharing features (one-click to Twitter, LinkedIn, copy link)
 - Pro tier (Stripe integration, feature gating)
@@ -3205,7 +3205,7 @@ Phase 2:
 ├─ Export features (PDF, social cards, CSV/JSON)
 ├─ Sharing features (one-click to Twitter, LinkedIn)
 ├─ Pro tier (Stripe integration, feature gating)
-└─ AI recommendations (bridge accounts, collaborations)
+└─ Algorithm-powered recommendations (bridge accounts, collaborations)
 
 Phase 3:
 ├─ Retention systems (onboarding, email, in-app triggers)
