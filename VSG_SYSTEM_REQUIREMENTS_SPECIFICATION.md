@@ -475,6 +475,59 @@ REQUIREMENT SRS-C6.1: Browser Support
 
 ---
 
+### **3.4 Mobile-Aware Design Constraints (Phase 1 Foundation)**
+
+**C7: Mobile Compatibility**
+
+```
+REQUIREMENT SRS-C7.1: Mobile-Aware Design
+├─ Priority: P1 (high, Phase 1 - constraints only)
+├─ Description: System SHALL be designed with mobile compatibility in mind
+├─ Rationale: 60% of users access on mobile; avoid costly refactors later
+├─ Phase 1 Constraints (Defensive Design):
+│  ├─ Responsive breakpoints: 320px, 768px, 1024px, 1440px
+│  ├─ Touch-first patterns: No critical hover dependencies
+│  ├─ Progressive enhancement: Works on mobile, optimized for desktop
+│  ├─ Performance budget: <3s load on 3G, <100KB initial bundle
+│  └─ Tablet support: All features usable on iPad (768px+ wide)
+├─ Phase 1 Acceptance Criteria:
+│  ├─ All features work on iPad (768px wide viewport)
+│  ├─ No critical functionality requires mouse hover
+│  ├─ Force-directed graph works with touch (pan/zoom gestures)
+│  ├─ Forms are thumb-accessible (48px+ tap targets)
+│  └─ Text readable without zoom (16px+ base font)
+├─ Implementation Notes:
+│  ├─ CSS: Use responsive utilities (Tailwind breakpoints)
+│  ├─ Touch events: Support both mouse and touch APIs
+│  ├─ Viewport: <meta name="viewport" content="width=device-width">
+│  └─ Testing: Manual testing on iPad, Chrome DevTools mobile emulation
+├─ Full Mobile Build Timeline:
+│  ├─ Phase 2: Responsive optimization (smartphone layouts)
+│  ├─ Phase 3: Touch gesture refinement, mobile-specific UX
+│  └─ Phase 4: Native apps (React Native, if demand validated)
+├─ Validation:
+│  ├─ Manual: Test all workflows on iPad Safari (768px)
+│  ├─ Automated: Lighthouse mobile score >85
+│  └─ User acceptance: Beta testers on tablets report usable experience
+
+REQUIREMENT SRS-C7.2: No Mobile-Breaking Patterns
+├─ Priority: P1 (high, Phase 1 - prevention)
+├─ Description: System SHALL NOT use patterns that break on mobile
+├─ Prohibited Patterns:
+│  ├─ Hover-only interactions (e.g., dropdown on hover)
+│  ├─ Fixed-width layouts (<1024px breakpoint)
+│  ├─ Tiny touch targets (<44px recommended, <32px forbidden)
+│  ├─ Horizontal scrolling (unless intentional, e.g., carousel)
+│  └─ Flash/plugin dependencies (obsolete)
+├─ Enforcement:
+│  ├─ Code review: Flag hover-only CSS (:hover without :focus/:active)
+│  ├─ Accessibility audit: WCAG 2.1 AA compliance (includes touch targets)
+│  └─ Design review: Mockups must show 768px breakpoint
+├─ Validation: Accessibility scan (axe, Lighthouse)
+```
+
+---
+
 ## **4. Functional Requirements**
 
 ### **4.1 User Authentication**
@@ -1848,6 +1901,71 @@ Code Quality: ESLint, Prettier, TypeScript
 Documentation: Markdown, OpenAPI (API spec)
 API Testing: Postman or Insomnia
 Load Testing: k6 or Artillery
+```
+
+---
+
+### **11.5 Internationalization Architecture**
+
+```
+REQUIREMENT SRS-T11.5.1: i18n Architecture from Day 1
+├─ Priority: P2 (medium, Phase 1 - architecture only)
+├─ Description: System SHALL use internationalization architecture from Day 1
+├─ Rationale: Avoid costly refactoring; support global expansion when demand emerges
+├─ Implementation:
+│  ├─ Library: next-i18next (Next.js standard, SSR-compatible)
+│  ├─ String externalization: All UI text in /locales/en/common.json
+│  ├─ Number formatting: Intl.NumberFormat API
+│  ├─ Date formatting: Intl.DateTimeFormat API
+│  ├─ Currency: Intl.NumberFormat with currency option
+│  └─ RTL support: CSS logical properties (margin-inline-start vs margin-left)
+├─ Supported Languages (Phase 1):
+│  └─ English only (en-US)
+├─ Translation Content Timeline:
+│  ├─ Phase 1: Architecture only, all strings externalized
+│  ├─ Phase 2: Monitor traffic by country (Google Analytics)
+│  ├─ Phase 3+: Add languages based on demand gates (below)
+├─ Decision Gates for New Languages:
+│  ├─ Spanish (es): If >10% traffic from Latin America/Spain
+│  ├─ French (fr): If >10% traffic from France/Quebec
+│  ├─ Japanese (ja): If creator market emerges in Japan
+│  ├─ Portuguese (pt-BR): If >10% traffic from Brazil
+│  └─ German (de): If >10% traffic from Germany/Austria/Switzerland
+├─ Translation Process (Phase 3+):
+│  ├─ Extract: Export /locales/en/common.json
+│  ├─ Translate: Use professional service (e.g., Lokalise, Crowdin)
+│  ├─ Import: Add /locales/{lang}/common.json
+│  ├─ Test: Manual QA by native speaker
+│  └─ Deploy: Ship via CI/CD
+├─ Phase 1 Acceptance Criteria:
+│  ├─ Zero hardcoded UI strings in components
+│  ├─ All text uses next-i18next's useTranslation hook
+│  ├─ All numbers/dates use Intl API
+│  ├─ CSS uses logical properties (no left/right hardcoding)
+│  └─ Language switcher UI exists (even if only English available)
+├─ Cost Estimate (Future):
+│  ├─ Translation per language: ~$500-1,500 (depends on word count)
+│  ├─ Maintenance per language: ~$100-300/quarter (new features)
+│  └─ Testing per language: ~$200-500 (native speaker QA)
+├─ Validation:
+│  ├─ Code audit: Grep for hardcoded strings in JSX
+│  ├─ CI/CD check: Fail if new strings bypass i18n
+│  └─ Manual test: Switch language in browser (Phase 3+)
+
+REQUIREMENT SRS-T11.5.2: Locale-Aware Data Formatting
+├─ Priority: P2 (medium, Phase 1)
+├─ Description: Numbers, dates, currency SHALL format per user's locale
+├─ Implementation Examples:
+│  ├─ Numbers: 1,234.56 (en-US) vs 1.234,56 (de-DE)
+│  ├─ Dates: 12/25/2024 (en-US) vs 25/12/2024 (en-GB) vs 2024-12-25 (ISO)
+│  ├─ Currency: $9.99 (en-US) vs 9,99 € (de-DE) vs ¥999 (ja-JP)
+│  └─ Time: 2:30 PM (en-US) vs 14:30 (de-DE)
+├─ Locale Detection:
+│  ├─ Priority 1: User preference (if logged in and set)
+│  ├─ Priority 2: Browser language (navigator.language)
+│  ├─ Priority 3: Geolocation (IP-based, via Cloudflare headers)
+│  └─ Fallback: en-US
+├─ Validation: Test with various locales in browser settings
 ```
 
 ---
