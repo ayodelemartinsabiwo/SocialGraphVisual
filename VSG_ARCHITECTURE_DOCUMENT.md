@@ -1055,9 +1055,387 @@ export function useParserWorker() {
 
 ---
 
-### **3.4 Mobile-Aware & Internationalization Architecture**
+### **3.4 PWA-First, Responsive & Internationalization Architecture**
 
-#### **3.4.1 Responsive Design Implementation**
+**Philosophy Alignment:**
+> *"Simplify Ruthlessly: ONE codebase, works everywhere. No app store gatekeepers."* - CLAUDE_ACE.md
+> *"Client-side processing, resilient, deterministic. Works offline."* - VSG_DESIGN_PRINCIPLE.md
+
+#### **3.4.1 Progressive Web App (PWA) Architecture**
+
+**PWA Core Implementation (SRS-C7.1, SRS-C7.3):**
+
+```javascript
+// next.config.js - Next.js PWA Configuration
+
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development', // Disable in dev for faster iteration
+  runtimeCaching: require('./pwa-cache-config')
+});
+
+module.exports = withPWA({
+  reactStrictMode: true,
+  // other Next.js config
+});
+```
+
+**Web App Manifest:**
+
+```json
+// public/manifest.json
+
+{
+  "name": "Visual Social Graph",
+  "short_name": "VSG",
+  "description": "Transform your social network into actionable insights",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["productivity", "social", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Upload Data",
+      "short_name": "Upload",
+      "description": "Upload new network data",
+      "url": "/dashboard/upload",
+      "icons": [{ "src": "/icons/upload-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Recent Graphs",
+      "short_name": "Graphs",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/graph-96x96.png", "sizes": "96x96" }]
+    }
+  ]
+}
+```
+
+**Service Worker Strategy (Workbox):**
+
+```javascript
+// pwa-cache-config.js - Runtime Caching Configuration
+
+module.exports = [
+  {
+    // App shell: Cache-first (HTML, CSS, JS)
+    urlPattern: /^https:\/\/vsg\.app\/_next\/static\/.*/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'app-shell',
+      expiration: {
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+      }
+    }
+  },
+  {
+    // Graph data: Network-first, fallback to cache
+    urlPattern: /^https:\/\/api\.vsg\.app\/graphs\/.*/i,
+    handler: 'NetworkFirst',
+    options: {
+      cacheName: 'graph-data',
+      networkTimeoutSeconds: 10,
+      expiration: {
+        maxEntries: 50,
+        maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
+      }
+    }
+  },
+  {
+    // Images/assets: Cache-first, stale-while-revalidate
+    urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+    handler: 'CacheFirst',
+    options: {
+      cacheName: 'images',
+      expiration: {
+        maxEntries: 100,
+        maxAgeSeconds: 60 * 24 * 60 * 60 // 60 days
+      }
+    }
+  },
+  {
+    // API calls: Network-only (with background sync for POST)
+    urlPattern: /^https:\/\/api\.vsg\.app\/.*/i,
+    handler: 'NetworkOnly',
+    options: {
+      backgroundSync: {
+        name: 'api-queue',
+        options: {
+          maxRetentionTime: 24 * 60 // Retry for up to 24 hours
+        }
+      }
+    }
+  }
+];
+```
+
+**Offline Support (IndexedDB):**
+
+```typescript
+// /lib/offline/graph-store.ts - Offline Graph Storage
+
+import { openDB, DBSchema, IDBPDatabase } from 'idb';
+
+interface GraphDB extends DBSchema {
+  graphs: {
+    key: string; // graph ID
+    value: {
+      id: string;
+      userId: string;
+      platform: string;
+      nodes: Array<{ id: string; label: string; [key: string]: any }>;
+      edges: Array<{ source: string; target: string; weight: number }>;
+      insights: Array<{ type: string; content: string; confidence: number }>;
+      metadata: { uploadDate: string; nodeCount: number; edgeCount: number };
+    };
+    indexes: { 'by-user': string; 'by-date': string };
+  };
+}
+
+let db: IDBPDatabase<GraphDB>;
+
+export async function initGraphStore() {
+  db = await openDB<GraphDB>('vsg-graphs', 1, {
+    upgrade(db) {
+      const graphStore = db.createObjectStore('graphs', { keyPath: 'id' });
+      graphStore.createIndex('by-user', 'userId');
+      graphStore.createIndex('by-date', 'metadata.uploadDate');
+    }
+  });
+  return db;
+}
+
+export async function cacheGraph(graph: GraphDB['graphs']['value']) {
+  const db = await initGraphStore();
+  await db.put('graphs', graph);
+}
+
+export async function getCachedGraphs(userId: string, limit = 5) {
+  const db = await initGraphStore();
+  return db.getAllFromIndex('graphs', 'by-user', userId, limit);
+}
+
+export async function getCachedGraph(graphId: string) {
+  const db = await initGraphStore();
+  return db.get('graphs', graphId);
+}
+```
+
+**Background Sync for Uploads:**
+
+```typescript
+// /lib/offline/upload-queue.ts - Background Sync for Uploads
+
+export async function queueUpload(file: File, platform: string) {
+  // Store file in IndexedDB
+  const uploadId = crypto.randomUUID();
+  const db = await openDB('vsg-uploads', 1, {
+    upgrade(db) {
+      db.createObjectStore('pending-uploads');
+    }
+  });
+
+  await db.put('pending-uploads', {
+    id: uploadId,
+    file: await file.arrayBuffer(),
+    fileName: file.name,
+    platform,
+    queuedAt: Date.now()
+  }, uploadId);
+
+  // Register background sync (if supported)
+  if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
+    const registration = await navigator.serviceWorker.ready;
+    await registration.sync.register('upload-sync');
+    return { success: true, message: 'Upload queued. Will sync when online.' };
+  } else {
+    // Fallback: Manual retry when online
+    window.addEventListener('online', () => processUploadQueue());
+    return { success: true, message: 'Upload queued. Manual retry when online.' };
+  }
+}
+
+async function processUploadQueue() {
+  const db = await openDB('vsg-uploads', 1);
+  const pendingUploads = await db.getAll('pending-uploads');
+
+  for (const upload of pendingUploads) {
+    try {
+      const formData = new FormData();
+      formData.append('file', new Blob([upload.file]), upload.fileName);
+      formData.append('platform', upload.platform);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+
+      if (response.ok) {
+        await db.delete('pending-uploads', upload.id);
+        console.log(`Upload ${upload.id} synced successfully`);
+      }
+    } catch (error) {
+      console.error(`Failed to sync upload ${upload.id}:`, error);
+    }
+  }
+}
+```
+
+**Install Prompt (Add to Home Screen):**
+
+```typescript
+// /hooks/useInstallPrompt.ts - PWA Install Prompt Hook
+
+import { useState, useEffect } from 'react';
+
+export function useInstallPrompt() {
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+      return;
+    }
+
+    // Listen for install prompt
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    // Detect if installed
+    window.addEventListener('appinstalled', () => {
+      setIsInstalled(true);
+      setInstallPrompt(null);
+    });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
+  }, []);
+
+  const promptInstall = async () => {
+    if (!installPrompt) return false;
+
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+
+    if (outcome === 'accepted') {
+      setIsInstalled(true);
+    }
+
+    setInstallPrompt(null);
+    return outcome === 'accepted';
+  };
+
+  return { installPrompt, promptInstall, isInstalled };
+}
+```
+
+**Install Banner Component:**
+
+```tsx
+// /components/pwa/InstallBanner.tsx
+
+import { useInstallPrompt } from '@/hooks/useInstallPrompt';
+import { X } from 'lucide-react';
+import { useState } from 'react';
+
+export function InstallBanner() {
+  const { installPrompt, promptInstall, isInstalled } = useInstallPrompt();
+  const [dismissed, setDismissed] = useState(false);
+
+  // Don't show if installed or dismissed or no prompt
+  if (isInstalled || dismissed || !installPrompt) return null;
+
+  const handleInstall = async () => {
+    const accepted = await promptInstall();
+    if (!accepted) setDismissed(true);
+  };
+
+  return (
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:w-96 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50">
+      <button
+        onClick={() => setDismissed(true)}
+        className="absolute top-2 right-2 p-1 hover:bg-blue-700 rounded"
+      >
+        <X size={16} />
+      </button>
+
+      <h3 className="font-semibold mb-1">Install Visual Social Graph</h3>
+      <p className="text-sm text-blue-100 mb-3">
+        Get quick access and work offline. Install our app!
+      </p>
+
+      <button
+        onClick={handleInstall}
+        className="w-full bg-white text-blue-600 font-medium py-2 px-4 rounded hover:bg-blue-50"
+      >
+        Install Now
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+#### **3.4.2 Responsive Design Implementation**
 
 **Design Constraints (SRS-C7.1, SRS-C7.2 Implementation):**
 
