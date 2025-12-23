@@ -475,55 +475,127 @@ REQUIREMENT SRS-C6.1: Browser Support
 
 ---
 
-### **3.4 Mobile-Aware Design Constraints (Phase 1 Foundation)**
+### **3.4 PWA-First Architecture (Phase 1 Core Strategy)**
 
-**C7: Mobile Compatibility**
+**Design Philosophy Alignment:**
+> *"Simplify Ruthlessly: ONE codebase, works everywhere. No app store gatekeepers."* - CLAUDE_ACE.md
+> *"Client-side processing, resilient, deterministic."* - VSG_DESIGN_PRINCIPLE.md
+
+**C7: Progressive Web App (PWA) as Primary Deployment**
 
 ```
-REQUIREMENT SRS-C7.1: Mobile-Aware Design
-├─ Priority: P1 (high, Phase 1 - constraints only)
-├─ Description: System SHALL be designed with mobile compatibility in mind
-├─ Rationale: 60% of users access on mobile; avoid costly refactors later
-├─ Phase 1 Constraints (Defensive Design):
-│  ├─ Responsive breakpoints: 320px, 768px, 1024px, 1440px
-│  ├─ Touch-first patterns: No critical hover dependencies
-│  ├─ Progressive enhancement: Works on mobile, optimized for desktop
-│  ├─ Performance budget: <3s load on 3G, <100KB initial bundle
-│  └─ Tablet support: All features usable on iPad (768px+ wide)
+REQUIREMENT SRS-C7.1: PWA-First Strategy
+├─ Priority: P0 (critical, Phase 1 - core deployment)
+├─ Description: System SHALL be built as a Progressive Web App from Day 1
+├─ Rationale:
+│  ├─ ONE codebase → works on web, mobile, tablet, desktop (Simplify Ruthlessly)
+│  ├─ Zero app store gatekeeping → instant deployments, no review delays
+│  ├─ Offline-first → aligns with 80% client-side processing philosophy
+│  ├─ Installable → native-like experience without native complexity
+│  └─ Progressive enhancement → works everywhere, enhanced where possible
+├─ Core PWA Requirements:
+│  ├─ Service Worker: Offline support, background sync, caching
+│  ├─ Web App Manifest: Installable to home screen, splash screen, app icon
+│  ├─ HTTPS: Required for service workers (Vercel provides by default)
+│  ├─ Responsive: 320px to 4K displays, touch and mouse
+│  └─ App-like: Full-screen mode, no browser chrome when installed
+├─ Phase 1 PWA Features:
+│  ├─ Installable: "Add to Home Screen" prompt on mobile/desktop
+│  ├─ Offline viewing: Cached graphs viewable without internet
+│  ├─ Background sync: Queue uploads when offline, sync when online
+│  ├─ Fast: <3s load on 3G, <1s on WiFi (cached)
+│  └─ Reliable: Works on flaky connections (service worker retry)
 ├─ Phase 1 Acceptance Criteria:
-│  ├─ All features work on iPad (768px wide viewport)
-│  ├─ No critical functionality requires mouse hover
-│  ├─ Force-directed graph works with touch (pan/zoom gestures)
-│  ├─ Forms are thumb-accessible (48px+ tap targets)
-│  └─ Text readable without zoom (16px+ base font)
-├─ Implementation Notes:
-│  ├─ CSS: Use responsive utilities (Tailwind breakpoints)
-│  ├─ Touch events: Support both mouse and touch APIs
-│  ├─ Viewport: <meta name="viewport" content="width=device-width">
-│  └─ Testing: Manual testing on iPad, Chrome DevTools mobile emulation
-├─ Full Mobile Build Timeline:
-│  ├─ Phase 2: Responsive optimization (smartphone layouts)
-│  ├─ Phase 3: Touch gesture refinement, mobile-specific UX
-│  └─ Phase 4: Native apps (React Native, if demand validated)
+│  ├─ Lighthouse PWA score >90
+│  ├─ Service worker caches all critical assets (app shell)
+│  ├─ "Add to Home Screen" works on iOS Safari 16.4+ and Android Chrome
+│  ├─ App works offline (view cached graphs, queue new uploads)
+│  ├─ Installable on desktop (Chrome, Edge, Safari 16.4+)
+│  └─ All features work on 320px-4K viewports
+├─ Native Apps (Phase 4+):
+│  ├─ Build ONLY if PWA limitations discovered (e.g., need Bluetooth, NFC)
+│  ├─ React Native or native Swift/Kotlin
+│  └─ Decision gate: >40% mobile traffic AND >20% users explicitly request native
 ├─ Validation:
-│  ├─ Manual: Test all workflows on iPad Safari (768px)
-│  ├─ Automated: Lighthouse mobile score >85
-│  └─ User acceptance: Beta testers on tablets report usable experience
+│  ├─ Manual: Install on iPhone, Android, Mac, Windows, Linux
+│  ├─ Automated: Lighthouse PWA audit (CI/CD gate)
+│  └─ User acceptance: Beta testers confirm native-like experience
 
-REQUIREMENT SRS-C7.2: No Mobile-Breaking Patterns
-├─ Priority: P1 (high, Phase 1 - prevention)
+REQUIREMENT SRS-C7.2: Responsive Design (320px to 4K)
+├─ Priority: P0 (critical, Phase 1)
+├─ Description: System SHALL work on all screen sizes from Day 1
+├─ Breakpoints (Mobile-First):
+│  ├─ 320px: Small phones (iPhone SE, Android Go)
+│  ├─ 640px: Large phones (iPhone 14 Pro, Pixel)
+│  ├─ 768px: Tablets (iPad, Android tablets)
+│  ├─ 1024px: Desktop (small laptops, Chromebooks)
+│  ├─ 1440px: Desktop (large monitors)
+│  └─ 2560px: 4K displays (creators, designers)
+├─ Touch-First Patterns:
+│  ├─ No hover-only interactions (use :focus/:active for accessibility)
+│  ├─ Minimum touch targets: 44px (iOS), 48px (Material Design)
+│  ├─ Touch gestures: Pan, pinch, zoom for graph visualization
+│  └─ Swipe navigation: Drawer menus, carousel insights
+├─ Progressive Enhancement:
+│  ├─ Works on 320px (basic functionality, vertical layout)
+│  ├─ Enhanced on 768px (tablet layout, sidebar, multi-column insights)
+│  ├─ Optimized on 1024px+ (desktop, full visualization power)
+│  └─ Luxurious on 2560px+ (4K graphs, immersive visualization)
+├─ Performance Budget:
+│  ├─ Initial bundle: <100KB (gzip)
+│  ├─ Total page weight: <500KB (first load)
+│  ├─ Time to Interactive: <3s on 3G, <1s on WiFi
+│  └─ Frame rate: 60 FPS (smooth animations, touch responsiveness)
+├─ Validation:
+│  ├─ Manual: Test on iPhone SE, iPad, desktop, 4K monitor
+│  ├─ Automated: Lighthouse mobile + desktop scores >90
+│  └─ Real device lab: BrowserStack or LambdaTest
+
+REQUIREMENT SRS-C7.3: Offline-First Architecture
+├─ Priority: P1 (high, Phase 1)
+├─ Description: System SHALL work offline for cached content
+├─ Rationale: Aligns with 80% client-side processing + PWA resilience + VSG_DESIGN_PRINCIPLE
+├─ Offline Capabilities:
+│  ├─ View cached graphs (last 5 uploads per user)
+│  ├─ Explore insights (cached with graph data)
+│  ├─ Export to PDF (client-side generation via jsPDF)
+│  └─ Queue new uploads (background sync when online)
+├─ Service Worker Caching Strategy:
+│  ├─ App shell: Cache-first (HTML, CSS, JS, fonts)
+│  ├─ Graph data: Network-first, fallback to cache (IndexedDB)
+│  ├─ API calls: Network-only (with queue for offline)
+│  └─ Images/assets: Cache-first, stale-while-revalidate
+├─ User Experience:
+│  ├─ Online indicator: Subtle icon in header (green dot = online, gray = offline)
+│  ├─ Offline mode: Banner: "You're offline. Viewing cached graphs."
+│  ├─ Queued actions: Toast: "Upload queued. Will sync when online."
+│  └─ Background sync: Automatic retry when connection restored (silent)
+├─ Implementation:
+│  ├─ Workbox (Google's service worker library, production-tested)
+│  ├─ IndexedDB: Store graph data locally (via idb-keyval wrapper)
+│  ├─ Background Sync API: Queue uploads (Chrome, Edge, Safari 16.4+)
+│  └─ Cache API: Asset caching (all modern browsers)
+├─ Validation:
+│  ├─ Disable network (DevTools offline), verify app works
+│  ├─ Upload while offline, verify syncs when online
+│  └─ Lighthouse offline test passes
+
+REQUIREMENT SRS-C7.4: No Mobile-Breaking Patterns (Enforcement)
+├─ Priority: P0 (critical, Phase 1)
 ├─ Description: System SHALL NOT use patterns that break on mobile
 ├─ Prohibited Patterns:
-│  ├─ Hover-only interactions (e.g., dropdown on hover)
-│  ├─ Fixed-width layouts (<1024px breakpoint)
-│  ├─ Tiny touch targets (<44px recommended, <32px forbidden)
-│  ├─ Horizontal scrolling (unless intentional, e.g., carousel)
-│  └─ Flash/plugin dependencies (obsolete)
+│  ├─ Hover-only interactions (e.g., dropdown on :hover only)
+│  ├─ Fixed-width layouts (use fluid, responsive grid)
+│  ├─ Tiny touch targets (<44px)
+│  ├─ Horizontal scrolling (unless intentional carousel)
+│  ├─ Flash/Java applets (obsolete, non-mobile)
+│  └─ Auto-playing videos with sound (bad UX, battery drain)
 ├─ Enforcement:
-│  ├─ Code review: Flag hover-only CSS (:hover without :focus/:active)
-│  ├─ Accessibility audit: WCAG 2.1 AA compliance (includes touch targets)
-│  └─ Design review: Mockups must show 768px breakpoint
-├─ Validation: Accessibility scan (axe, Lighthouse)
+│  ├─ Code review: ESLint rule flags hover-only CSS
+│  ├─ Accessibility audit: WCAG 2.1 AA compliance (touch targets ≥44px)
+│  ├─ Design review: All mockups show 320px, 768px, 1440px breakpoints
+│  └─ CI/CD: Lighthouse audit fails build if mobile score <90
+├─ Validation: Automated Lighthouse + manual real-device testing (BrowserStack)
 ```
 
 ---

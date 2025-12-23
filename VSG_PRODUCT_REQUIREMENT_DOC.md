@@ -3827,46 +3827,96 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 ---
 
-### **B.4 Mobile Native Apps (Phase 4 - Validation Required)**
+### **B.4 Mobile Strategy: PWA-First (Phase 1), Native Apps (Phase 4 - If PWA Limitations Found)**
 
-**Current State (Phase 1-2):**
-- Mobile-aware responsive design (works on tablets)
-- Progressive Web App (PWA) for mobile web
-- Touch-optimized graph interactions
+**Phase 1 Core Strategy: Progressive Web App (PWA)**
 
-**Future Capability:**
-- Native iOS app (App Store)
-- Native Android app (Google Play)
-- Offline-first architecture
-- Push notifications for network changes
+**Philosophy Alignment:**
+> *"Simplify Ruthlessly: ONE codebase, works everywhere."* - CLAUDE_ACE.md
 
-**Decision Gate:**
-- **Trigger:** >40% of traffic from mobile devices AND >20% user requests for native app
+**Current State (Phase 1):**
+- **Progressive Web App (PWA):** Primary mobile deployment strategy
+  - Installable on iOS (Safari 16.4+), Android (Chrome), desktop
+  - Offline-first architecture (service workers, IndexedDB caching)
+  - "Add to Home Screen" for native-like experience
+  - Zero app store gatekeeping (instant deployments, no review delays)
+  - Works on all devices: 320px phones to 4K desktops
+  - Touch-optimized graph interactions (pan, pinch, zoom)
+  - Background sync for offline uploads
+  - Push notifications (opt-in, if user demands in Phase 2+)
+
+**PWA Benefits:**
+- ✅ ONE codebase (web, mobile, tablet, desktop)
+- ✅ Instant updates (no app store approval)
+- ✅ Works offline (cached graphs, queued uploads)
+- ✅ Installable (home screen icon, splash screen, full-screen mode)
+- ✅ Cross-platform (iOS, Android, Windows, Mac, Linux, ChromeOS)
+- ✅ Lower cost ($0 additional vs web-only)
+- ✅ Faster iteration (deploy fixes same day)
+
+**PWA Limitations (Known):**
+- Cannot access: Bluetooth, NFC, advanced camera APIs, contacts
+- Push notifications: More limited than native (iOS restrictions)
+- App Store discovery: Not listed in App Store/Play Store (web-only)
+- Performance: Slightly slower than native for heavy computation
+
+---
+
+**Future Capability: Native Apps (Phase 4+ - Only If PWA Shows Limitations)**
+
+**Decision Gate (Strict):**
+- **Trigger:** PWA demonstrates clear limitations that block critical user needs
+  - Example 1: >20% users request "offline graph generation for 10K+ nodes" (PWA can't handle)
+  - Example 2: >30% users request "Bluetooth sharing to nearby devices" (PWA can't access)
+  - Example 3: App Store featuring becomes proven growth channel (data-driven)
+- **Alternative Trigger:** >40% mobile traffic AND >30% explicit requests for native app
 - **Evaluation Point:** End of Phase 3 (Q4 2026)
-- **Data Required:** Mobile analytics, app store research, competitive landscape
+- **Data Required:**
+  - PWA analytics (install rates, offline usage, performance bottlenecks)
+  - User interviews (>50 users) on PWA limitations
+  - Competitive analysis (do competitors' native apps offer unique value?)
+  - App Store research (would featuring drive significant growth?)
 
-**Implementation Options (If Validated):**
+**Implementation Options (If PWA Limitations Validated):**
+
 1. **React Native (Recommended)**
-   - Share codebase with web (React components)
+   - Share components with web (React codebase)
    - Single development team
-   - Pros: Code reuse, faster development
-   - Cons: Performance trade-offs, native feel
-   - Cost: $100K-$200K development
+   - Pros: 60-70% code reuse, faster development, one team
+   - Cons: Performance trade-offs vs fully native, "hybrid" feel
+   - Cost: $100K-$200K development, $30K-$50K/year maintenance
    - Timeline: 6-12 months
+   - Use case: PWA works but users want App Store discovery + slight performance boost
 
 2. **Native iOS + Android (Premium Option)**
    - Separate Swift (iOS) and Kotlin (Android) codebases
    - Best performance and native UX
-   - Pros: Premium quality, App Store featuring potential
-   - Cons: 2x development cost, separate teams
-   - Cost: $250K-$400K development
+   - Pros: Premium quality, App Store featuring potential, full device access
+   - Cons: 2x development cost, separate teams, slower iteration
+   - Cost: $250K-$400K development, $80K-$120K/year maintenance
    - Timeline: 12-18 months
+   - Use case: PWA fundamentally insufficient, need full device APIs, targeting App Store featuring
+
+3. **PWA + Capacitor (Hybrid Approach)**
+   - Wrap PWA in native container (access native APIs when needed)
+   - Publish to App Store/Play Store
+   - Pros: Minimal changes to PWA, App Store presence, selective native API access
+   - Cons: Still hybrid limitations, extra wrapper layer
+   - Cost: $30K-$50K development, $10K-$20K/year maintenance
+   - Timeline: 2-4 months
+   - Use case: PWA works well, just need App Store listing + one or two native APIs
 
 **Success Metrics (If Built):**
-- App Store rating >4.3/5
-- Mobile conversion rate >5% (vs 3% web)
-- Mobile retention >25% (vs 15% web)
-- App Store featuring (organic discovery)
+- App Store rating >4.5/5 (higher bar than web)
+- Native app retention >30% (vs 20% PWA)
+- Performance: <2s to visualize 5K nodes (vs <3s PWA)
+- App Store featuring achieved within 6 months
+- Native app users LTV >2x PWA users (justifies 2x cost)
+
+**Default Stance: Bet on PWA, Build Native Only If Necessary**
+- Phase 1-3: PWA is sufficient for 95% of use cases
+- Phase 4+: Evaluate PWA limitations based on real user data, not assumptions
+- Philosophy: "Simplify Ruthlessly" - avoid native complexity unless data demands it
 
 ---
 
