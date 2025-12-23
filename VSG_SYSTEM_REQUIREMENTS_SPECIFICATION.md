@@ -521,6 +521,77 @@ REQUIREMENT SRS-C7.1: PWA-First Strategy
 │  ├─ Automated: Lighthouse PWA audit (CI/CD gate)
 │  └─ User acceptance: Beta testers confirm native-like experience
 
+REQUIREMENT SRS-C7.1.1: Large Graph Optimization (10K+ Nodes Offline)
+├─ Priority: P1 (high, Phase 1 - performance)
+├─ Description: System SHALL handle 10K+ nodes offline with deterministic algorithms
+├─ Rationale:
+│  ├─ PWA can handle large graphs with smart algorithms (no native app needed)
+│  ├─ Aligns with VSG_DESIGN_PRINCIPLE (algorithm-first, deterministic, transparent)
+│  ├─ Proves PWA is sufficient for 95% of use cases (native only for Bluetooth/AR/etc)
+│  └─ "Ultrathink": Question assumption "PWA can't handle 10K nodes" - it can
+├─ Implementation Strategy:
+│  ├─ WebAssembly Force Simulation (Rust/C++ compiled to WASM)
+│  │   ├─ Barnes-Hut approximation: O(n log n) instead of O(n²)
+│  │   ├─ Near-native performance: <5 seconds for 10K nodes (vs 30-60s in JS)
+│  │   ├─ Cached in service worker: Works offline
+│  │   └─ Runs in WebWorker: Non-blocking UI
+│  ├─ Hierarchical Level-of-Detail (LoD) Rendering
+│  │   ├─ Zoom 0 (bird's eye): Show 200 community clusters (aggregated)
+│  │   ├─ Zoom 1 (medium): Show 2K important nodes + shadow clusters
+│  │   ├─ Zoom 2+ (deep): Show full detail in viewport only (~500-1000 nodes)
+│  │   └─ Progressive disclosure: User never sees 10K nodes at once
+│  ├─ Viewport Culling + Spatial Indexing (Quadtree)
+│  │   ├─ Quadtree: O(log n) query for visible nodes
+│  │   ├─ Only render nodes in viewport: ~500-1000 out of 10K
+│  │   ├─ Pan/Zoom: Seamlessly reveals more nodes (no lag)
+│  │   └─ Result: 60 FPS even on low-end devices
+│  ├─ Progressive/Incremental Rendering
+│  │   ├─ Render in batches: 500 nodes per frame (requestAnimationFrame)
+│  │   ├─ 10K nodes = 20 frames @ 60 FPS = ~333ms total
+│  │   ├─ UI stays responsive: Never blocks main thread
+│  │   └─ Progress feedback: "Rendering network... 47%"
+│  └─ Importance Sampling (Show What Matters)
+│      ├─ Calculate importance: PageRank + betweenness centrality + degree
+│      ├─ Show top 2K important nodes first
+│      ├─ Aggregate rest into shadow clusters (80 clusters for remaining 8K)
+│      └─ Detail on demand: Click cluster → expand to see members
+├─ Performance Targets (10K Nodes, 50K Edges):
+│  ├─ Force simulation: <5 seconds (WASM in WebWorker)
+│  ├─ Initial render: <1 second (progressive batches, 500 nodes/frame)
+│  ├─ Pan/Zoom: 60 FPS (viewport culling, only render visible nodes)
+│  ├─ Memory usage: <30MB (optimized data structures, quadtree indexing)
+│  └─ Offline: Full capability (WASM cached, IndexedDB for graph data)
+├─ Technology Stack:
+│  ├─ WebAssembly: Rust (force simulation) compiled via wasm-pack
+│  ├─ WebWorker: Offload simulation to background thread
+│  ├─ IndexedDB: Store graph data offline (idb-keyval wrapper)
+│  ├─ Canvas API: High-performance rendering (OffscreenCanvas for workers)
+│  └─ Quadtree: Spatial indexing library (d3-quadtree or custom)
+├─ Validation:
+│  ├─ Test graph: 10K nodes, 50K edges (realistic Twitter follower network)
+│  ├─ Test device: 4GB RAM Android phone (OnePlus Nord, Samsung A52)
+│  ├─ Test mode: Offline (airplane mode, service worker cached)
+│  ├─ Acceptance criteria:
+│  │   ├─ Force simulation completes in <5 seconds
+│  │   ├─ Initial render shows clusters in <1 second
+│  │   ├─ Pan/Zoom maintains 60 FPS (no dropped frames)
+│  │   ├─ Memory usage stays <30MB (no crashes on 4GB device)
+│  │   └─ User can explore, zoom, filter, export within 10 seconds total
+│  └─ Benchmark comparison:
+│      ├─ JavaScript (slow): 30-60s simulation, laggy rendering
+│      ├─ PWA + WASM (optimized): <5s simulation, 60 FPS rendering
+│      └─ Native app: <3s simulation, 60 FPS rendering (marginal improvement)
+├─ Phase 1 Implementation:
+│  ├─ Week 5-6: WASM force simulation (Rust module, wasm-pack build)
+│  ├─ Week 7: Hierarchical rendering (cluster → sample → full)
+│  ├─ Week 8: Viewport culling + quadtree (spatial indexing)
+│  ├─ Week 9: Progressive rendering + importance sampling
+│  └─ Week 10: Performance testing + optimization
+├─ Decision Impact:
+│  ├─ Native app NOT needed for large graphs (PWA handles it)
+│  ├─ Native app triggers: Bluetooth, AR, background tasks, App Store featuring
+│  └─ Phase 4 evaluation: Focus on REAL PWA limitations, not imagined ones
+
 REQUIREMENT SRS-C7.2: Responsive Design (320px to 4K)
 ├─ Priority: P0 (critical, Phase 1)
 ├─ Description: System SHALL work on all screen sizes from Day 1
