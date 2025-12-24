@@ -19,6 +19,7 @@
 
 **Change Log**:
 - v1.0 (Dec 24, 2025): Privacy terminology alignment (pseudonymized identifiers; aggregated analytics) to match SRS + Data & Intelligence Framework
+- v1.0 (Dec 24, 2025): Aligned TemplateMatcher contract to `match(templates, metrics, profile)` and standardized canonical graph construction (undirected/simple, multi-edge aggregation)
 
 **Document Hierarchy:**
 ```
@@ -3085,17 +3086,34 @@ export class GraphAnalyzer implements IGraphAnalyzer {
   }
 
   private buildGraphologyGraph(data: GraphData): Graph {
-    const graph = new Graph({ type: 'undirected' });
+    // Canonical analysis graph policy: undirected, simple, no self-loops; multi-edges collapsed.
+    const graph = new Graph({ type: 'undirected', multi: false, allowSelfLoops: false });
 
     // Add nodes
     data.nodes.forEach(node => {
-      graph.addNode(node.id, { label: node.label, weight: node.weight });
+      if (!graph.hasNode(node.id)) {
+        graph.addNode(node.id, { label: node.label, weight: node.weight });
+      }
     });
 
-    // Add edges
+    // Add edges (collapse multi-edges into a single undirected tie-strength edge)
+    const buckets = new Map<string, { source: string; target: string; weight: number }>();
     data.edges.forEach(edge => {
-      graph.addEdge(edge.source, edge.target, { weight: edge.weight });
+      if (!graph.hasNode(edge.source) || !graph.hasNode(edge.target)) return;
+      if (edge.source === edge.target) return;
+
+      const a = edge.source < edge.target ? edge.source : edge.target;
+      const b = edge.source < edge.target ? edge.target : edge.source;
+      const key = `${a}::${b}`;
+
+      const prev = buckets.get(key) ?? { source: a, target: b, weight: 0 };
+      prev.weight += typeof edge.weight === 'number' ? edge.weight : 1;
+      buckets.set(key, prev);
     });
+
+    for (const e of buckets.values()) {
+      graph.addEdge(e.source, e.target, { weight: e.weight });
+    }
 
     return graph;
   }
@@ -3581,10 +3599,8 @@ export class InsightEngine {
     const profile = this.statisticalProfiler.profile(graph.data);
 
     // 5. Template matching (rule-based)
-    const matched = await this.templateMatcher.match({
-      ...metrics,
-      ...profile
-    });
+    const templates = await this.templateLibrary.getActive();
+    const matched = await this.templateMatcher.match(templates, metrics, profile);
 
     // 6. Interpolate narratives
     const insights: Insight[] = [];
@@ -6358,7 +6374,8 @@ export class InsightEngine {
         const matched = await Sentry.startSpan(
           { name: 'template_matching', op: 'compute' },
           async (span) => {
-            const result = await this.templateMatcher.match({...metrics, ...profile});
+            const templates = await this.templateLibrary.getActive();
+            const result = await this.templateMatcher.match(templates, metrics, profile);
             span.setAttributes({
               'templates.evaluated': 30,
               'templates.matched': result.length
@@ -6909,7 +6926,8 @@ export async function generateInsights(graphId: string) {
       op: 'template.match',
       description: 'Match rule-based templates'
     });
-    const matched = await templateMatcher.match({ ...metrics, ...profile });
+    const templates = await templateLibrary.getActive();
+    const matched = await templateMatcher.match(templates, metrics, profile);
     matchSpan.setData('matches', matched.length);
     matchSpan.finish();
 
