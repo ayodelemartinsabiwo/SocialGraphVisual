@@ -180,12 +180,12 @@ interface SocialGraph {
 }
 
 interface Node {
-  id: string; // Platform-specific ID (anonymized in storage)
+  id: string; // Platform-specific ID (pseudonymized in storage)
   type: 'user' | 'self'; // 'self' = graph owner
 
   // Required attributes
-  displayName: string; // Anonymized in storage (hash)
-  username: string; // Anonymized in storage (hash)
+  displayName: string; // Pseudonymized in storage (keyed hash)
+  username: string; // Pseudonymized in storage (keyed hash)
 
   // Optional attributes (platform-dependent)
   followerCount?: number;
@@ -2059,9 +2059,9 @@ function buildGraph(nodes, edges) {
 
 function detectCommunities(graph) {
   const G = Graph.from(graph);
-  const communities = louvain(G);
-  // Compute modularity, sizes, etc.
-  return { communities, modularity, sizes };
+  const communities = louvain(G); // nodeId -> communityId mapping
+  // Optionally compute modularity, sizes, etc.
+  return { communities };
 }
 ```
 

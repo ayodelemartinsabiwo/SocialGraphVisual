@@ -120,7 +120,7 @@ User control (delete/export anytime)
 
 Translation to Architecture:
 ├─ Web Worker parsing: User data never leaves browser (mostly)
-├─ Anonymized server storage: Hashed node IDs only
+├─ Pseudonymized server storage: Hashed node IDs only
 ├─ Insight Engine: On-premise algorithms (no third-party AI)
 ├─ Clear data flow: User sees exactly what's sent
 └─ Cascade deletes: User deletion removes all data
@@ -351,7 +351,7 @@ Example:
 │  │  ├─ insights (generated, cached, linked to graph)            │ │
 │  │  ├─ templates (narrative library, A/B variants) ⭐ NEW        │ │
 │  │  ├─ subscriptions (Stripe sync, tier management)             │ │
-│  │  └─ analytics_events (usage tracking, anonymized)            │ │
+│  │  └─ analytics_events (usage tracking, aggregated)            │ │
 │  └──────────────────────────────────────────────────────────────┘ │
 │                          ↕                                        │
 │  ┌──────────────────────────────────────────────────────────────┐ │
@@ -418,7 +418,7 @@ USER                BROWSER (Web Worker)           SERVER (Optional)
  │                         │     ├─ Construct edges       │
  │                         │     └─ Calculate basic metrics│
  │                         │                              │
- │                         │  7. Anonymize (if uploading) │
+│                         │  7. Pseudonymize (if uploading) │
  │                         │     ├─ Hash node IDs         │
  │                         │     └─ Remove PII            │
  │                         │                              │
@@ -433,7 +433,7 @@ USER                BROWSER (Web Worker)           SERVER (Optional)
  │                         │                              │
  │  "Upload" (opt-in)      │   POST /api/graphs           │
  │────────────────────────>│─────────────────────────────>│
- │                         │   (anonymized graph JSON)    │
+│                         │   (pseudonymized graph JSON) │
  │                         │                              │
  │                         │   201 Created + graph_id     │
  │                         │<─────────────────────────────│
@@ -854,7 +854,7 @@ Testing:
 │   ├─ /graph (graph manipulation utilities)
 │   │   ├─ builder.ts (construct from parsed data)
 │   │   ├─ metrics.ts (basic metrics: degree, density)
-│   │   └─ anonymize.ts (hash IDs, remove PII)
+│   │   └─ anonymize.ts (pseudonymize IDs, remove PII)
 │   ├─ /visualization (D3 helpers)
 │   │   ├─ force-config.ts (force simulation params)
 │   │   ├─ color-scheme.ts (community colors)
@@ -3744,7 +3744,7 @@ model Graph {
   platform      Platform
   nodeCount     Int      @map("node_count")
   edgeCount     Int      @map("edge_count")
-  graphData     Json     @map("graph_data") // JSONB (anonymized)
+  graphData     Json     @map("graph_data") // JSONB (pseudonymized)
   graphSizeBytes Int     @map("graph_size_bytes") // For monitoring
   isLatest      Boolean  @default(true) @map("is_latest") // Version flag
   createdAt     DateTime @default(now()) @map("created_at")
@@ -3861,7 +3861,7 @@ enum SubscriptionStatus {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ANALYTICS (Usage Tracking, Anonymized)
+// ANALYTICS (Usage Tracking, Aggregated)
 // ═══════════════════════════════════════════════════════════════════
 
 model AnalyticsEvent {
@@ -3962,7 +3962,7 @@ Mitigations:
 Threat: Sensitive data exposed
 Mitigations:
 ├─ Client-side processing: 80% never leaves browser
-├─ Anonymized storage: Node IDs hashed
+├─ Pseudonymized storage: Node IDs hashed
 ├─ Access control: User can only access own data
 ├─ No PII in logs: User IDs only, no emails
 └─ CORS: Strict origin whitelist
@@ -6575,7 +6575,7 @@ Performance Monitoring:
 Analytics:
 ├─ Tool: PostHog (privacy-friendly)
 ├─ Tracking: User actions, feature usage
-├─ Privacy: Anonymized, no PII
+├─ Privacy: Aggregated, no PII
 └─ Purpose: Product analytics, A/B testing
 
 Logs:
