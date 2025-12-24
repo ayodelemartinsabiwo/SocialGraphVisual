@@ -279,9 +279,9 @@ REQUIREMENT SRS-C2.1: Data Minimization
 ├─ Description: Store only data necessary for core functionality
 ├─ What we store:
 │  ├─ Account: Email, name, tier
-│  ├─ Graph: Anonymized structure (node IDs hashed, edges, weights)
+│  ├─ Graph: Pseudonymized structure (node IDs hashed, edges, weights)
 │  ├─ Insights: Generated insights, confidence levels
-│  └─ Analytics: Anonymized usage metrics
+│  └─ Analytics: Aggregated usage metrics (no PII)
 ├─ What we DON'T store:
 │  ├─ Raw ZIP files (deleted after processing)
 │  ├─ Full social media content (only metadata)
@@ -334,7 +334,7 @@ REQUIREMENT SRS-C3.2: Web Workers for Heavy Processing
 ├─ Validation: UI stays at 60 FPS during parsing
 
 REQUIREMENT SRS-C3.3: Minimal Server Data Transfer
-├─ Description: Only anonymized graph structure sent to server
+├─ Description: Only pseudonymized graph structure sent to server
 ├─ What we send:
 │  ├─ Graph structure: Node IDs (hashed), edges, weights
 │  ├─ Metadata: Node count, edge count, platform
@@ -387,7 +387,7 @@ Server-Side Fallback (Opt-In):
 ├─ Privacy consideration:
 │  ├─ User explicitly opts in ("Process on server instead?")
 │  ├─ Server deletes raw file after processing (same as client-side)
-│  ├─ Anonymized graph still stored (same as client-side)
+│  ├─ Pseudonymized graph still stored (same as client-side)
 │  └─ Trade-off accepted: Privacy slightly reduced for accessibility
 ├─ Performance: Server can handle larger networks (no browser limits)
 ├─ Tier gating (Phase 2+):
@@ -1205,7 +1205,7 @@ SRS-F6.3: Raw Data Export
 │  ├─ CSV (Edge List): source, target, weight (Gephi-compatible)
 │  ├─ JSON (Graph): Full graph object (nodes, edges, metadata)
 │  └─ GEXF (Phase 3+): Gephi native format
-├─ Privacy: Anonymized or full (user choice)
+├─ Privacy: Pseudonymized or full (user choice)
 ├─ Acceptance: Opens in Excel/Gephi, complete data, <10s generation
 
 SRS-F6.4: One-Click Social Sharing
@@ -1460,7 +1460,7 @@ CREATE TABLE graphs (
   platform VARCHAR(20) NOT NULL,
   node_count INTEGER,
   edge_count INTEGER,
-  graph_data JSONB, -- Anonymized structure
+  graph_data JSONB, -- Pseudonymized structure
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -1666,7 +1666,7 @@ Configuration:
 **Privacy by Design:**
 - 80% client-side processing (minimize data transfer)
 - No account access (manual upload only)
-- Anonymized storage (node IDs hashed)
+- Pseudonymized storage (node IDs hashed)
 - User preview (see what will be sent before upload)
 - Temporary storage (files deleted after processing)
 
@@ -1796,7 +1796,7 @@ Performance Monitoring:
 Analytics:
 ├─ Tool: PostHog (privacy-friendly)
 ├─ Tracking: User actions, feature usage
-├─ Privacy: Anonymized, no PII
+├─ Privacy: Aggregated, no PII
 └─ Purpose: Product analytics, not surveillance
 
 Logs:
@@ -2247,6 +2247,11 @@ R6 (Browser Limitations):
 
 ## **Change Log:**
 ```
+v1.2 (Dec 24, 2025) - Terminology & Privacy Clarification:
+├─ Clarified: "anonymized" → "pseudonymized" where hashed identifiers are used
+├─ Clarified: analytics privacy as aggregated (no PII)
+└─ Consistency: aligned export/privacy wording with Data & Intelligence Framework
+
 v1.2 (December 2025) - Algorithm-First Edition:
 ├─ REPLACED: Section 4.5 "AI-Powered Recommendations" → "Algorithm-Powered Recommendations"
 │  ├─ Removed: External AI API dependencies (Anthropic Claude, OpenAI)
