@@ -37,7 +37,7 @@
 5. [Template System](#5-template-system)
 6. [Statistical Profiling](#6-statistical-profiling)
 7. [Insight Generation Pipeline](#7-insight-generation-pipeline)
-8. [Privacy & Anonymization](#8-privacy--anonymization)
+8. [Privacy & Pseudonymization](#8-privacy--pseudonymization)
 9. [Performance Optimization](#9-performance-optimization)
 10. [Evolution Strategy](#10-evolution-strategy)
 11. [Quality Assurance](#11-quality-assurance)
@@ -180,12 +180,12 @@ interface SocialGraph {
 }
 
 interface Node {
-  id: string; // Platform-specific ID (anonymized in storage)
+  id: string; // Platform-specific ID (pseudonymized in storage)
   type: 'user' | 'self'; // 'self' = graph owner
 
   // Required attributes
-  displayName: string; // Anonymized in storage (hash)
-  username: string; // Anonymized in storage (hash)
+  displayName: string; // Pseudonymized in storage (keyed hash)
+  username: string; // Pseudonymized in storage (keyed hash)
 
   // Optional attributes (platform-dependent)
   followerCount?: number;
@@ -619,7 +619,7 @@ interface Insight {
   // Explainability (transparency)
   explanation: {
     triggeredConditions: string[]; // Which conditions matched
-    metrics: { key: string; value: number }[]; // Supporting data
+    metrics: { key: string; value: number | null }[]; // Supporting data (null = not available / not numeric)
     templateVersion: number;
   };
 
@@ -922,18 +922,19 @@ class GraphAnalyzer {
     const G = this.toGraphology(graph);
 
     // Run Louvain algorithm
-    const communities = louvain(G);
+    // Common graphology Louvain implementations return a mapping: nodeId -> communityId
+    const communities: Record<string, number> = louvain(G);
 
     // Compute modularity
     const modularity = this.computeModularity(G, communities);
 
     // Analyze community sizes
-    const sizes = Object.values(
-      communities.reduce((acc, comm) => {
-        acc[comm] = (acc[comm] || 0) + 1;
-        return acc;
-      }, {} as Record<number, number>)
-    ).sort((a, b) => b - a);
+    const sizeByCommunity = Object.values(communities).reduce((acc, commId) => {
+      acc[commId] = (acc[commId] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    const sizes = Object.values(sizeByCommunity).sort((a, b) => b - a);
 
     // Compute distribution
     const totalNodes = graph.data.nodes.length;
@@ -977,32 +978,27 @@ class GraphAnalyzer {
    */
   private computeModularity(
     G: Graph,
-    communities: number[]
+    communities: Record<string, number>
   ): number {
     // O(m) modularity computation for undirected graphs:
     // Q = Σ_c [ (l_c / m) - (d_c / (2m))^2 ]
     // where l_c = # edges inside community c, d_c = sum of degrees in c.
-    const nodes = G.nodes();
     const m = G.edges().length;
     if (m === 0) return 0;
-
-    const degreeByIdx = nodes.map(n => G.degree(n));
     const sumDegreesByCommunity = new Map<number, number>();
     const internalEdgesByCommunity = new Map<number, number>();
 
-    for (let i = 0; i < nodes.length; i++) {
-      const c = communities[i];
-      sumDegreesByCommunity.set(c, (sumDegreesByCommunity.get(c) ?? 0) + degreeByIdx[i]);
+    for (const nodeId of G.nodes()) {
+      const c = communities[nodeId];
+      if (c === undefined) continue;
+      sumDegreesByCommunity.set(c, (sumDegreesByCommunity.get(c) ?? 0) + G.degree(nodeId));
     }
 
     // Count internal edges per community (each edge counted once)
     G.forEachEdge((edge, attrs, source, target) => {
-      const sourceIdx = nodes.indexOf(source);
-      const targetIdx = nodes.indexOf(target);
-      if (sourceIdx < 0 || targetIdx < 0) return;
-
-      const c1 = communities[sourceIdx];
-      const c2 = communities[targetIdx];
+      const c1 = communities[source];
+      const c2 = communities[target];
+      if (c1 === undefined || c2 === undefined) return;
       if (c1 === c2) {
         internalEdgesByCommunity.set(c1, (internalEdgesByCommunity.get(c1) ?? 0) + 1);
       }
@@ -1028,49 +1024,41 @@ class GraphAnalyzer {
    */
   private detectEchoChambers(
     G: Graph,
-    communities: number[]
+    communities: Record<string, number>
   ): { isolated: number[]; echoScore: number } {
-    const communityCounts = communities.reduce((acc, comm) => {
-      acc[comm] = (acc[comm] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
+    const internalByCommunity = new Map<number, number>();
+    const externalByCommunity = new Map<number, number>();
 
-    const isolated: number[] = [];
-    let totalIntraEdges = 0;
-    let totalEdges = 0;
+    let totalInternal = 0;
+    let totalExternal = 0;
 
-    Object.keys(communityCounts).forEach(commId => {
-      const comm = parseInt(commId);
-      const nodesInComm = communities
-        .map((c, i) => c === comm ? i : null)
-        .filter(i => i !== null);
+    G.forEachEdge((edge, attrs, source, target) => {
+      const c1 = communities[source];
+      const c2 = communities[target];
+      if (c1 === undefined || c2 === undefined) return;
 
-      let intraEdges = 0;
-      let externalEdges = 0;
-
-      nodesInComm.forEach(nodeIdx => {
-        G.forEachNeighbor(G.nodes()[nodeIdx], (neighbor) => {
-          const neighborIdx = G.nodes().indexOf(neighbor);
-          if (communities[neighborIdx] === comm) {
-            intraEdges++;
-          } else {
-            externalEdges++;
-          }
-        });
-      });
-
-      const totalCommEdges = intraEdges + externalEdges;
-      const externalPercentage = externalEdges / totalCommEdges;
-
-      if (externalPercentage < 0.05) {
-        isolated.push(comm);
+      if (c1 === c2) {
+        internalByCommunity.set(c1, (internalByCommunity.get(c1) ?? 0) + 1);
+        totalInternal += 1;
+      } else {
+        externalByCommunity.set(c1, (externalByCommunity.get(c1) ?? 0) + 1);
+        externalByCommunity.set(c2, (externalByCommunity.get(c2) ?? 0) + 1);
+        totalExternal += 2;
       }
-
-      totalIntraEdges += intraEdges;
-      totalEdges += totalCommEdges;
     });
 
-    const echoScore = totalIntraEdges / totalEdges;
+    const isolated: number[] = [];
+    for (const commId of new Set([...internalByCommunity.keys(), ...externalByCommunity.keys()])) {
+      const intra = internalByCommunity.get(commId) ?? 0;
+      const external = externalByCommunity.get(commId) ?? 0;
+      const total = intra + external;
+      if (total === 0) continue;
+      const externalPercentage = external / total;
+      if (externalPercentage < 0.05) isolated.push(commId);
+    }
+
+    const denom = totalInternal + totalExternal;
+    const echoScore = denom === 0 ? 0 : totalInternal / denom;
 
     return { isolated, echoScore };
   }
@@ -1391,7 +1379,7 @@ class TemplateMatcher {
         ...optionalMatches
       ].map(c => ({
         key: c.metric,
-        value: this.getMetricValue(c.metric, metrics, profile)
+        value: this.getMetricValue(c.metric, metrics, profile) ?? null
       }));
 
       matches.push({
@@ -1572,7 +1560,7 @@ interface TemplateMatch {
   priority: number;
   variables: Record<string, any>;
   triggeredConditions: string[];
-  supportingMetrics: { key: string; value: number }[];
+  supportingMetrics: { key: string; value: number | null }[];
 }
 ```
 
@@ -1942,11 +1930,11 @@ Breakdown (uncached, 5K node graph):
 
 ---
 
-## **8. Privacy & Anonymization**
+## **8. Privacy & Pseudonymization**
 
 ### **8.1 Data Minimization Strategy**
 
-**Principle**: Store only what's necessary for analysis, anonymize everything else
+**Principle**: Store only what's necessary for analysis, pseudonymize everything else
 
 ```typescript
 /**
@@ -1954,49 +1942,49 @@ Breakdown (uncached, 5K node graph):
  */
 class PrivacyPreservingStorage {
   /**
-   * Anonymize graph before storage
+   * Pseudonymize graph before storage
    *
    * Process:
-   * 1. Hash usernames/names (SHA-256 + salt)
+   * 1. Pseudonymize usernames/names (HMAC-SHA256 with a user-specific secret)
    * 2. Remove profile images (reconstruct on-demand if needed)
    * 3. Generalize timestamps (day-level precision)
    * 4. Strip PII from metadata
    */
   async store(graph: SocialGraph, userId: string): Promise<void> {
-    const salt = await this.getUserSalt(userId);
+    const secret = await this.getUserSecret(userId);
 
-    // Anonymize nodes
-    const anonymizedNodes = graph.data.nodes.map(node => ({
+    // Pseudonymize nodes
+    const pseudonymizedNodes = graph.data.nodes.map(node => ({
       ...node,
-      displayName: this.hash(node.displayName, salt),
-      username: this.hash(node.username, salt),
+      displayName: this.hash(node.displayName, secret),
+      username: this.hash(node.username, secret),
       profileImageUrl: undefined, // Remove, reconstruct if needed
     }));
 
     // Generalize edge timestamps
-    const anonymizedEdges = graph.data.edges.map(edge => ({
+    const pseudonymizedEdges = graph.data.edges.map(edge => ({
       ...edge,
       createdAt: this.generalizeDate(edge.createdAt), // Day precision
     }));
 
-    const anonymizedGraph = {
+    const pseudonymizedGraph = {
       ...graph,
       data: {
-        nodes: anonymizedNodes,
-        edges: anonymizedEdges,
+        nodes: pseudonymizedNodes,
+        edges: pseudonymizedEdges,
         metadata: this.stripPII(graph.data.metadata)
       }
     };
 
-    await this.graphRepo.create(anonymizedGraph);
+    await this.graphRepo.create(pseudonymizedGraph);
   }
 
   /**
     * Pseudonymize value with user-specific secret (non-reversible)
    */
-  private hash(value: string, salt: string): string {
+  private hash(value: string, secret: string): string {
     return crypto
-      .createHmac('sha256', salt)
+      .createHmac('sha256', secret)
       .update(value)
       .digest('hex');
   }
@@ -2071,9 +2059,9 @@ function buildGraph(nodes, edges) {
 
 function detectCommunities(graph) {
   const G = Graph.from(graph);
-  const communities = louvain(G);
-  // Compute modularity, sizes, etc.
-  return { communities, modularity, sizes };
+  const communities = louvain(G); // nodeId -> communityId mapping
+  // Optionally compute modularity, sizes, etc.
+  return { communities };
 }
 ```
 
@@ -2250,7 +2238,7 @@ Even in Phase 4, every insight must be:
 ```typescript
 // Example: Custom "Echo Chamber Score"
 
-function computeEchoChamberScore(graph: Graph, communities: number[]): number {
+function computeEchoChamberScore(graph: Graph, communities: Record<string, number>): number {
   let intraCommunityEngagement = 0;
   let totalEngagement = 0;
 
@@ -2258,15 +2246,16 @@ function computeEchoChamberScore(graph: Graph, communities: number[]): number {
     const weight = attributes.weight || 1;
     totalEngagement += weight;
 
-    const sourceCommunity = communities[graph.nodes().indexOf(source)];
-    const targetCommunity = communities[graph.nodes().indexOf(target)];
+    const sourceCommunity = communities[source];
+    const targetCommunity = communities[target];
+    if (sourceCommunity === undefined || targetCommunity === undefined) return;
 
     if (sourceCommunity === targetCommunity) {
       intraCommunityEngagement += weight;
     }
   });
 
-  return intraCommunityEngagement / totalEngagement;
+  return totalEngagement === 0 ? 0 : intraCommunityEngagement / totalEngagement;
 }
 ```
 
@@ -2540,6 +2529,7 @@ Total: ~20 templates for Phase 1
 
 **Change Log**:
 - v1.0 (Dec 24, 2025): Initial version, algorithm-first architecture established
+- v1.0 (Dec 24, 2025): Clarified pseudonymization (HMAC-based) vs anonymization, made community outputs mapping-based, and made explainability metrics null-safe
 
 ---
 

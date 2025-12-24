@@ -12,6 +12,7 @@
 | 1.0 | Dec 2025 | Initial PRD | Visual Social Graph Team |
 | 2.0 | Dec 2025 | Technical validation, corrected file formats, added technical spike | Visual Social Graph Team |
 | 2.1 | Dec 2025 | Strategic refinement, category definition, enhanced risk framework | Visual Social Graph Team |
+| 2.1 | Dec 24, 2025 | Terminology alignment: pseudonymized graph transfer/storage, generalized timestamps; consistent with SRS + Data & Intelligence Framework | Visual Social Graph Team |
 
 ---
 
@@ -186,7 +187,7 @@ Social media platforms optimize for engagement (time spent, ad views), not for u
 
 ## **III. The Essence — Why This Exists**
 
-Most people have no idea who they really are online. 
+Most people have no idea who they really are online.
 
 They post, they engage, they build followers — but they're flying blind. They can't *see* their digital identity. They can't visualize the invisible threads connecting them to their audience. They don't understand their positioning, their influence patterns, or the echo chambers they've built.
 
@@ -334,7 +335,7 @@ This clarity prevents scope creep and ensures focused execution.
 BEFORE: Confusion, curiosity, vague unease about online presence
          ↓
 STEP 1: "Download your digital identity" [2-10 minutes]
-         ↓  
+         ↓
 STEP 2: "Upload and watch the magic" [30 seconds]
          ↓
 STEP 3: [Breathtaking visualization appears]
@@ -417,7 +418,7 @@ The Promise (3 Cards):
 
 How It Works (Visual Timeline):
 1. Download → [Icon: Cloud down arrow]
-2. Upload → [Icon: File upload with security shield]  
+2. Upload → [Icon: File upload with security shield]
 3. Discover → [Icon: Expanding network graph]
 └─ "5 minutes to revelation"
 
@@ -572,7 +573,7 @@ Each card:
 └─────────────────────────────────────┘
 ```
 
-**Design Principle:** 
+**Design Principle:**
 - Make it feel like a treasure hunt, not homework
 - Acknowledge the wait time upfront (builds anticipation)
 - Video tutorials embedded (< 60 seconds each)
@@ -603,7 +604,7 @@ On drop:
 
 Privacy Panel (Always Visible):
 ├─ 🔒 "Your data is processed locally first"
-├─ 🚫 "We never store raw social media files"  
+├─ 🚫 "We never store raw social media files"
 ├─ ✅ "Only aggregated insights are saved"
 └─ [Privacy Policy] [How We Handle Data]
 
@@ -626,7 +627,7 @@ Advanced Option (Expandable):
 
 // Client-side processing first:
 - 80% happens in browser
-- Only anonymized graph data sent to server
+- Only pseudonymized graph data sent to server
 - User can preview before sharing anything
 
 // Local-Only Mode:
@@ -640,7 +641,7 @@ Advanced Option (Expandable):
 
 ### **D. The Visualization: The Revelation**
 
-**Core Philosophy:** 
+**Core Philosophy:**
 *"The graph should feel alive. Every node is a person. Every edge is a relationship. This isn't data — it's your digital DNA."*
 
 #### **Primary View: Network Graph**
@@ -795,7 +796,7 @@ Similar creators: [Smaller dots, hoverable]
 
 Insight: "You're positioned as a Professional Conversationalist
          Most similar to: @user1, @user2, @user3"
-         
+
 [What this means for you]:
 "This positioning is valuable for: thought leadership,
  consulting opportunities, and strategic partnerships.
@@ -830,7 +831,7 @@ Heat map of your posts:
 
 Insight: "Your 'Tech tutorials' posts get 3x engagement
          from your core network vs. 'Personal updates'"
-         
+
 [What this means for you]:
 "Double down on tech tutorials. Your audience expects
  and values this content type. Consider: Weekly tutorial series."
@@ -885,7 +886,7 @@ Algorithm-powered insights:
  • @user1 (45 mutual connections)
  • @user2 (connects you to Tech Twitter)
  • @user3 (gateway to Design community)"
- 
+
 [Strategic Action]:
 "Engage with @user2's next 3 posts. They can
  introduce you to 500+ potential followers."
@@ -893,7 +894,7 @@ Algorithm-powered insights:
 🔍 Untapped Segments (Confidence: Medium)
 "You have 234 followers who never engage.
  Analysis: They followed for [old content type]"
- 
+
 [Strategic Action]:
 "Create 1 post in [old content type] to re-engage.
  Or: Accept they're no longer your audience."
@@ -903,7 +904,7 @@ Algorithm-powered insights:
  • 67% audience overlap
  • Complementary content
  • Similar engagement patterns"
- 
+
 [Strategic Action]:
 "Propose collaboration: Joint newsletter, podcast
  episode, or content series. Draft intro message?"
@@ -1069,7 +1070,7 @@ On hover:
 ```python
 # Pseudo-architecture
 class InsightsEngine:
-    
+
     def analyze_network(self, graph_data):
         return {
             'community_detection': self.detect_clusters(graph_data),
@@ -1094,9 +1095,9 @@ Visualization: Color-coded communities
 Confidence: High (if >50 nodes), Medium (<50 nodes)
 
 Insight: "You have 4 distinct communities:
-         Professional (blue), Personal (green), 
+         Professional (blue), Personal (green),
          Industry (purple), Aspirational (orange)"
-         
+
 [What this means for you]:
 "These communities rarely interact. Consider:
  Creating content that bridges communities or
@@ -1112,7 +1113,7 @@ Confidence: High
 
 Insight: "@user is a key connector — engaging them
          reaches 200+ people in your network"
-         
+
 [Strategic Action]:
 "Engage with @user's content 3x this week.
  Like, comment meaningfully, share with context."
@@ -1128,7 +1129,7 @@ Confidence: Medium (requires 50+ posts for accuracy)
 Insight: "You're positioned at the intersection of
          Tech Education and Personal Development.
          This unique positioning is your strength."
-         
+
 [What this means for you]:
 "This niche has limited competition. Lean into
  this hybrid. Don't pivot to pure tech tutorials—
@@ -1144,12 +1145,12 @@ Confidence: Medium (based on available interaction data)
 
 Insight: "67% of your frequent engagers share your
          views. (Confidence: Medium — limited data)"
-         
+
 [What this means for you]:
 "This isn't inherently bad, but limits exposure
  to new ideas and audiences. Your choice:
  comfort vs. growth."
- 
+
 [Strategic Action]:
 "Try: Follow 1 person who challenges you daily
  for 30 days. See if it sparks new content ideas."
@@ -1170,7 +1171,7 @@ Confidence: High
 Insight: "Your engagement quality is HIGH (82/100).
          Your audience genuinely cares about your content."
          (Confidence: High — based on 1000+ interactions)
-         
+
 [What this means for you]:
 "You've built real relationships, not just reach.
  This is rare and valuable. Protect it by:
@@ -1190,29 +1191,29 @@ class ConfidenceScorer {
       temporal_coverage: this.assessTimeCoverage(data_quality),
       signal_strength: this.measureSignalStrength(data_quality)
     };
-    
+
     const weights = {
       sample_size: 0.4,
       data_completeness: 0.3,
       temporal_coverage: 0.2,
       signal_strength: 0.1
     };
-    
+
     const confidence_score = this.weightedAverage(factors, weights);
-    
+
     return {
       level: this.categorize(confidence_score), // High/Medium/Low
       score: confidence_score,
       explanation: this.explainConfidence(factors)
     };
   }
-  
+
   categorize(score) {
     if (score > 0.75) return 'High';
     if (score > 0.45) return 'Medium';
     return 'Low';
   }
-  
+
   explainConfidence(factors) {
     // Generate user-friendly explanation
     // "Based on 500+ connections with complete interaction history"
@@ -1280,7 +1281,7 @@ One-click share to platforms
 **3. Raw Data Export**
 ```
 CSV/JSON downloads:
-├─ Node list (anonymized or full)
+├─ Node list (pseudonymized or full)
 ├─ Edge list with weights
 ├─ Community assignments
 ├─ Metrics per node
@@ -1441,7 +1442,7 @@ Backend:
 ├─ Python 3.12 + FastAPI 0.109 (ML/analysis microservice)
 ├─ PostgreSQL 16 (user data, metadata)
 ├─ Redis 7.2 (caching, job queues, rate limiting)
-└─ S3-compatible storage (Cloudflare R2) for anonymized graphs
+└─ S3-compatible storage (Cloudflare R2) for pseudonymized graphs
 
 Analysis:
 ├─ NetworkX 3.2 (graph algorithms)
@@ -1481,7 +1482,7 @@ Development:
 │  ├─ Validate file               │
 │  ├─ Parse data structure        │
 │  ├─ Extract entities            │
-│  ├─ Anonymize if needed         │
+│  ├─ Pseudonymize if needed      │
 │  ├─ Build initial graph         │
 │  └─ Calculate basic metrics     │
 │                                 │
@@ -1490,7 +1491,7 @@ Development:
 │  ├─ 500MB: 60-90 seconds        │
 │  └─ 1GB: 120-180 seconds        │
 └──────────┬──────────────────────┘
-           │ 2. Send structured data (anonymized)
+           │ 2. Send structured data (pseudonymized)
            │    - Only graph structure, no raw files
            │    - User preview before transmission
            ↓
@@ -1556,10 +1557,10 @@ What Never Leaves Browser:
 ├─ Full message content
 ├─ Private profile information
 ├─ Unprocessed personal data
-└─ Exact timestamps (anonymized)
+└─ Exact timestamps (generalized)
 
 What Reaches Server (20%):
-├─ Anonymized graph structure
+├─ Pseudonymized graph structure
 │  └─ Nodes: Hashed IDs, no real names
 │  └─ Edges: Weights only, no messages
 ├─ Aggregated metrics only
@@ -1567,7 +1568,7 @@ What Reaches Server (20%):
 └─ Encrypted in transit (TLS 1.3)
 
 Server-side Storage:
-├─ Graph structure (anonymized)
+├─ Graph structure (pseudonymized)
 ├─ Computed insights only
 ├─ Visualization preferences
 ├─ User can delete anytime (GDPR)
@@ -1575,7 +1576,7 @@ Server-side Storage:
 
 Transparency Dashboard:
 ├─ "What data we extract" (explicit list)
-├─ "What we store" (explicit list)  
+├─ "What we store" (explicit list)
 ├─ "What we don't store" (explicit list)
 ├─ "Who can see your data" (only you)
 └─ Download all stored data anytime
@@ -1633,15 +1634,15 @@ class TwitterVersionDetector {
       }
       return 'v2023_legacy'; // Old structure
     }
-    
+
     // Check for beta format changes
     if (this.hasBetaIndicators(fileContents)) {
       return 'v2025_beta';
     }
-    
+
     throw new Error('Unknown Twitter format');
   }
-  
+
   hasEditInfo(contents) {
     try {
       const sample = this.extractSample(contents);
@@ -1691,14 +1692,14 @@ class ProgressiveGraphRenderer {
       nodeCount: graphData.nodes.length,
       estimatedClusters: 3-5
     });
-    
+
     // Stage 2: Nodes only (500ms-2s)
     await this.renderNodes(graphData.nodes, {
       animate: true,
       fadeIn: true,
       staggerDelay: 10 // ms per node
     });
-    
+
     // Stage 3: Core edges (2s-4s)
     // Render strongest connections first
     const coreEdges = this.filterEdges(graphData.edges, {
@@ -1709,7 +1710,7 @@ class ProgressiveGraphRenderer {
       animateGrowth: true,
       wavePattern: true
     });
-    
+
     // Stage 4: Remaining edges (4s-6s)
     const remainingEdges = graphData.edges.filter(
       e => !coreEdges.includes(e)
@@ -1718,17 +1719,17 @@ class ProgressiveGraphRenderer {
       batch: 50,
       alpha: 0.3 // Less visual weight
     });
-    
+
     // Stage 5: Labels & interactions (6s+)
     this.renderLabels(graphData.nodes);
     this.enableInteractions();
     this.applyPhysicsSimulation();
-    
+
     // Stage 6: Polish (background)
     this.applyFilters();
     this.optimizePerformance();
   }
-  
+
   renderSkeleton(config) {
     // Show structural outline immediately
     // Users see *something* while processing
@@ -1737,7 +1738,7 @@ class ProgressiveGraphRenderer {
       innerRing: this.createPlaceholderRing(15),
       outerClusters: this.createPlaceholderClusters(config.estimatedClusters)
     };
-    
+
     this.display(skeleton, { opacity: 0.3 });
   }
 }
@@ -1776,13 +1777,13 @@ Feels alive, not mechanical.
 class LocalOnlyMode {
   async analyze(uploadedFile, options = {}) {
     // All processing in browser, zero network requests
-    
+
     // 1. Parse data (Web Worker)
     const parsed = await this.parseLocal(uploadedFile);
-    
+
     // 2. Build graph (IndexedDB storage)
     const graph = await this.buildGraphLocal(parsed);
-    
+
     // 3. Run algorithms (WASM for performance)
     const insights = await this.analyzeLocal(graph, {
       algorithms: [
@@ -1791,10 +1792,10 @@ class LocalOnlyMode {
         'betweenness_centrality'
       ]
     });
-    
+
     // 4. Render visualization (Canvas/WebGL)
     const visualization = await this.renderLocal(graph, insights);
-    
+
     // 5. Export options
     return {
       visualization: visualization,
@@ -1805,7 +1806,7 @@ class LocalOnlyMode {
       }
     };
   }
-  
+
   exportStandalone(graph, insights) {
     // Generate fully self-contained HTML file
     // User can save and open later, no internet needed
@@ -2652,7 +2653,7 @@ Copy Framework:
 ✅ "234 followers are ready to engage more" (positive, opportunity)
 
 ❌ "You're in an echo chamber" (accusatory)
-✅ "67% of your network shares your views. Consider: 
+✅ "67% of your network shares your views. Consider:
     Following diverse voices to broaden your reach" (neutral + action)
 
 ❌ "Most followers don't care about you" (brutal)

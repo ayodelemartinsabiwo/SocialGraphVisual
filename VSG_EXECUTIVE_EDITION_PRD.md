@@ -13,6 +13,7 @@
 | 2.0 | Dec 2025 | Technical validation | 95 |
 | 2.1 | Dec 2025 | Strategic refinement | 110 |
 | 2.1-E | Dec 2025 | Executive edition (condensed) | 35 |
+| 2.1-E | Dec 24, 2025 | Privacy terminology alignment (pseudonymized graph transfer/storage; generalized timestamps) | 35 |
 
 **Related Documents:**
 - Product Strategy Document
@@ -599,7 +600,7 @@ Infrastructure:
 1. User uploads file → Browser (validation)
 2. Web Worker parses → Extracts graph structure
 3. Client-side processing → 80% of computation
-4. Server receives → Anonymized graph data only
+4. Server receives → Pseudonymized graph data only
 5. Analysis engine → Runs algorithms (Python)
 6. Results returned → Browser renders visualization
 ```
@@ -612,10 +613,10 @@ Infrastructure:
 - Raw ZIP files from platforms
 - Full message content
 - Private profile information
-- Exact timestamps (anonymized)
+- Exact timestamps (generalized)
 
 **What we DO store:**
-- Anonymized graph structure
+- Pseudonymized graph structure
 - Computed insights only
 - User preferences
 - Visualization state
