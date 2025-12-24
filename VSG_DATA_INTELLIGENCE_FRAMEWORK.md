@@ -289,7 +289,7 @@ interface GraphMetrics {
 
   communities: {
     count: number;
-    modularity: number; // 0-1, quality of community division
+    modularity: number; // Typically [-0.5, 1.0], quality of community division
     sizes: number[]; // Nodes per community (sorted desc)
     distribution: {
       largest: number; // % of graph in largest community
@@ -721,9 +721,12 @@ class InsightEngine {
 
     const start = Date.now();
 
+    // Keep graph in outer scope for safe fallback handling
+    let graph: SocialGraph | null = null;
+
     try {
       // 2. Fetch graph
-      const graph = await this.graphRepo.getById(graphId);
+      graph = await this.graphRepo.getById(graphId);
 
       // 3. Compute metrics (or retrieve cached)
       let metrics = graph.metrics;
@@ -741,14 +744,21 @@ class InsightEngine {
       logger.info('Template matching complete', {
         graphId,
         matchCount: matched.length,
-        categories: matched.map(m => m.category)
+        categories: matched.map(m => m.template.category)
       });
 
       // 6. Interpolate narratives
       const insights: Insight[] = matched.map(match => {
+        const interpolationContext = {
+          graphId: graph.id,
+          userId: graph.userId,
+          experimentId: 'insight-narrative-v1'
+        };
+
         const narrative = this.templateInterpolator.interpolate(
           match.template,
-          match.variables
+          match.variables,
+          interpolationContext
         );
 
         // 7. Generate actions
@@ -799,7 +809,7 @@ class InsightEngine {
       });
 
       // Fallback: Return basic metrics insight
-      return this.generateBasicInsight(graph);
+      return graph ? this.generateBasicInsight(graph) : [];
     }
   }
 
@@ -1545,7 +1555,8 @@ class TemplateMatcher {
       case 'number':
         return value.toLocaleString();
       case 'percentage':
-        return `${(value * 100).toFixed(1)}%`;
+        // Convention: percentage values in metrics/templates are stored as 0-100 (not 0-1).
+        return `${value.toFixed(1)}%`;
       case 'currency':
         return `$${value.toFixed(2)}`;
       default:
@@ -1787,7 +1798,11 @@ class StatisticalProfiler {
    * Compare to platform baselines (Phase 2+)
    */
   private compareToBaseline(platform: Platform, metrics: GraphMetrics): Comparisons {
-    // Baseline data from public research or aggregated user data
+    // Baseline data from public research or aggregated opt-in cohorts.
+    // Guardrails:
+    // - Only aggregated statistics (no raw graphs)
+    // - Minimum cohort size thresholds (k-anonymity style)
+    // - No joining/exporting that re-identifies individuals
     const baseline = this.getBaselineForPlatform(platform);
 
     return {
@@ -2530,6 +2545,7 @@ Total: ~20 templates for Phase 1
 **Change Log**:
 - v1.0 (Dec 24, 2025): Initial version, algorithm-first architecture established
 - v1.0 (Dec 24, 2025): Clarified pseudonymization (HMAC-based) vs anonymization, made community outputs mapping-based, and made explainability metrics null-safe
+- v1.0 (Dec 24, 2025): Standardized percentage convention (0-100) and corrected InsightEngine interpolation + logging examples for determinism
 
 ---
 
