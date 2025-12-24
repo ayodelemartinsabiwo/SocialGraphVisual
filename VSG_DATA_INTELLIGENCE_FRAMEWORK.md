@@ -1,5 +1,5 @@
 # **Visual Social Graph: Data & Intelligence Framework**
-## **Version 1.0 - Algorithm-First Foundation**
+## **Version 1.1 - Modularity Provider Pattern Update**
 
 *Bridging data models, graph algorithms, and explainable insights*
 
@@ -22,9 +22,23 @@
 
 **Related Documents**:
 - VSG_DESIGN_PRINCIPLE.md - "AI as a Design Tool, Not a Dependency"
+- VSG_SRS_AMENDMENT_ALGORITHM_FIRST.md - Algorithm implementation patterns (see Section 4.2: Modularity Provider Pattern)
 - VSG_ARCHITECTURE_DOCUMENT.md - Technical implementation
 - VSG_SYSTEM_REQUIREMENTS_SPECIFICATION.md - Functional requirements
 - VSG_PRODUCT_STRATEGY.md - Strategic positioning
+
+**Change Log**:
+```
+v1.1 (Dec 24, 2025) - Modularity Provider Pattern Update:
+├─ Updated Section 4.1: detectCommunities() now uses louvain.detailed()
+├─ Modularity computed by library (preferred) instead of custom calculation
+├─ Added validation: modularity range check (-0.5 to 1.0)
+├─ Updated computeModularity() docstring: marked as fallback/validation method
+└─ Cross-reference: VSG_SRS_AMENDMENT_ALGORITHM_FIRST.md Section 4.2
+
+v1.0 (Dec 23, 2025) - Initial Release:
+└─ Algorithm-first intelligence framework established
+```
 
 ---
 
@@ -931,12 +945,29 @@ class GraphAnalyzer {
     // Convert to graphology format
     const G = this.toGraphology(graph);
 
-    // Run Louvain algorithm
-    // Common graphology Louvain implementations return a mapping: nodeId -> communityId
-    const communities: Record<string, number> = louvain(G);
+    // ═══════════════════════════════════════════════════════════════════
+    // MODULARITY PROVIDER PATTERN (Library-First)
+    // ═══════════════════════════════════════════════════════════════════
+    // Use louvain.detailed() to get library-computed modularity (preferred)
+    // See: VSG_SRS_AMENDMENT_ALGORITHM_FIRST.md Section 4.2
+    //
+    // Why library-first:
+    // - Modularity computed directly by algorithm (no separate calculation)
+    // - Accounts for resolution parameter, edge weights, graph assumptions
+    // - Avoids subtle mismatches between algorithm and modularity formula
+    // - Better performance (modularity "free" during algorithm execution)
 
-    // Compute modularity
-    const modularity = this.computeModularity(G, communities);
+    const louvainResult = louvain.detailed(G);
+    const communities: Record<string, number> = louvainResult.communities;
+    const modularity: number = louvainResult.modularity;
+
+    // Validate modularity is within expected range
+    if (modularity < -0.5 || modularity > 1.0) {
+      console.warn(
+        `[GraphAnalyzer] Modularity out of expected range: ${modularity.toFixed(4)} ` +
+        `(expected: -0.5 to 1.0). Graph may have unusual structure.`
+      );
+    }
 
     // Analyze community sizes
     const sizeByCommunity = Object.values(communities).reduce((acc, commId) => {
@@ -974,9 +1005,18 @@ class GraphAnalyzer {
   }
 
   /**
-   * Compute modularity Q
+   * Compute modularity Q (Fallback/Validation Method)
    *
-   * Q = (1/2m) * Σ[A_ij - (k_i * k_j / 2m)] * δ(c_i, c_j)
+   * NOTE: This method is kept for validation and special cases.
+   * Prefer using louvain.detailed().modularity in production code.
+   *
+   * Use cases for this method:
+   * - Development validation (compare library vs custom, tolerance: 0.0001)
+   * - Custom resolution scenarios requiring manual modularity calculation
+   * - Debugging modularity mismatches
+   * - Academic research requiring specific modularity variant
+   *
+   * Formula: Q = (1/2m) * Σ[A_ij - (k_i * k_j / 2m)] * δ(c_i, c_j)
    *
    * Where:
    * - m = total edges
@@ -987,6 +1027,8 @@ class GraphAnalyzer {
    * Range: [-0.5, 1.0]
    * - Q > 0.3: Strong community structure
    * - Q > 0.7: Very strong community structure
+   *
+   * Reference: Newman (2006), "Modularity and community structure in networks"
    */
   private computeModularity(
     G: Graph,
