@@ -1034,7 +1034,7 @@ Visualization interface:
 ├─ Insights panel (bottom drawer, expandable)
 ├─ Node detail modal (click any node)
 ├─ Tutorial tooltips (dismissible, contextual)
-└─ Mobile responsive (limited functionality acceptable)
+└─ PWA-first (installable, offline-capable, works on all devices 320px-4K)
 
 Component library:
 ├─ Buttons (primary, secondary, ghost, icon)
@@ -2999,7 +2999,7 @@ Innovation:
 ├─ AI advancement: GPT-5 integration (when available)
 ├─ Visualization: 3D network graphs, VR/AR exploration
 ├─ Integrations: Notion, Obsidian, Roam (save insights)
-└─ Mobile: Native iOS and Android apps (Phase 4+)
+└─ Mobile: Native iOS/Android apps (Phase 4+ - ONLY if PWA shows limitations)
 ```
 
 **Priority 3: Business Maturity**
