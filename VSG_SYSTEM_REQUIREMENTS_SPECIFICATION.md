@@ -286,7 +286,7 @@ REQUIREMENT SRS-C2.1: Data Minimization
 │  ├─ Raw ZIP files (deleted after processing)
 │  ├─ Full social media content (only metadata)
 │  ├─ Private messages (never parsed)
-│  └─ Exact usernames (hashed or aggregated)
+│  └─ Exact usernames (raw / unpseudonymized)
 ├─ Validation: Data inventory quarterly, GDPR compliance audit
 
 REQUIREMENT SRS-C2.2: User Data Deletion
@@ -754,7 +754,7 @@ SRS-F2.3: Instagram Parser
 ├─ Challenges:
 │  ├─ Format change 2024: New structure
 │  ├─ Multiple files: Large accounts split across files
-│  └─ Timestamps: UNIX format
+│  └─ Timestamps: UNIX format in export; normalize to ISO 8601 UTC internally
 ├─ Acceptance: >95% success rate (both formats)
 
 SRS-F2.4: LinkedIn Parser
@@ -2247,6 +2247,10 @@ R6 (Browser Limitations):
 
 ## **Change Log:**
 ```
+v1.2 (Dec 24, 2025) - Graph & Timestamp Alignment:
+├─ Clarified: source exports may use UNIX timestamps; internal representation uses ISO 8601 UTC strings
+└─ Clarified: server does not store raw usernames; only pseudonymized identifiers and aggregated analytics
+
 v1.2 (Dec 24, 2025) - Terminology & Privacy Clarification:
 ├─ Clarified: "anonymized" → "pseudonymized" where hashed identifiers are used
 ├─ Clarified: analytics privacy as aggregated (no PII)
