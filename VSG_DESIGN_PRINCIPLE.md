@@ -43,6 +43,7 @@ AI is deliberately positioned as an **augmentation layer**, not a structural pil
 * The system MUST remain functional if AI services are disabled.
 * AI-generated insights MUST NOT obscure or replace underlying data visibility.
 * No critical user action or system process SHALL require opaque AI inference.
+* Any A/B testing or narrative variation MUST be sticky and reproducible (must not introduce non-determinism into core insights).
 
 ### **Outcome**
 
