@@ -115,6 +115,12 @@ Complex algorithms run underneath. Users experience simplicity above. "Explain l
 
 We show confidence levels. We admit uncertainty. We educate rather than dictate. This builds trust and differentiates from black-box competitors.
 
+**7. Deterministic algorithms over AI dependencies**
+
+We use AI to design better, not to hold the system together. Core functionality relies on classical graph algorithms (Louvain, PageRank, Barnes-Hut) and deterministic methods, ensuring explainability, reproducibility, and long-term stability. AI-driven recommendations (where present) are optional, non-blocking, and clearly distinguished from deterministic outputs. The system MUST remain functional if AI services are disabled.
+
+*See: VSG_DESIGN_PRINCIPLE.md - "Use AI to think better, not to hold the system together."*
+
 ### **1.4 Strategic Non-Goals (What We're NOT Pursuing)**
 
 **Deliberately avoiding:**
@@ -1364,7 +1370,124 @@ Review: Quarterly (ensure insights remain primary)
 
 ---
 
-**Constraint 5: Beautiful, Not Bloated (Experience)**
+**Constraint 5: PWA-First Deployment (One Codebase, Zero Gatekeepers)**
+
+```
+Constitutional commitment:
+"We deploy as a Progressive Web App from Day 1.
+ One codebase works everywhere.
+ No app store gatekeepers.
+ Offline-first architecture.
+ Installable without friction."
+
+Weaponization:
+├─ Strategic speed: Deploy in 8-12 weeks (not 20-30)
+├─ Zero friction updates: Fix bugs same day (no 3-7 day app store review)
+├─ Cost structure advantage: ONE codebase (not 3: web + iOS + Android)
+├─ Competitive moat: Can't be blocked by app stores
+├─ Privacy alignment: 80% client-side processing + offline = data stays local
+├─ User control: Install/uninstall instantly (no app store lock-in)
+└─ Market reach: Works on ALL platforms from Day 1 (iOS, Android, Windows, Mac, Linux, ChromeOS)
+
+What this enables:
+├─ Same-day deployments (competitive velocity)
+├─ Instant A/B testing (no waiting for approval)
+├─ Offline capability (service workers + IndexedDB)
+├─ Installable to home screen (native-like experience)
+├─ Cross-platform parity (same features everywhere)
+├─ Algorithm-first optimization (WASM for 10K+ nodes offline)
+└─ Progressive enhancement (works everywhere, enhanced where possible)
+
+What this eliminates (Phase 1-2):
+├─ Native iOS app development (Swift, App Store submission)
+├─ Native Android app development (Kotlin, Play Store submission)
+├─ App store review delays (3-7 days per update)
+├─ Platform-specific bug fixes (fix once, works everywhere)
+├─ Separate codebase maintenance (3x engineering cost)
+└─ App store policies/restrictions (we control our destiny)
+
+Decision filter:
+├─ Feature request: "We need a native iOS app for performance"
+│  └─ Answer: NO (PWA + WASM handles 10K+ nodes offline, <5s simulation)
+├─ Investor pressure: "You need native apps to compete"
+│  └─ Answer: RESIST (PWA is strategic advantage, not limitation)
+├─ User feedback: "I can't find you in the App Store"
+│  └─ Answer: EDUCATE (PWA installs from website, no gatekeepers)
+└─ Partnership: "We only work with native apps"
+    └─ Answer: DEFER (wait until PWA shows real limitations)
+
+Native App Trigger (Strict - REAL Limitations Only):
+Only build native apps in Phase 4+ IF PWA demonstrates clear technical limitations:
+├─ >30% users request Bluetooth sharing (PWA can't access Bluetooth API)
+├─ >30% users request AR visualization (PWA has limited camera/AR APIs)
+├─ >30% users request background auto-analysis (PWA background tasks limited on iOS)
+└─ App Store featuring becomes proven growth channel (>40% signups)
+
+NOT Valid Triggers (PWA Handles These):
+├─ ❌ "10K+ node graphs offline" → PWA + WASM + hierarchical rendering
+├─ ❌ "Offline capability" → PWA excels (service workers + IndexedDB)
+├─ ❌ "Performance on mobile" → PWA + WASM is 90% as fast as native
+└─ ❌ "Works on iPhone" → PWA installable on iOS Safari 16.4+
+
+Durability: Permanent (Phase 1-2), Strong (Phase 3+)
+Changeability: 5% (can add native apps if REAL limitations found, but PWA remains primary)
+Review: Yearly (verify PWA continues to meet user needs)
+```
+
+**Strategic Rationale:**
+
+PWA-first is not just a technical decision—it's a **strategic weapon** that compounds with our other constraints:
+
+1. **Privacy-First (Constraint 1) + PWA = Data Sovereignty**
+   - 80% client-side processing → data stays on device
+   - Service workers → offline graphs, no server dependency
+   - IndexedDB → local storage, user controls deletion
+
+2. **User Ownership (Constraint 2) + PWA = True Control**
+   - Install/uninstall instantly (no app store lock-in)
+   - Works offline (no forced updates)
+   - Export data anytime (standard browser APIs)
+
+3. **Individual Focus (Constraint 3) + PWA = Zero Friction**
+   - No app store account needed (reduces signup friction)
+   - Works on any device user has (desktop, mobile, tablet)
+   - One-time payment option (no recurring subscription lock-in)
+
+4. **Algorithm-First (Design Principle) + PWA = Performance**
+   - WebAssembly (Rust compiled to WASM) for force simulations
+   - Barnes-Hut approximation: O(n log n) instead of O(n²)
+   - Result: <5 seconds for 10K nodes (vs 30-60s in JavaScript)
+   - 90% native performance, 100% offline capability
+
+**Competitive Advantage:**
+
+- **Incumbents can't match:** LinkedIn, Twitter/X analytics require OAuth (violates Constraint 1). They MUST use native apps for mobile. We don't.
+- **Startups can't keep up:** Our iteration speed (same-day deploys) >> competitors (3-7 day app store reviews)
+- **Cost structure moat:** ONE codebase = engineering focus on features, not platform maintenance
+
+**Market Validation:**
+
+- **Twitter/X (2023):** PWA-first for web, then native apps. Validated PWA can handle social graphs.
+- **Instagram Lite:** PWA for emerging markets. Proves PWA works for visual + social.
+- **Figma:** PWA handles complex canvas rendering. Validates PWA for compute-intensive tasks.
+
+**Impact if violated:**
+
+- Engineering cost: 3x (separate web, iOS, Android codebases)
+- Velocity: 70% slower (app store review delays)
+- Competitive advantage: Lost (become like everyone else)
+- Strategic focus: Diluted (platform-specific bugs vs. features)
+
+**We commit:** PWA-first is our deployment foundation. If market demands native apps, we:
+1. First, optimize PWA (WASM, better algorithms, progressive enhancement)
+2. Partner with platforms for official APIs (maintain PWA-first philosophy)
+3. Add native apps ONLY for REAL limitations (Bluetooth, AR, background tasks)
+
+But PWA remains primary platform forever.
+
+---
+
+**Constraint 6: Beautiful, Not Bloated (Experience)**
 
 ```
 Constitutional commitment:
@@ -1411,7 +1534,7 @@ Review: Every feature launch (measure adoption, kill low-usage features)
 
 ---
 
-**Constraint 6: Freemium Model (Business)**
+**Constraint 7: Freemium Model (Business)**
 
 ```
 Strong commitment:
@@ -1453,7 +1576,7 @@ But core principle remains: Free tier must be genuinely useful.
 
 ---
 
-**Constraint 7: No Advertising (Monetization)**
+**Constraint 8: No Advertising (Monetization)**
 
 ```
 Strong commitment:
@@ -1495,7 +1618,7 @@ But product itself remains ad-free.
 
 ---
 
-**Constraint 8: Manual Upload First (Technical)**
+**Constraint 9: Manual Upload First (Technical)**
 
 ```
 Strong commitment:
@@ -1543,17 +1666,11 @@ If relaxed: Manual upload must remain as option (for maximum privacy users).
 
 **These guide decisions but can be changed based on market learning.**
 
-**Constraint 9: Creator Focus (Market Segment)**
+**Constraint 10: Creator Focus (Market Segment)**
 - Current: Micro-influencers and personal brand builders
 - Flexible: Can expand to professionals, researchers, etc.
 - Changeability: 70%
 - Review: Quarterly
-
-**Constraint 10: Web-First (Platform)**
-- Current: Progressive Web App (PWA)
-- Flexible: Can add native mobile, desktop apps
-- Changeability: 80%
-- Review: Semi-annually
 
 **Constraint 11: $12/mo Price Point (Pricing)**
 - Current: Pro tier at $12/month
@@ -3040,12 +3157,140 @@ Trust drives retention, advocacy, and category leadership.
 
 **Feature Prioritization:** Must meet 3 of 4 criteria (serves primary user, strengthens core value, requested by >20%, feasible in 2 weeks)
 
-### **9.4 Platform Strategy**
+### **9.4 Platform & Deployment Strategy**
 
-- **Current:** Web-first (PWA)
-- **Mobile Native:** Phase 3+ (when usage >30% mobile)
-- **Desktop App:** Phase 3+ (power users, large networks)
-- **Platform Partnerships:** Phase 3+ (after proving value)
+**Strategic Foundation: PWA-First as Competitive Weapon**
+
+Progressive Web App (PWA) deployment is elevated to **Tier 1 Constitutional Constraint** (Constraint 5) because it's not just a technical choice—it's a **strategic weapon** that amplifies every other competitive advantage:
+
+**PWA Strategic Advantages:**
+
+1. **Velocity = Competitive Moat**
+   - Same-day deployments (no app store review delays)
+   - Instant A/B testing (ship, measure, iterate in hours, not weeks)
+   - Fix bugs in production immediately (vs. 3-7 day wait for app stores)
+   - Result: **10x faster iteration** than competitors on native apps
+
+2. **Cost Structure = Sustainable Advantage**
+   - ONE codebase for all platforms (web, iOS, Android, desktop, tablet)
+   - Engineering focus: 100% on features vs. 40% on platform maintenance
+   - Deployment infrastructure: Simple (Vercel) vs. complex (3 app stores)
+   - Result: **3x lower engineering cost** at scale
+
+3. **Zero Gatekeepers = Strategic Independence**
+   - No App Store policies (can't be blocked by Apple/Google)
+   - No revenue sharing (0% vs. 15-30% app store tax)
+   - No forced API changes (we control our stack)
+   - Result: **Full control of product destiny**
+
+4. **Privacy-First Alignment = Trust Multiplier**
+   - PWA enables 80% client-side processing (data stays on device)
+   - Service workers + IndexedDB = offline capability (no server dependency)
+   - Installable without account creation (reduces friction)
+   - Result: **Privacy claims are architecturally enforced**, not promises
+
+5. **Algorithm-First Performance = "PWA Can't Handle" Myth Destroyed**
+   - WebAssembly (Rust → WASM) for force simulations
+   - Barnes-Hut approximation: O(n log n) vs. O(n²)
+   - Performance: <5 seconds for 10K nodes (vs. 30-60s in JavaScript)
+   - Result: **90% native performance, 100% offline capability**
+
+**Platform Deployment Roadmap:**
+
+**Phase 1 (Weeks 1-12): PWA Foundation**
+- Progressive Web App deployed on Vercel
+- Installable to home screen (iOS Safari 16.4+, Android Chrome)
+- Offline-first architecture (service workers + IndexedDB)
+- Responsive design (320px mobile → 4K desktop)
+- Lighthouse PWA score: >90
+- **Success Metric:** 40% of mobile users install to home screen within 7 days
+
+**Phase 2 (Months 3-12): PWA Optimization**
+- WebAssembly force simulation (Rust, handles 10K+ nodes offline)
+- Hierarchical Level-of-Detail rendering (cluster → sample → full detail)
+- Viewport culling + quadtree spatial indexing (60 FPS on 10K nodes)
+- Push notifications (engagement, insights ready)
+- Background sync (queue uploads when offline, sync when online)
+- **Success Metric:** 10K+ node graphs render <5s, 60 FPS pan/zoom
+
+**Phase 3 (Year 2): Advanced PWA Features**
+- App shortcuts (quick actions from home screen)
+- Share target API (receive shares from other apps)
+- File handling API (open .csv/.json files directly in VSG)
+- Badging API (unread insights notification badge)
+- **Success Metric:** PWA feature adoption >60% on supported browsers
+
+**Phase 4+ (Year 3+): Native Apps - ONLY if PWA Shows REAL Limitations**
+
+**Decision Gate (Strict - Evidence Required):**
+
+Native apps ONLY if one of these conditions met:
+1. **>30% users request Bluetooth sharing** (PWA cannot access Bluetooth API)
+2. **>30% users request AR network visualization** (PWA has limited camera/AR APIs)
+3. **>30% users request background auto-analysis** (PWA background tasks limited on iOS)
+4. **App Store featuring drives >40% signups** (marketing decision, not technical)
+
+**NOT Valid Triggers (PWA Handles These):**
+- ❌ "10K+ node graphs offline" → PWA + WASM + hierarchical rendering
+- ❌ "Offline capability" → PWA excels (service workers + IndexedDB)
+- ❌ "Performance on mobile" → PWA + WASM is 90% as fast as native
+- ❌ "Works on iPhone" → PWA installable on iOS Safari 16.4+
+- ❌ "Users expect native app" → Educate on PWA advantages (no gatekeepers)
+
+**If Native Apps Built:**
+- PWA remains **primary platform** (constitutional commitment)
+- Native apps are **feature parity**, not feature superset
+- Native development ONLY for platform-specific APIs (Bluetooth, AR, background tasks)
+- Core business logic stays in shared TypeScript (prevent divergence)
+
+**Platform Partnerships:**
+
+**Phase 3+ Strategy:**
+- Partner with platforms for **official API access** (e.g., LinkedIn Official Partner)
+- Maintain privacy promise (API access for real-time insights, but NO credential storage)
+- Requirement: Partnership must offer something PWA cannot (e.g., verified badge)
+- Decision filter: "Does this partnership preserve Constraint 1 (No Account Access)?"
+
+**Desktop App:**
+
+**Phase 3+ (If Validated):**
+- Electron wrapper for PWA (not separate codebase)
+- Use case: Power users analyzing 50K+ node networks
+- Triggers: >20% users work primarily on desktop, request offline desktop app
+- Implementation: Same PWA codebase, Electron shell for native OS integration
+
+**Strategic Metrics for Platform Success:**
+
+| Metric | Target (Year 1) | Measurement |
+|--------|-----------------|-------------|
+| PWA Install Rate (Mobile) | 40% | % of mobile users who "Add to Home Screen" within 7 days |
+| Offline Usage | 25% | % of sessions where user works offline (cached graphs) |
+| Cross-Platform Usage | 60% | % of users who access from 2+ device types (mobile, desktop, tablet) |
+| Performance (10K nodes) | <5s simulation, 60 FPS | 95th percentile load time, frame rate during pan/zoom |
+| Update Speed | <1 hour | Time from code commit to production deployment |
+
+**Why This Strategy Wins:**
+
+1. **Incumbents (LinkedIn, Twitter/X) cannot match:**
+   - They require OAuth (violates our Constraint 1)
+   - They must support native apps (3x engineering cost)
+   - They have app store review delays (slow iteration)
+
+2. **Startups cannot keep up:**
+   - Our iteration speed: Same-day deploys vs. their 3-7 day app store reviews
+   - Our cost structure: ONE codebase vs. their 3 (web, iOS, Android)
+   - Our independence: Zero gatekeepers vs. their app store dependencies
+
+3. **User trust compounds:**
+   - PWA = offline-first = data stays local (privacy promise enforced)
+   - Installable without app store account (reduces friction)
+   - No forced updates (user controls when to refresh)
+
+**Bottom Line:**
+
+PWA-first is our **strategic constitution**, not a technical implementation detail. It's the foundation that makes "privacy-first + individual-focused + rapid iteration" possible at scale.
+
+If the market demands native apps, we optimize PWA first. Only when PWA shows REAL technical limitations (Bluetooth, AR, background tasks) do we consider native development—and even then, PWA remains primary.
 
 ---
 

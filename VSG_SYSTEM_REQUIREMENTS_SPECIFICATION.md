@@ -475,6 +475,202 @@ REQUIREMENT SRS-C6.1: Browser Support
 
 ---
 
+### **3.4 PWA-First Architecture (Phase 1 Core Strategy)**
+
+**Design Philosophy Alignment:**
+> *"Simplify Ruthlessly: ONE codebase, works everywhere. No app store gatekeepers."* - CLAUDE_ACE.md
+> *"Client-side processing, resilient, deterministic."* - VSG_DESIGN_PRINCIPLE.md
+
+**C7: Progressive Web App (PWA) as Primary Deployment**
+
+```
+REQUIREMENT SRS-C7.1: PWA-First Strategy
+├─ Priority: P0 (critical, Phase 1 - core deployment)
+├─ Description: System SHALL be built as a Progressive Web App from Day 1
+├─ Rationale:
+│  ├─ ONE codebase → works on web, mobile, tablet, desktop (Simplify Ruthlessly)
+│  ├─ Zero app store gatekeeping → instant deployments, no review delays
+│  ├─ Offline-first → aligns with 80% client-side processing philosophy
+│  ├─ Installable → native-like experience without native complexity
+│  └─ Progressive enhancement → works everywhere, enhanced where possible
+├─ Core PWA Requirements:
+│  ├─ Service Worker: Offline support, background sync, caching
+│  ├─ Web App Manifest: Installable to home screen, splash screen, app icon
+│  ├─ HTTPS: Required for service workers (Vercel provides by default)
+│  ├─ Responsive: 320px to 4K displays, touch and mouse
+│  └─ App-like: Full-screen mode, no browser chrome when installed
+├─ Phase 1 PWA Features:
+│  ├─ Installable: "Add to Home Screen" prompt on mobile/desktop
+│  ├─ Offline viewing: Cached graphs viewable without internet
+│  ├─ Background sync: Queue uploads when offline, sync when online
+│  ├─ Fast: <3s load on 3G, <1s on WiFi (cached)
+│  └─ Reliable: Works on flaky connections (service worker retry)
+├─ Phase 1 Acceptance Criteria:
+│  ├─ Lighthouse PWA score >90
+│  ├─ Service worker caches all critical assets (app shell)
+│  ├─ "Add to Home Screen" works on iOS Safari 16.4+ and Android Chrome
+│  ├─ App works offline (view cached graphs, queue new uploads)
+│  ├─ Installable on desktop (Chrome, Edge, Safari 16.4+)
+│  └─ All features work on 320px-4K viewports
+├─ Native Apps (Phase 4+):
+│  ├─ Build ONLY if PWA limitations discovered (e.g., need Bluetooth, NFC)
+│  ├─ React Native or native Swift/Kotlin
+│  └─ Decision gate: >40% mobile traffic AND >20% users explicitly request native
+├─ Validation:
+│  ├─ Manual: Install on iPhone, Android, Mac, Windows, Linux
+│  ├─ Automated: Lighthouse PWA audit (CI/CD gate)
+│  └─ User acceptance: Beta testers confirm native-like experience
+
+REQUIREMENT SRS-C7.1.1: Large Graph Optimization (10K+ Nodes Offline)
+├─ Priority: P1 (high, Phase 1 - performance)
+├─ Description: System SHALL handle 10K+ nodes offline with deterministic algorithms
+├─ Rationale:
+│  ├─ PWA can handle large graphs with smart algorithms (no native app needed)
+│  ├─ Aligns with VSG_DESIGN_PRINCIPLE (algorithm-first, deterministic, transparent)
+│  ├─ Proves PWA is sufficient for 95% of use cases (native only for Bluetooth/AR/etc)
+│  └─ "Ultrathink": Question assumption "PWA can't handle 10K nodes" - it can
+├─ Implementation Strategy:
+│  ├─ WebAssembly Force Simulation (Rust/C++ compiled to WASM)
+│  │   ├─ Barnes-Hut approximation: O(n log n) instead of O(n²)
+│  │   ├─ Near-native performance: <5 seconds for 10K nodes (vs 30-60s in JS)
+│  │   ├─ Cached in service worker: Works offline
+│  │   └─ Runs in WebWorker: Non-blocking UI
+│  ├─ Hierarchical Level-of-Detail (LoD) Rendering
+│  │   ├─ Zoom 0 (bird's eye): Show 200 community clusters (aggregated)
+│  │   ├─ Zoom 1 (medium): Show 2K important nodes + shadow clusters
+│  │   ├─ Zoom 2+ (deep): Show full detail in viewport only (~500-1000 nodes)
+│  │   └─ Progressive disclosure: User never sees 10K nodes at once
+│  ├─ Viewport Culling + Spatial Indexing (Quadtree)
+│  │   ├─ Quadtree: O(log n) query for visible nodes
+│  │   ├─ Only render nodes in viewport: ~500-1000 out of 10K
+│  │   ├─ Pan/Zoom: Seamlessly reveals more nodes (no lag)
+│  │   └─ Result: 60 FPS even on low-end devices
+│  ├─ Progressive/Incremental Rendering
+│  │   ├─ Render in batches: 500 nodes per frame (requestAnimationFrame)
+│  │   ├─ 10K nodes = 20 frames @ 60 FPS = ~333ms total
+│  │   ├─ UI stays responsive: Never blocks main thread
+│  │   └─ Progress feedback: "Rendering network... 47%"
+│  └─ Importance Sampling (Show What Matters)
+│      ├─ Calculate importance: PageRank + betweenness centrality + degree
+│      ├─ Show top 2K important nodes first
+│      ├─ Aggregate rest into shadow clusters (80 clusters for remaining 8K)
+│      └─ Detail on demand: Click cluster → expand to see members
+├─ Performance Targets (10K Nodes, 50K Edges):
+│  ├─ Force simulation: <5 seconds (WASM in WebWorker)
+│  ├─ Initial render: <1 second (progressive batches, 500 nodes/frame)
+│  ├─ Pan/Zoom: 60 FPS (viewport culling, only render visible nodes)
+│  ├─ Memory usage: <30MB (optimized data structures, quadtree indexing)
+│  └─ Offline: Full capability (WASM cached, IndexedDB for graph data)
+├─ Technology Stack:
+│  ├─ WebAssembly: Rust (force simulation) compiled via wasm-pack
+│  ├─ WebWorker: Offload simulation to background thread
+│  ├─ IndexedDB: Store graph data offline (idb-keyval wrapper)
+│  ├─ Canvas API: High-performance rendering (OffscreenCanvas for workers)
+│  └─ Quadtree: Spatial indexing library (d3-quadtree or custom)
+├─ Validation:
+│  ├─ Test graph: 10K nodes, 50K edges (realistic Twitter follower network)
+│  ├─ Test device: 4GB RAM Android phone (OnePlus Nord, Samsung A52)
+│  ├─ Test mode: Offline (airplane mode, service worker cached)
+│  ├─ Acceptance criteria:
+│  │   ├─ Force simulation completes in <5 seconds
+│  │   ├─ Initial render shows clusters in <1 second
+│  │   ├─ Pan/Zoom maintains 60 FPS (no dropped frames)
+│  │   ├─ Memory usage stays <30MB (no crashes on 4GB device)
+│  │   └─ User can explore, zoom, filter, export within 10 seconds total
+│  └─ Benchmark comparison:
+│      ├─ JavaScript (slow): 30-60s simulation, laggy rendering
+│      ├─ PWA + WASM (optimized): <5s simulation, 60 FPS rendering
+│      └─ Native app: <3s simulation, 60 FPS rendering (marginal improvement)
+├─ Phase 1 Implementation:
+│  ├─ Week 5-6: WASM force simulation (Rust module, wasm-pack build)
+│  ├─ Week 7: Hierarchical rendering (cluster → sample → full)
+│  ├─ Week 8: Viewport culling + quadtree (spatial indexing)
+│  ├─ Week 9: Progressive rendering + importance sampling
+│  └─ Week 10: Performance testing + optimization
+├─ Decision Impact:
+│  ├─ Native app NOT needed for large graphs (PWA handles it)
+│  ├─ Native app triggers: Bluetooth, AR, background tasks, App Store featuring
+│  └─ Phase 4 evaluation: Focus on REAL PWA limitations, not imagined ones
+
+REQUIREMENT SRS-C7.2: Responsive Design (320px to 4K)
+├─ Priority: P0 (critical, Phase 1)
+├─ Description: System SHALL work on all screen sizes from Day 1
+├─ Breakpoints (Mobile-First):
+│  ├─ 320px: Small phones (iPhone SE, Android Go)
+│  ├─ 640px: Large phones (iPhone 14 Pro, Pixel)
+│  ├─ 768px: Tablets (iPad, Android tablets)
+│  ├─ 1024px: Desktop (small laptops, Chromebooks)
+│  ├─ 1440px: Desktop (large monitors)
+│  └─ 2560px: 4K displays (creators, designers)
+├─ Touch-First Patterns:
+│  ├─ No hover-only interactions (use :focus/:active for accessibility)
+│  ├─ Minimum touch targets: 44px (iOS), 48px (Material Design)
+│  ├─ Touch gestures: Pan, pinch, zoom for graph visualization
+│  └─ Swipe navigation: Drawer menus, carousel insights
+├─ Progressive Enhancement:
+│  ├─ Works on 320px (basic functionality, vertical layout)
+│  ├─ Enhanced on 768px (tablet layout, sidebar, multi-column insights)
+│  ├─ Optimized on 1024px+ (desktop, full visualization power)
+│  └─ Luxurious on 2560px+ (4K graphs, immersive visualization)
+├─ Performance Budget:
+│  ├─ Initial bundle: <100KB (gzip)
+│  ├─ Total page weight: <500KB (first load)
+│  ├─ Time to Interactive: <3s on 3G, <1s on WiFi
+│  └─ Frame rate: 60 FPS (smooth animations, touch responsiveness)
+├─ Validation:
+│  ├─ Manual: Test on iPhone SE, iPad, desktop, 4K monitor
+│  ├─ Automated: Lighthouse mobile + desktop scores >90
+│  └─ Real device lab: BrowserStack or LambdaTest
+
+REQUIREMENT SRS-C7.3: Offline-First Architecture
+├─ Priority: P1 (high, Phase 1)
+├─ Description: System SHALL work offline for cached content
+├─ Rationale: Aligns with 80% client-side processing + PWA resilience + VSG_DESIGN_PRINCIPLE
+├─ Offline Capabilities:
+│  ├─ View cached graphs (last 5 uploads per user)
+│  ├─ Explore insights (cached with graph data)
+│  ├─ Export to PDF (client-side generation via jsPDF)
+│  └─ Queue new uploads (background sync when online)
+├─ Service Worker Caching Strategy:
+│  ├─ App shell: Cache-first (HTML, CSS, JS, fonts)
+│  ├─ Graph data: Network-first, fallback to cache (IndexedDB)
+│  ├─ API calls: Network-only (with queue for offline)
+│  └─ Images/assets: Cache-first, stale-while-revalidate
+├─ User Experience:
+│  ├─ Online indicator: Subtle icon in header (green dot = online, gray = offline)
+│  ├─ Offline mode: Banner: "You're offline. Viewing cached graphs."
+│  ├─ Queued actions: Toast: "Upload queued. Will sync when online."
+│  └─ Background sync: Automatic retry when connection restored (silent)
+├─ Implementation:
+│  ├─ Workbox (Google's service worker library, production-tested)
+│  ├─ IndexedDB: Store graph data locally (via idb-keyval wrapper)
+│  ├─ Background Sync API: Queue uploads (Chrome, Edge, Safari 16.4+)
+│  └─ Cache API: Asset caching (all modern browsers)
+├─ Validation:
+│  ├─ Disable network (DevTools offline), verify app works
+│  ├─ Upload while offline, verify syncs when online
+│  └─ Lighthouse offline test passes
+
+REQUIREMENT SRS-C7.4: No Mobile-Breaking Patterns (Enforcement)
+├─ Priority: P0 (critical, Phase 1)
+├─ Description: System SHALL NOT use patterns that break on mobile
+├─ Prohibited Patterns:
+│  ├─ Hover-only interactions (e.g., dropdown on :hover only)
+│  ├─ Fixed-width layouts (use fluid, responsive grid)
+│  ├─ Tiny touch targets (<44px)
+│  ├─ Horizontal scrolling (unless intentional carousel)
+│  ├─ Flash/Java applets (obsolete, non-mobile)
+│  └─ Auto-playing videos with sound (bad UX, battery drain)
+├─ Enforcement:
+│  ├─ Code review: ESLint rule flags hover-only CSS
+│  ├─ Accessibility audit: WCAG 2.1 AA compliance (touch targets ≥44px)
+│  ├─ Design review: All mockups show 320px, 768px, 1440px breakpoints
+│  └─ CI/CD: Lighthouse audit fails build if mobile score <90
+├─ Validation: Automated Lighthouse + manual real-device testing (BrowserStack)
+```
+
+---
+
 ## **4. Functional Requirements**
 
 ### **4.1 User Authentication**
@@ -1848,6 +2044,71 @@ Code Quality: ESLint, Prettier, TypeScript
 Documentation: Markdown, OpenAPI (API spec)
 API Testing: Postman or Insomnia
 Load Testing: k6 or Artillery
+```
+
+---
+
+### **11.5 Internationalization Architecture**
+
+```
+REQUIREMENT SRS-T11.5.1: i18n Architecture from Day 1
+├─ Priority: P2 (medium, Phase 1 - architecture only)
+├─ Description: System SHALL use internationalization architecture from Day 1
+├─ Rationale: Avoid costly refactoring; support global expansion when demand emerges
+├─ Implementation:
+│  ├─ Library: next-i18next (Next.js standard, SSR-compatible)
+│  ├─ String externalization: All UI text in /locales/en/common.json
+│  ├─ Number formatting: Intl.NumberFormat API
+│  ├─ Date formatting: Intl.DateTimeFormat API
+│  ├─ Currency: Intl.NumberFormat with currency option
+│  └─ RTL support: CSS logical properties (margin-inline-start vs margin-left)
+├─ Supported Languages (Phase 1):
+│  └─ English only (en-US)
+├─ Translation Content Timeline:
+│  ├─ Phase 1: Architecture only, all strings externalized
+│  ├─ Phase 2: Monitor traffic by country (Google Analytics)
+│  ├─ Phase 3+: Add languages based on demand gates (below)
+├─ Decision Gates for New Languages:
+│  ├─ Spanish (es): If >10% traffic from Latin America/Spain
+│  ├─ French (fr): If >10% traffic from France/Quebec
+│  ├─ Japanese (ja): If creator market emerges in Japan
+│  ├─ Portuguese (pt-BR): If >10% traffic from Brazil
+│  └─ German (de): If >10% traffic from Germany/Austria/Switzerland
+├─ Translation Process (Phase 3+):
+│  ├─ Extract: Export /locales/en/common.json
+│  ├─ Translate: Use professional service (e.g., Lokalise, Crowdin)
+│  ├─ Import: Add /locales/{lang}/common.json
+│  ├─ Test: Manual QA by native speaker
+│  └─ Deploy: Ship via CI/CD
+├─ Phase 1 Acceptance Criteria:
+│  ├─ Zero hardcoded UI strings in components
+│  ├─ All text uses next-i18next's useTranslation hook
+│  ├─ All numbers/dates use Intl API
+│  ├─ CSS uses logical properties (no left/right hardcoding)
+│  └─ Language switcher UI exists (even if only English available)
+├─ Cost Estimate (Future):
+│  ├─ Translation per language: ~$500-1,500 (depends on word count)
+│  ├─ Maintenance per language: ~$100-300/quarter (new features)
+│  └─ Testing per language: ~$200-500 (native speaker QA)
+├─ Validation:
+│  ├─ Code audit: Grep for hardcoded strings in JSX
+│  ├─ CI/CD check: Fail if new strings bypass i18n
+│  └─ Manual test: Switch language in browser (Phase 3+)
+
+REQUIREMENT SRS-T11.5.2: Locale-Aware Data Formatting
+├─ Priority: P2 (medium, Phase 1)
+├─ Description: Numbers, dates, currency SHALL format per user's locale
+├─ Implementation Examples:
+│  ├─ Numbers: 1,234.56 (en-US) vs 1.234,56 (de-DE)
+│  ├─ Dates: 12/25/2024 (en-US) vs 25/12/2024 (en-GB) vs 2024-12-25 (ISO)
+│  ├─ Currency: $9.99 (en-US) vs 9,99 € (de-DE) vs ¥999 (ja-JP)
+│  └─ Time: 2:30 PM (en-US) vs 14:30 (de-DE)
+├─ Locale Detection:
+│  ├─ Priority 1: User preference (if logged in and set)
+│  ├─ Priority 2: Browser language (navigator.language)
+│  ├─ Priority 3: Geolocation (IP-based, via Cloudflare headers)
+│  └─ Fallback: en-US
+├─ Validation: Test with various locales in browser settings
 ```
 
 ---
