@@ -550,9 +550,9 @@ import louvain from 'graphology-communities-louvain';
 import { betweennessCentrality } from 'graphology-metrics/centrality';
 
 interface CoreMetrics {
-  communities: Map<string, number>;
+  communities: Record<string, number>; // nodeId -> communityId
   modularity: number;
-  betweenness: Map<string, number>;
+  betweenness: Record<string, number>; // nodeId -> score
   engagementTiers: {
     superFans: string[];
     regulars: string[];
@@ -562,12 +562,17 @@ interface CoreMetrics {
 }
 
 export function computeCoreMetrics(graph: Graph): CoreMetrics {
+  // Canonical analysis graph policy (see VSG_DATA_INTELLIGENCE_FRAMEWORK.md):
+  // - Undirected, simple (no parallel edges)
+  // - Multi-edges collapsed into a single tie-strength edge (summed weight)
+  // - No self-loops
+
   // Community detection (Louvain)
-  const communities = louvain(graph);
-  const modularity = louvain.assign(graph, { resolution: 1 });
+  const communities: Record<string, number> = louvain(graph);
+  const modularity = computeModularity(graph, communities);
 
   // Betweenness centrality
-  const betweenness = betweennessCentrality(graph);
+  const betweenness: Record<string, number> = betweennessCentrality(graph);
 
   // Engagement tiers (statistical bucketing)
   const engagementTiers = computeEngagementTiers(graph);
@@ -578,6 +583,39 @@ export function computeCoreMetrics(graph: Graph): CoreMetrics {
     betweenness,
     engagementTiers
   };
+}
+
+function computeModularity(graph: Graph, communities: Record<string, number>): number {
+  // O(m) modularity for undirected graphs:
+  // Q = Σ_c [ (l_c / m) - (d_c / (2m))^2 ]
+  const m = graph.edges().length;
+  if (m === 0) return 0;
+
+  const sumDegreesByCommunity = new Map<number, number>();
+  const internalEdgesByCommunity = new Map<number, number>();
+
+  graph.forEachNode(node => {
+    const c = communities[node];
+    if (c === undefined) return;
+    sumDegreesByCommunity.set(c, (sumDegreesByCommunity.get(c) ?? 0) + graph.degree(node));
+  });
+
+  graph.forEachEdge((edge, attrs, source, target) => {
+    const c1 = communities[source];
+    const c2 = communities[target];
+    if (c1 === undefined || c2 === undefined) return;
+    if (c1 === c2) {
+      internalEdgesByCommunity.set(c1, (internalEdgesByCommunity.get(c1) ?? 0) + 1);
+    }
+  });
+
+  let Q = 0;
+  for (const [c, d_c] of sumDegreesByCommunity.entries()) {
+    const l_c = internalEdgesByCommunity.get(c) ?? 0;
+    Q += (l_c / m) - Math.pow(d_c / (2 * m), 2);
+  }
+
+  return Q;
 }
 
 function computeEngagementTiers(graph: Graph) {
@@ -1223,7 +1261,7 @@ describe('Core Metrics', () => {
   let testGraph: Graph;
 
   beforeEach(() => {
-    testGraph = new Graph();
+    testGraph = new Graph({ type: 'undirected', multi: false, allowSelfLoops: false });
     // Create test graph with known structure
     testGraph.addNode('center', { label: 'Center' });
     testGraph.addNode('community1_a', { label: 'C1A' });
@@ -1242,7 +1280,8 @@ describe('Core Metrics', () => {
 
   test('detects communities correctly', () => {
     const metrics = computeCoreMetrics(testGraph);
-    expect(metrics.communities.size).toBeGreaterThanOrEqual(2);
+    const communityCount = new Set(Object.values(metrics.communities)).size;
+    expect(communityCount).toBeGreaterThanOrEqual(2);
   });
 
   test('identifies center as bridge', () => {
@@ -1252,7 +1291,7 @@ describe('Core Metrics', () => {
 
   test('computes betweenness correctly', () => {
     const metrics = computeCoreMetrics(testGraph);
-    const centerBetweenness = metrics.betweenness.get('center');
+    const centerBetweenness = metrics.betweenness['center'];
     expect(centerBetweenness).toBeGreaterThan(0.3);
   });
 });
@@ -1580,6 +1619,8 @@ Ongoing: Refinement
 | **Author** | Engineering / Architecture |
 | **Philosophy** | CLAUDE_ACE.md aligned |
 | **Next Step** | Review → Approve → Implement |
+
+**Last Updated**: December 24, 2025 — aligned algorithm examples with canonical undirected/simple graph policy, modularity computation, and mapping-based algorithm outputs.
 
 ---
 
