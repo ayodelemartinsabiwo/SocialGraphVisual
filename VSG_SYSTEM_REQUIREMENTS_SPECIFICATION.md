@@ -1150,8 +1150,8 @@ SRS-F5.6: Template Library Architecture
 ├─ Selection Algorithm:
 │  ├─ Filter by conditions (metrics match)
 │  ├─ Score by relevance (tone, platform, freshness)
-│  ├─ Add randomness for variety (top 3 candidates)
-│  └─ Track usage to avoid repetition
+│  ├─ Deterministic variety (sticky bucketing per user+template+version)
+│  └─ Track usage to avoid repetition (cooldown window)
 │
 ├─ Interpolation Engine:
 │  ├─ Variables: {name}, {count}, {percentage}, {communities}
@@ -1159,7 +1159,8 @@ SRS-F5.6: Template Library Architecture
 │  └─ Fallback: Keep placeholder if variable missing
 │
 ├─ Acceptance:
-│  ├─ Same user sees same template <10% of time
+│  ├─ Reproducible: Same graph+template version yields same narrative for same user
+│  ├─ Variety: Cooldown prevents repeating the same narrative variant back-to-back
 │  ├─ Narratives read naturally (user testing)
 │  └─ No "template not found" errors
 ```
@@ -1584,8 +1585,8 @@ CREATE INDEX idx_graphs_user_platform_latest ON graphs(user_id, platform, is_lat
 CREATE INDEX idx_graphs_user_created ON graphs(user_id, created_at DESC);
 
 -- Constraint: Only one latest graph per user per platform
-CREATE UNIQUE INDEX idx_graphs_latest_per_platform 
-  ON graphs(user_id, platform) 
+CREATE UNIQUE INDEX idx_graphs_latest_per_platform
+  ON graphs(user_id, platform)
   WHERE is_latest = TRUE AND deleted_at IS NULL;
 
 Acceptance criteria:

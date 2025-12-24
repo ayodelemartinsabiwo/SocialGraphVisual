@@ -314,7 +314,7 @@ Example:
 │  │  │  │  └─ IF communities > 5 → "fragmented_network"          │ │
 │  │  │  ├─ Template Interpolator (narrative generation)          │ │
 │  │  │  │  ├─ Variable substitution ({{count}} → "3")            │ │
-│  │  │  │  ├─ Variant selection (randomize for natural feel)     │ │
+│  │  │  │  ├─ Variant selection (deterministic, sticky A/B)      │ │
 │  │  │  │  └─ Confidence level assignment (high/medium/low)      │ │
 │  │  │  └─ Action Generator (conditional suggestions)            │ │
 │  │  │     ├─ Prioritize by impact (estimated reach increase)    │ │
