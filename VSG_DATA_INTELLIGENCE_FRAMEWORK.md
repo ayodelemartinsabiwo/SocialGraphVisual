@@ -2529,6 +2529,7 @@ Total: ~20 templates for Phase 1
 
 **Change Log**:
 - v1.0 (Dec 24, 2025): Initial version, algorithm-first architecture established
+- v1.0 (Dec 24, 2025): Clarified pseudonymization (HMAC-based) vs anonymization, made community outputs mapping-based, and made explainability metrics null-safe
 
 ---
 

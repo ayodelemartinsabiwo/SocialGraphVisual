@@ -17,6 +17,9 @@
 | **Classification** | Internal - Technical |
 | **Scope** | Phase 0-2 (detailed), Phase 3-4 (directional) |
 
+**Change Log**:
+- v1.0 (Dec 24, 2025): Privacy terminology alignment (pseudonymized identifiers; aggregated analytics) to match SRS + Data & Intelligence Framework
+
 **Document Hierarchy:**
 ```
 Product Strategy Document v1.1 (strategic constitution)

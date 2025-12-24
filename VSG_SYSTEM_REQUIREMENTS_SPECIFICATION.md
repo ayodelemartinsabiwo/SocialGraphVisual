@@ -2247,6 +2247,11 @@ R6 (Browser Limitations):
 
 ## **Change Log:**
 ```
+v1.2 (Dec 24, 2025) - Terminology & Privacy Clarification:
+├─ Clarified: "anonymized" → "pseudonymized" where hashed identifiers are used
+├─ Clarified: analytics privacy as aggregated (no PII)
+└─ Consistency: aligned export/privacy wording with Data & Intelligence Framework
+
 v1.2 (December 2025) - Algorithm-First Edition:
 ├─ REPLACED: Section 4.5 "AI-Powered Recommendations" → "Algorithm-Powered Recommendations"
 │  ├─ Removed: External AI API dependencies (Anthropic Claude, OpenAI)
