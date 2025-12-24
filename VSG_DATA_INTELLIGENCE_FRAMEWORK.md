@@ -311,8 +311,8 @@ interface GraphMetrics {
     // PageRank: Influence/importance
     pageRank: {
       top10: { nodeId: string; score: number }[];
-      selfRank: number; // Graph owner's rank (1-indexed)
-      selfPercentile: number; // 0-100, higher = more influential
+      selfRank: number | null; // Graph owner's rank (1-indexed), null if 'self' not present
+      selfPercentile: number | null; // 0-100, higher = more influential, null if 'self' not present
     };
 
     // Betweenness: Bridge/broker nodes
@@ -865,14 +865,14 @@ class InsightEngine {
   private async generateBasicInsight(graph: SocialGraph): Promise<Insight[]> {
     const nodeCount = graph.data.nodes.length;
     const edgeCount = graph.data.edges.length;
-    const avgDegree = (edgeCount * 2) / nodeCount;
+    const avgDegree = nodeCount === 0 ? 0 : (edgeCount * 2) / nodeCount;
 
     return [{
       id: uuid(),
       graphId: graph.id,
       templateId: 'fallback-basic',
       category: 'community',
-      narrative: `Your network has ${nodeCount} connections with an average of ${avgDegree.toFixed(1)} connections each.`,
+      narrative: `Your network has ${nodeCount} accounts and ${edgeCount} connections (avg degree: ${avgDegree.toFixed(1)}).`,
       actions: [],
       confidence: 'high',
       priority: 1,
@@ -948,11 +948,13 @@ class GraphAnalyzer {
 
     // Compute distribution
     const totalNodes = graph.data.nodes.length;
-    const distribution = {
-      largest: sizes[0] / totalNodes,
-      top3: sizes.slice(0, 3).reduce((sum, s) => sum + s, 0) / totalNodes,
-      top5: sizes.slice(0, 5).reduce((sum, s) => sum + s, 0) / totalNodes
-    };
+    const distribution = totalNodes === 0 || sizes.length === 0
+      ? { largest: 0, top3: 0, top5: 0 }
+      : {
+          largest: sizes[0] / totalNodes,
+          top3: sizes.slice(0, 3).reduce((sum, s) => sum + s, 0) / totalNodes,
+          top5: sizes.slice(0, 5).reduce((sum, s) => sum + s, 0) / totalNodes
+        };
 
     // Detect isolated communities (echo chambers)
     const isolation = this.detectEchoChambers(G, communities);
@@ -1074,23 +1076,43 @@ class GraphAnalyzer {
   }
 
   /**
-   * Convert SocialGraph to graphology Graph
+   * Convert SocialGraph to canonical graphology Graph
+   *
+   * Canonical analysis graph policy:
+   * - Undirected, simple (no parallel edges)
+   * - Multi-edges are collapsed by summing weights (tie strength)
+   * - Self-loops are ignored
    */
   private toGraphology(graph: SocialGraph): Graph {
-    const G = new Graph();
+    const G = new Graph({ type: 'undirected', multi: false, allowSelfLoops: false });
 
-    // Add nodes
+    // Add nodes (dedupe)
     graph.data.nodes.forEach(node => {
-      G.addNode(node.id, { ...node });
+      if (!G.hasNode(node.id)) G.addNode(node.id, { ...node });
     });
 
-    // Add edges
+    // Collapse multi-edges into a single undirected edge
+    const buckets = new Map<string, { source: string; target: string; weight: number; types: Set<string> }>();
     graph.data.edges.forEach(edge => {
-      G.addEdge(edge.source, edge.target, {
-        weight: edge.weight,
-        type: edge.type
-      });
+      if (!G.hasNode(edge.source) || !G.hasNode(edge.target)) return;
+      if (edge.source === edge.target) return;
+
+      const a = edge.source < edge.target ? edge.source : edge.target;
+      const b = edge.source < edge.target ? edge.target : edge.source;
+      const key = `${a}::${b}`;
+
+      const prev = buckets.get(key) ?? { source: a, target: b, weight: 0, types: new Set<string>() };
+      prev.weight += typeof edge.weight === 'number' ? edge.weight : 1;
+      if (edge.type) prev.types.add(edge.type);
+      buckets.set(key, prev);
     });
+
+    for (const e of buckets.values()) {
+      G.addEdge(e.source, e.target, {
+        weight: e.weight,
+        types: Array.from(e.types)
+      });
+    }
 
     return G;
   }
@@ -1168,10 +1190,13 @@ computePageRank(graph: SocialGraph): PageRankMetrics {
     .map(([nodeId, score]) => ({ nodeId, score }))
     .sort((a, b) => b.score - a.score);
 
-  // Find self rank
+  // Find self rank (null if 'self' node is absent or not found)
   const selfNodeId = graph.data.nodes.find(n => n.type === 'self')?.id;
-  const selfRank = sorted.findIndex(s => s.nodeId === selfNodeId) + 1;
-  const selfPercentile = (1 - selfRank / sorted.length) * 100;
+  const idx = selfNodeId ? sorted.findIndex(s => s.nodeId === selfNodeId) : -1;
+  const selfRank = idx >= 0 ? idx + 1 : null;
+  const selfPercentile = selfRank === null || sorted.length === 0
+    ? null
+    : (1 - selfRank / sorted.length) * 100;
 
   const duration = Date.now() - start;
   algorithmDuration.observe({ algorithm: 'pagerank' }, duration / 1000);
@@ -1218,10 +1243,8 @@ computeBetweenness(graph: SocialGraph): BetweennessMetrics {
     .sort((a, b) => b.score - a.score);
 
   // Identify bridge nodes (top 10% betweenness)
-  const threshold = this.percentile(
-    Object.values(scores),
-    0.9
-  );
+  const values = Object.values(scores);
+  const threshold = values.length === 0 ? 0 : this.percentile(values, 0.9);
 
   const bridgeNodes = sorted
     .filter(s => s.score >= threshold)
@@ -1346,27 +1369,28 @@ class TemplateMatcher {
    *
    * @param templates - Available templates
    * @param metrics - Computed graph metrics
-   * @param profile - Statistical profile
+   * @param profile - Statistical profile (optional; progressive stages may omit)
    * @returns Matched templates with confidence scores
    */
   match(
     templates: InsightTemplate[],
-    metrics: GraphMetrics,
-    profile: StatisticalProfile
+    metrics: Partial<GraphMetrics>,
+    profile?: Partial<StatisticalProfile>
   ): TemplateMatch[] {
+    const safeProfile = (profile ?? {}) as Partial<StatisticalProfile>;
     const matches: TemplateMatch[] = [];
 
     for (const template of templates) {
       // Evaluate required conditions
       const requiredMatch = template.conditions.required.every(condition =>
-        this.evaluateCondition(condition, metrics, profile)
+        this.evaluateCondition(condition, metrics, safeProfile)
       );
 
       if (!requiredMatch) continue; // Skip if required conditions not met
 
       // Evaluate optional conditions (for confidence)
       const optionalMatches = template.conditions.optional.filter(condition =>
-        this.evaluateCondition(condition, metrics, profile)
+        this.evaluateCondition(condition, metrics, safeProfile)
       );
 
       // Calculate confidence score
@@ -1380,7 +1404,7 @@ class TemplateMatcher {
       const variables = this.extractVariables(
         template.narrative.variables,
         metrics,
-        profile
+        safeProfile
       );
 
       // Extract supporting metrics for explainability
@@ -1389,7 +1413,7 @@ class TemplateMatcher {
         ...optionalMatches
       ].map(c => ({
         key: c.metric,
-        value: this.getMetricValue(c.metric, metrics, profile) ?? null
+        value: this.getMetricValue(c.metric, metrics, safeProfile) ?? null
       }));
 
       matches.push({
@@ -1417,8 +1441,8 @@ class TemplateMatcher {
    */
   private evaluateCondition(
     condition: Condition,
-    metrics: GraphMetrics,
-    profile: StatisticalProfile
+    metrics: Partial<GraphMetrics>,
+    profile: Partial<StatisticalProfile>
   ): boolean {
     const value = this.getMetricValue(condition.metric, metrics, profile);
 
@@ -1452,8 +1476,8 @@ class TemplateMatcher {
    */
   private getMetricValue(
     path: string,
-    metrics: GraphMetrics,
-    profile: StatisticalProfile
+    metrics: Partial<GraphMetrics>,
+    profile: Partial<StatisticalProfile>
   ): number | undefined {
     const trimmed = path.trim();
 
@@ -1527,8 +1551,8 @@ class TemplateMatcher {
    */
   private extractVariables(
     variableDefs: InsightTemplate['narrative']['variables'],
-    metrics: GraphMetrics,
-    profile: StatisticalProfile
+    metrics: Partial<GraphMetrics>,
+    profile: Partial<StatisticalProfile>
   ): Record<string, any> {
     const variables: Record<string, any> = {};
 
@@ -1951,6 +1975,11 @@ Breakdown (uncached, 5K node graph):
 
 **Principle**: Store only what's necessary for analysis, pseudonymize everything else
 
+**Storage boundary**:
+- **Client memory** may contain raw identifiers during upload/preview.
+- **Server persistence** stores only **pseudonymized** identifiers and graph structure needed for computation; analytics/telemetry must be **aggregated** and must not include raw handles or raw names.
+- If the product needs to re-render friendly labels later, keep them **client-side** (e.g., in IndexedDB) or fetch them from the uploaded file; do not rely on reversing hashes.
+
 ```typescript
 /**
  * Privacy-preserving graph storage
@@ -1971,8 +2000,8 @@ class PrivacyPreservingStorage {
     // Pseudonymize nodes
     const pseudonymizedNodes = graph.data.nodes.map(node => ({
       ...node,
-      displayName: this.hash(node.displayName, secret),
-      username: this.hash(node.username, secret),
+      displayName: node.displayName ? this.hash(node.displayName, secret) : undefined,
+      username: node.username ? this.hash(node.username, secret) : undefined,
       profileImageUrl: undefined, // Remove, reconstruct if needed
     }));
 
@@ -2008,7 +2037,8 @@ class PrivacyPreservingStorage {
    * Generalize date to day precision
    */
   private generalizeDate(date: Date): Date {
-    return new Date(date.toDateString()); // Remove time
+    // UTC-safe day precision (avoids local timezone shifting the date)
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   }
 
   /**
@@ -2066,9 +2096,38 @@ self.onmessage = async (e) => {
 };
 
 function buildGraph(nodes, edges) {
-  const G = new Graph();
-  nodes.forEach(n => G.addNode(n.id, n));
-  edges.forEach(e => G.addEdge(e.source, e.target, e));
+  // Canonical analysis graph policy:
+  // - Undirected, simple (no parallel edges)
+  // - Multi-edges are collapsed by summing weights
+  // - Self-loops are ignored
+  const G = new Graph({ type: 'undirected', multi: false, allowSelfLoops: false });
+  nodes.forEach(n => {
+    if (!G.hasNode(n.id)) G.addNode(n.id, n);
+  });
+
+  const buckets = new Map();
+  edges.forEach(e => {
+    if (!G.hasNode(e.source) || !G.hasNode(e.target)) return;
+    if (e.source === e.target) return;
+
+    const a = e.source < e.target ? e.source : e.target;
+    const b = e.source < e.target ? e.target : e.source;
+    const key = `${a}::${b}`;
+
+    const prev = buckets.get(key) || { source: a, target: b, weight: 0, types: new Set() };
+    prev.weight += typeof e.weight === 'number' ? e.weight : 1;
+    if (e.type) prev.types.add(e.type);
+    buckets.set(key, prev);
+  });
+
+  buckets.forEach(v => {
+    G.addEdge(v.source, v.target, {
+      weight: v.weight,
+      types: Array.from(v.types)
+    });
+  });
+
+  // Worker returns a Graphology-serialized graph (JSON-compatible)
   return G.export();
 }
 
@@ -2191,6 +2250,8 @@ class ProgressiveInsightEngine extends InsightEngine {
       this.canMatchWithPartialMetrics(t, partialMetrics)
     );
 
+    // Note: profile is intentionally omitted for progressive stages.
+    // Templates that require `profile.*` values should be excluded by `canMatchWithPartialMetrics`.
     return this.templateMatcher.match(matchable, partialMetrics);
   }
 }
@@ -2546,6 +2607,7 @@ Total: ~20 templates for Phase 1
 - v1.0 (Dec 24, 2025): Initial version, algorithm-first architecture established
 - v1.0 (Dec 24, 2025): Clarified pseudonymization (HMAC-based) vs anonymization, made community outputs mapping-based, and made explainability metrics null-safe
 - v1.0 (Dec 24, 2025): Standardized percentage convention (0-100) and corrected InsightEngine interpolation + logging examples for determinism
+- v1.0 (Dec 24, 2025): Canonicalized analysis graph as undirected/simple with multi-edge aggregation, made TemplateMatcher accept partial metrics with optional profile (for progressive matching/tests), and made date generalization UTC-safe
 
 ---
 
