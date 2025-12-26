@@ -1,5 +1,5 @@
 # **Visual Social Graph: Manual Upload PRD**
-## **Version 2.1 - Strategic Refinement & Category Definition**
+## **Version 2.2 - Strategic Refinement & Category Definition**
 
 *"The most powerful social graph visualization tool should feel like magic, even when you're uploading a ZIP file."*
 
@@ -13,6 +13,7 @@
 | 2.0 | Dec 2025 | Technical validation, corrected file formats, added technical spike | Visual Social Graph Team |
 | 2.1 | Dec 2025 | Strategic refinement, category definition, enhanced risk framework | Visual Social Graph Team |
 | 2.1 | Dec 24, 2025 | Terminology alignment: pseudonymized graph transfer/storage, generalized timestamps; consistent with SRS + Data & Intelligence Framework | Visual Social Graph Team |
+| 2.2 | Dec 26, 2025 | Phase 1 platform scope expanded (Facebook, TikTok); removed email-based reminders/copy; replaced security-scan trust copy with validation feedback | Visual Social Graph Team |
 
 ---
 
@@ -237,7 +238,7 @@ This becomes a **category-defining stance**, not just a technical choice.
 Profile:
 ├─ Age: 25-40
 ├─ Income: $50K-150K
-├─ Platforms: Instagram, Twitter/X, TikTok
+├─ Platforms: Instagram, Twitter/X, TikTok, Facebook
 ├─ Goals: Grow audience strategically, understand positioning
 └─ Pain: Can't compete with agency tools, need insights for brand deals
 
@@ -409,7 +410,7 @@ Trust Statement (NEW):
 Social Proof:
 ├─ "Join 10,000+ creators who've discovered their positioning"
 ├─ Rotating testimonials with actual visualizations
-└─ Platform logos: Twitter, Instagram, LinkedIn, Facebook, TikTok
+└─ Platform logos: Twitter/X, Instagram, LinkedIn, Facebook, TikTok
 
 The Promise (3 Cards):
 ├─ "100% Private" - We never access your accounts
@@ -472,7 +473,7 @@ While you wait, learn:
 ├─ Day 1: "What is network centrality?" [2-min video]
 ├─ Day 2: "Why engagement quality matters" [article]
 ├─ Day 3: "Reading your first visualization" [interactive tutorial]
-└─ Email drip keeps engagement warm
+└─ In-product learning sequence keeps engagement warm
 
 Benefit: Educated users extract more value
 ```
@@ -515,7 +516,7 @@ Each card:
 │                                     │
 │  1. Go to Settings → Account        │
 │  2. Click "Download archive"        │
-│  3. Wait for email (usually 1-2hrs) │
+│  3. Wait for platform notification  │
 │  4. Download ZIP file               │
 │  5. Upload here ↓                   │
 │                                     │
@@ -538,7 +539,7 @@ Each card:
 │  1. Settings → Security → Download  │
 │  2. Select "JSON" format (not HTML) │
 │  3. Choose "All time" date range    │
-│  4. Wait for email (10-30 minutes)  │
+│  4. Wait for platform notification  │
 │  5. Upload ZIP file here ↓          │
 │                                     │
 │  [Video Tutorial] [Screenshots]     │
@@ -560,7 +561,7 @@ Each card:
 │  1. Me → Settings & Privacy         │
 │  2. Data Privacy → Get a copy       │
 │  3. Select "Connections" only       │
-│  4. Wait for email (10-45 minutes)  │
+│  4. Wait for platform notification  │
 │  5. Upload ZIP file here ↓          │
 │                                     │
 │  [Video Tutorial] [Screenshots]     │
@@ -598,7 +599,7 @@ Each card:
 
 On drop:
 ├─ Instant file validation
-├─ Security scan animation (builds trust)
+├─ Trust-building validation feedback (format, size, extraction checks)
 ├─ Progress bar: "Extracting..." → "Parsing..." → "Analyzing..."
 └─ Micro-interactions: checkmarks, sparkles
 
@@ -1880,7 +1881,7 @@ Use cases:
 
 ```
 Day 1-2: Gather Real Archives
-├─ Download actual data from Twitter, Instagram, LinkedIn
+├─ Download actual data from Twitter/X, Instagram, LinkedIn, Facebook, TikTok
 ├─ Test with 3 different account sizes (small, medium, large)
 ├─ Document exact file structures
 ├─ Identify edge cases (incomplete files, encoding issues)
@@ -1890,6 +1891,8 @@ Day 3-4: Build Minimal Parsers
 ├─ Twitter parser (handle .js wrapper, multiple parts)
 ├─ Instagram parser (new string_list_data format)
 ├─ LinkedIn parser (CSV with encoding issues)
+├─ Facebook parser (account export variant detection)
+├─ TikTok parser (account export variant detection)
 ├─ Unit tests with real data
 └─ Version detection logic
 
@@ -1901,7 +1904,7 @@ Day 5: Performance Testing
 └─ Memory profiling (prevent crashes)
 
 Deliverables:
-✓ Working parsers for all 3 platforms
+✓ Working parsers for all 5 platforms (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 ✓ Performance benchmarks
 ✓ Documented edge cases
 ✓ Browser compatibility matrix
@@ -2129,7 +2132,7 @@ Week 19-20: Marketing Launch
 │  └─ Logo, brand assets, founder story
 ├─ Product Hunt launch preparation
 │  └─ Teaser campaign, hunter outreach
-└─ Email drip campaigns (activation, retention)
+└─ In-product onboarding nudges (activation, retention)
 ```
 
 ---
@@ -2544,7 +2547,7 @@ Mitigation:
 ├─ Exceptional landing page (show the magic, inspire action)
 ├─ Video tutorials (reduce perceived friction from 10 min → 2 min)
 ├─ Wait-time engagement (sample network while waiting)
-├─ Email drip campaign (nudges, reminders, education)
+├─ In-product nudges (reminders, education)
 ├─ Gamification ("Unlock your social DNA" framing)
 ├─ Social proof (testimonials from real users)
 ├─ Clear value prop: "5 minutes to strategic clarity"
@@ -3719,7 +3722,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 2. **Weekly/Daily Re-Upload UX (Low-Cost Option)**
    - Streamlined re-upload flow (remember last upload)
-   - Email reminders to download fresh data
+  - In-app reminders to refresh (user-controlled)
    - One-click update comparison
    - Pros: Maintains privacy promise, minimal development
    - Cons: Still manual, user friction

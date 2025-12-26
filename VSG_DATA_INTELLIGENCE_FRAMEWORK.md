@@ -269,7 +269,7 @@ interface GraphMetadata {
 2. **Pseudonymized Storage**: Usernames/names are pseudonymized with a user-specific keyed hash (non-reversible)
 3. **JSONB for Flexibility**: Graph structure stored as JSONB for schema evolution
 4. **Denormalized Metrics**: Cached to avoid recomputing on every request
-5. **Platform-Agnostic**: Core structure works for Twitter, Instagram, LinkedIn, etc.
+5. **Platform-Agnostic**: Core structure works for Twitter/X, Instagram, LinkedIn, Facebook, TikTok, etc.
 
 ---
 

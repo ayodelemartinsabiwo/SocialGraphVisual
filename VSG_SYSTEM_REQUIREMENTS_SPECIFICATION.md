@@ -1,5 +1,5 @@
 # **Visual Social Graph: System Requirements Specification**
-## **Version 1.2 - Algorithm-First Technical Foundation**
+## **Version 1.3 - Algorithm-First Technical Foundation**
 
 *"Architecture is frozen music. Every line of code should sing."*
 
@@ -9,7 +9,7 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Version** | 1.2 (Algorithm-First Edition) |
+| **Version** | 1.3 (Algorithm-First Edition) |
 | **Date** | December 2025 |
 | **Status** | Living Document - Technical Foundation |
 | **Owner** | Engineering / Architecture |
@@ -21,9 +21,9 @@
 ```
 Product Strategy Document v1.1 (strategic constitution)
     ↓ constrains
-Product Requirements Document v2.1-E (what we're building)
+Product Requirements Document v2.2 (what we're building)
     ↓ defines
-System Requirements Specification v1.2 (THIS DOCUMENT - how we build it)
+System Requirements Specification v1.3 (THIS DOCUMENT - how we build it)
     ↓ guides
 Architecture Document (technical design)
     ↓ implements
@@ -213,7 +213,7 @@ Phase 4 (Leadership):
 ### **2.2 System Boundaries**
 
 **In Scope:**
-- File upload/parsing (Twitter, Instagram, LinkedIn)
+- File upload/parsing (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 - Network visualization (D3.js force-directed)
 - Insight generation (algorithms + templates)
 - Export (PDF, social cards, CSV/JSON)
@@ -229,7 +229,7 @@ Phase 4 (Leadership):
 - White-label (Phase 1-2)
 
 **Deferred to Later Phases:**
-- Additional platforms (TikTok, YouTube) - Phase 3+
+- Additional platforms (e.g., YouTube) - Phase 3+
 - Real-time updates (browser extension option) - Phase 3+
 - Mobile apps (iOS, Android) - Phase 4+
 - API for developers - Phase 4+
@@ -245,7 +245,7 @@ Phase 4 (Leadership):
 
 ```
 REQUIREMENT SRS-C1.1: No OAuth Implementation for Social Platforms
-├─ Description: System SHALL NOT implement OAuth for Twitter, Instagram, LinkedIn
+├─ Description: System SHALL NOT implement OAuth for Twitter/X, Instagram, LinkedIn, Facebook, TikTok
 ├─ Rationale: Privacy promise, competitive moat, legal safety
 ├─ Enforcement:
 │  ├─ Code review: Block any OAuth library imports for social platforms
@@ -714,7 +714,7 @@ SRS-F1.3: Session Management
 SRS-F2.1: Multi-Platform File Upload
 ├─ Priority: P0 (critical, Phase 0)
 ├─ Protocol: Tus (resumable upload, handles interruptions)
-├─ Platforms: Twitter, Instagram, LinkedIn
+├─ Platforms: Twitter/X, Instagram, LinkedIn, Facebook, TikTok
 ├─ Max size: 2GB per file
 ├─ Implementation:
 │  ├─ Client: tus-js-client
@@ -768,11 +768,35 @@ SRS-F2.4: LinkedIn Parser
 ├─ Graph: Bidirectional connections (mutual)
 ├─ Acceptance: >95% success rate, handles 10K connections
 
-SRS-F2.5: Parser Versioning System
+SRS-F2.5: Facebook Parser
+├─ Priority: P0 (critical, Phase 1)
+├─ Format: ZIP export downloaded from Facebook/Meta account data tools
+├─ Goal: Extract a connection graph usable for visualization + insights
+├─ Minimum output:
+│  ├─ Nodes: user + connections (IDs pseudonymized)
+│  └─ Edges: relationships with directionality when available
+├─ Constraints:
+│  ├─ Manual upload only (no OAuth)
+│  └─ Platform export formats may vary; implement resilient detection
+├─ Acceptance: >90% success rate (initial Phase 1 benchmark), clear user-facing errors on unsupported export variants
+
+SRS-F2.6: TikTok Parser
+├─ Priority: P0 (critical, Phase 1)
+├─ Format: ZIP export downloaded from TikTok account data tools
+├─ Goal: Extract a connection graph usable for visualization + insights
+├─ Minimum output:
+│  ├─ Nodes: user + connections (IDs pseudonymized)
+│  └─ Edges: follower/following-style relationships when present
+├─ Constraints:
+│  ├─ Manual upload only (no OAuth)
+│  └─ Platform export formats may vary; implement resilient detection
+├─ Acceptance: >90% success rate (initial Phase 1 benchmark), clear user-facing errors on unsupported export variants
+
+SRS-F2.7: Parser Versioning System
 ├─ Priority: P1 (high, Phase 1)
 ├─ Implementation:
 │  ├─ Version detection: Auto-detect format version
-│  ├─ Parser registry: twitter_v1, twitter_v2, instagram_v1, instagram_v2, linkedin_v1
+│  ├─ Parser registry: twitter_v1, twitter_v2, instagram_v1, instagram_v2, linkedin_v1, facebook_v1, tiktok_v1
 │  ├─ Fallback: Try alternative parser if first fails
 │  └─ Logging: Track parser version used (analytics)
 ├─ Acceptance: Handles old exports, forwards-compatible with new formats
@@ -1144,7 +1168,7 @@ SRS-F5.6: Template Library Architecture
 │    narrative: string,       // With {variable} placeholders
 │    conditions: [...],       // Selection criteria
 │    tone: "professional" | "casual" | "motivational",
-│    platform: "twitter" | "linkedin" | "instagram" | "all"
+│    platform: "twitter" | "linkedin" | "instagram" | "facebook" | "tiktok" | "all"
 │  }
 │
 ├─ Selection Algorithm:
@@ -1445,7 +1469,7 @@ CREATE TABLE users (
 CREATE TABLE uploads (
   id UUID PRIMARY KEY,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  platform VARCHAR(20) NOT NULL, -- twitter, instagram, linkedin
+  platform VARCHAR(20) NOT NULL, -- twitter, instagram, linkedin, facebook, tiktok
   file_size BIGINT,
   status VARCHAR(20) DEFAULT 'pending',
   error_message TEXT,
@@ -1839,7 +1863,7 @@ Benefits:
 ### **10.1 Phase 0: Technical Validation Spike (2 weeks)**
 
 **Must-Have:**
-- SRS-F2.2, F2.3, F2.4: All parsers (>95% success)
+- SRS-F2.2, F2.3, F2.4, F2.5, F2.6: All parsers (Phase 1 targets met)
 - SRS-F3.1: Basic force-directed graph (D3.js)
 - SRS-NF2: Parsing <60s (typical account)
 - SRS-NF3: Visualization 60 FPS (<1K nodes)
@@ -2169,7 +2193,7 @@ REQUIREMENT SRS-T11.5.2: Locale-Aware Data Formatting
 
 ```
 R1 (Platform Format Instability):
-├─ Retired by: SRS-F2.2, F2.3, F2.4, F2.5 (parsers + versioning)
+├─ Retired by: SRS-F2.2, F2.3, F2.4, F2.5, F2.6, F2.7 (parsers + versioning)
 ├─ Validation: >95% success rate (30+ test files)
 └─ Phase: Retired in Phase 0-1
 
@@ -2247,6 +2271,12 @@ R6 (Browser Limitations):
 
 ## **Change Log:**
 ```
+v1.3 (Dec 26, 2025) - Phase 1 Platform Scope:
+├─ Expanded Phase 1 scope: Twitter/X, Instagram, LinkedIn, Facebook, TikTok
+├─ Added: SRS-F2.5 (Facebook Parser) and SRS-F2.6 (TikTok Parser)
+├─ Renumbered: Parser versioning → SRS-F2.7; expanded parser registry to include facebook_v1, tiktok_v1
+└─ Updated: template/platform unions to include facebook and tiktok
+
 v1.2 (Dec 24, 2025) - Graph & Timestamp Alignment:
 ├─ Clarified: source exports may use UNIX timestamps; internal representation uses ISO 8601 UTC strings
 └─ Clarified: server does not store raw usernames; only pseudonymized identifiers and aggregated analytics
@@ -2293,7 +2323,7 @@ v1.0 (December 2025):
 
 ---
 
-**End of System Requirements Specification v1.2**
+**End of System Requirements Specification v1.3**
 
 *"Architecture is frozen music. Every line of code should sing."*
 

@@ -642,7 +642,7 @@ Our value proposition: Show users their REAL network structure
 ├─ Empowers: Users to leave platform if needed
 └─ Reduces: Time on platform (clarity → efficiency)
 
-Fundamental conflict: 
+Fundamental conflict:
 We succeed when users understand and optimize their networks.
 They succeed when users stay confused and engaged.
 
@@ -892,7 +892,7 @@ CRM data:
 └─ Transaction history (deals, revenue)
 
 PNI data:
-├─ Social media exports (Twitter, Instagram, LinkedIn)
+├─ Social media exports (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 ├─ Engagement patterns (likes, comments, shares)
 ├─ Network structure (who connects to whom)
 └─ Content analysis (what you post about)
@@ -1782,7 +1782,7 @@ Our response:
  (1) We never access your accounts (privacy)
  (2) You control when to refresh (intentionality)
  (3) No ongoing platform dependency (resilience)
- 
+
  This isn't a limitation. It's a principle."
 
 Turn constraint into differentiation.
@@ -1798,7 +1798,7 @@ Response framework:
  (1) It would require [violating constraint X]
  (2) That would destroy [competitive advantage Y]
  (3) Our constraint is our moat [explain why]
- 
+
  This discipline is why we'll win the category."
 
 Constraints signal strategic clarity (investors value this).
@@ -2487,7 +2487,7 @@ Copy framework:
 ✅ "67% of your frequent engagers share your viewpoints.
     Many networks show similar patterns.
     This creates comfort but limits exposure to new ideas."
-    
+
 Key: Contextualize, normalize, de-personalize
 ```
 
@@ -2537,7 +2537,7 @@ Copy framework:
 ✅ "You have 47 highly engaged followers.
     Investing more time here could accelerate growth.
     Most successful creators focus on their core 50-100."
-    
+
 Key: Future-focused, opportunity-framed, normalized
 ```
 
@@ -2588,10 +2588,10 @@ Format:
 
 Example:
 "Sarah has high betweenness centrality.
- 
+
  What this means: Sarah connects you to different parts of your network.
  Engaging her amplifies your reach across communities.
- 
+
  Action: Reply to Sarah's next 3 posts with thoughtful comments.
          [Draft suggested comment] [Schedule reminder]"
 
@@ -2605,17 +2605,17 @@ Format:
 
 Example:
 "You have 4 distinct communities that rarely interact.
- 
+
  Opportunity: Create content that bridges communities.
  This expands reach while maintaining authentic voice.
- 
+
  Strategy:
  1. Identify common interests across communities
  2. Create content addressing shared themes
  3. Tag representatives from each community
  4. Measure cross-community engagement
  5. Iterate based on response
- 
+
  [Content ideas generator] [Community interest overlap tool]"
 
 Key: Strategic, achievable, supported with tools
@@ -2628,19 +2628,19 @@ Format:
 
 Example:
 "You're positioned at intersection of Tech Education and Personal Development.
- 
+
  Strategic Implications:
  ├─ Unique niche with limited competition
  ├─ Attracts audience seeking practical + philosophical
  ├─ Differentiation from pure tech or pure self-help
  └─ Opportunity: Establish thought leadership here
- 
+
  Quarterly Roadmap:
  Q1: Solidify positioning (80% content in niche)
  Q2: Build authority (guest posts, podcast appearances)
  Q3: Monetize (course/product aligned with positioning)
  Q4: Scale (leverage positioning for partnerships)
- 
+
  [Positioning audit] [Content calendar] [Authority building checklist]"
 
 Key: Visionary, comprehensive, milestone-based

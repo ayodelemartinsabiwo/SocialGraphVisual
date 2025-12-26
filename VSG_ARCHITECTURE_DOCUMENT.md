@@ -20,6 +20,7 @@
 **Change Log**:
 - v1.0 (Dec 24, 2025): Privacy terminology alignment (pseudonymized identifiers; aggregated analytics) to match SRS + Data & Intelligence Framework
 - v1.0 (Dec 24, 2025): Aligned TemplateMatcher contract to `match(templates, metrics, profile)` and standardized canonical graph construction (undirected/simple, multi-edge aggregation)
+- v1.0 (Dec 26, 2025): Phase 1 platform scope expanded (Facebook, TikTok); updated parser worker contracts/types and user-facing invalid-file messaging; removed virus-scanning wording in upload service diagram
 
 **Document Hierarchy:**
 ```
@@ -253,6 +254,7 @@ Example:
 │  │  │  Domain Logic Layer (Business Rules)                    │  │ │
 │  │  │  ├─ Parser Service (Web Worker) - 80% client-side       │  │ │
 │  │  │  │  ├─ TwitterParser, InstagramParser, LinkedInParser   │  │ │
+│  │  │  │  ├─ FacebookParser, TikTokParser                     │  │ │
 │  │  │  │  ├─ Version detector, format validator              │  │ │
 │  │  │  │  └─ Error recovery, progress reporting              │  │ │
 │  │  │  ├─ Graph Builder (Web Worker)                          │  │ │
@@ -300,7 +302,7 @@ Example:
 │  │  │  └─ Session management (JWT + Redis)                      │ │
 │  │  ├─ Upload Service                                           │ │
 │  │  │  ├─ Tus protocol server (resumable uploads)               │ │
-│  │  │  ├─ File validation, virus scanning                       │ │
+│  │  │  ├─ File validation (format, size, extraction checks)     │ │
 │  │  │  └─ Temporary storage (R2)                                │ │
 │  │  ├─ Insight Engine ⭐ ALGORITHM-FIRST CORE                    │ │
 │  │  │  ├─ Graph Analyzer (graphology + algorithms)              │ │
@@ -762,7 +764,7 @@ Visualization: D3.js v7 + Canvas API
 └─ WebGL (future): >5K nodes (Phase 3+)
 
 Heavy Computation: Web Workers
-├─ Parsers: TwitterParser, InstagramParser, LinkedInParser
+├─ Parsers: TwitterParser, InstagramParser, LinkedInParser, FacebookParser, TikTokParser
 ├─ Graph builder: Node/edge construction
 └─ Communication: postMessage API
 
@@ -919,11 +921,13 @@ Testing:
 import { TwitterParser } from '@/lib/parsers/twitter';
 import { InstagramParser } from '@/lib/parsers/instagram';
 import { LinkedInParser } from '@/lib/parsers/linkedin';
+import { FacebookParser } from '@/lib/parsers/facebook';
+import { TikTokParser } from '@/lib/parsers/tiktok';
 
 interface ParseMessage {
   type: 'PARSE';
   file: File;
-  platform: 'twitter' | 'instagram' | 'linkedin';
+  platform: 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'tiktok';
 }
 
 interface ProgressMessage {
@@ -4212,7 +4216,7 @@ Parser Tests (Critical):
 ├─ Fixture-based: 30+ real platform exports
 ├─ Success rate: >95% (28/30 minimum)
 ├─ Accuracy: Spot-check parsed data vs. source
-└─ Performance: <60s for 500MB file
+└─ Performance: <60s for typical account export (benchmark), up to 2GB cap
 ```
 
 ---
@@ -5499,7 +5503,7 @@ function categorizeParserError(error: Error): string {
 
 function getUserFriendlyMessage(errorType: string): string {
   const messages = {
-    INVALID_FILE_FORMAT: 'This doesn\'t appear to be a valid Twitter/Instagram/LinkedIn export file. Please download your data from the platform and try again.',
+    INVALID_FILE_FORMAT: 'This doesn\'t appear to be a valid Twitter/Instagram/LinkedIn/Facebook/TikTok export file. Please download your data from the platform and try again.',
     EMPTY_OR_CORRUPTED: 'The file appears to be empty or corrupted. Please re-download your data and try uploading again.',
     UNSUPPORTED_VERSION: 'This export format is not yet supported. We\'re working on it! Please contact support.',
     UNKNOWN_ERROR: 'Something went wrong while processing your file. Our team has been notified. Please try again or contact support.'
@@ -7327,7 +7331,7 @@ Debt Prevention:
 ## **Next Steps**
 
 1. **Phase 0 Execution** (Week 3):
-   - Implement parsers (TwitterParser, InstagramParser, LinkedInParser)
+  - Implement parsers (TwitterParser, InstagramParser, LinkedInParser, FacebookParser, TikTokParser)
    - Build basic visualization (D3.js force-directed graph)
    - Validate aha moment (5 user tests)
 

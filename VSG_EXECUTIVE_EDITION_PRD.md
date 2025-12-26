@@ -407,7 +407,7 @@ User Journey:
 **Goal:** Validate technical approach before full development
 
 **Week 1:**
-- Download real archives (Twitter, Instagram, LinkedIn)
+- Download real archives (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 - Build minimal parsers
 - Performance testing
 
@@ -429,7 +429,7 @@ User Journey:
 
 **Deliverables:**
 - Landing page with "We don't connect to accounts" positioning
-- Upload flow (3 platforms: Twitter, Instagram, LinkedIn)
+- Upload flow (5 platforms: Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 - Basic visualization (network graph + 1 insight view)
 - Beta launch
 
@@ -635,7 +635,7 @@ Infrastructure:
 ### **12.1 Must-Have (Phase 1)**
 
 **Core Features:**
-- ✅ Upload flow (3 platforms)
+- ✅ Upload flow (5 platforms)
 - ✅ Network graph visualization
 - ✅ Community detection
 - ✅ Basic insights (1-2 views)
@@ -716,7 +716,7 @@ Infrastructure:
 
 ### **14.1 Phase 0 Questions (Answer in 2 weeks)**
 
-1. Can we parse all 3 platform formats reliably? (>95%)
+1. Can we parse all 5 platform formats reliably? (>95%)
 2. Is browser performance acceptable? (<60 sec)
 3. Do users feel "aha moment"? (4/5 in testing)
 4. Are there critical UX blockers? (show-stoppers)

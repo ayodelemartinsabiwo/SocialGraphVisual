@@ -187,7 +187,7 @@ Each gate consists of:
 ```
 Criterion 1: Parser Success Rate ≥95%
 ├─ Measurement: (Successful parses / Total test files) × 100
-├─ Test set: 30 files (3 platforms × 3 sizes × 3 variations)
+├─ Test set: 30 files (5 platforms × multiple sizes × variations)
 ├─ Success definition: Extracts core data (followers, following, posts)
 ├─ Current: [measure during Phase 0]
 └─ Non-negotiable: This is foundational capability
@@ -873,7 +873,7 @@ R10: Platform API Restrictions [External]
 ```
 R1: Platform Format Instability [Technical]
 ├─ Actions:
-│  ├─ Test parsers with 30 real files (3 platforms × 3 sizes × 3 variations)
+│  ├─ Test parsers with 30 real files (5 platforms × multiple sizes × variations)
 │  ├─ Document exact file structures (screenshots, notes)
 │  ├─ Build version detection logic (auto-detect format versions)
 │  └─ Test edge cases (corrupted, incomplete, very old exports)
@@ -1260,7 +1260,7 @@ R10 | Platform API | 3 | 3 | Accepted | Strategy | Quarterly
 **Primary Risks Addressed:** R1 (Platform Format Instability), R2 (Upload Friction - initial), R3 (Aha Moment - initial)
 
 **Learning Objectives:**
-1. Can we reliably parse all 3 platform formats? (Target: >95% success)
+1. Can we reliably parse all 5 platform formats? (Target: >95% success)
 2. Can browsers handle the processing? (Target: <60 seconds)
 3. Do users feel the "aha moment"? (Target: 4/5 test users)
 4. Are there critical UX blockers? (Target: None)
@@ -1275,7 +1275,7 @@ From PRD v2.1:
  But we still need to prove we can actually build this."
 
 **Key questions to answer:**
-1. Can we reliably parse all 3 platform formats? (>95% success rate)
+1. Can we reliably parse all 5 platform formats? (>95% success rate)
 2. Can browsers handle the processing? (<60 seconds)
 3. Do users feel the "aha moment"? (4/5 in testing)
 4. Are there critical UX blockers? (show-stoppers)
