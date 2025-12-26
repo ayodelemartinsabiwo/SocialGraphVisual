@@ -142,7 +142,7 @@ This UX specification embodies the six core principles from CLAUDE_ACE.md:
 
 **Visual Language:**
 - Privacy badges: Lock icons, "Local Processing" labels
-- Upload flow: Emphasize security scan, virus check, format validation
+- Upload flow: Emphasize format validation and encrypted transfer
 - Transparency: Show exactly what data is being processed
 
 **Performance-First**
@@ -717,7 +717,6 @@ Footer (Persistent)
 ├─ Privacy Policy
 ├─ Terms of Service
 ├─ FAQ
-├─ GitHub (open source)
 └─ © 2025 Visual Social Graph
 ```
 
@@ -749,7 +748,7 @@ Footer (Persistent)
 │  │                                                              │  │
 │  │         ┌──────────────────────────────────┐                 │  │
 │  │         │  Visualize Your Network (Free)  │                 │  │
-│  │         │  (Button: 56px h, Orange-500 bg) │                 │  │
+│  │         │  (Button: 56px h, Orange-600 bg) │                 │  │
 │  │         └──────────────────────────────────┘                 │  │
 │  │                   (24px gap below)                           │  │
 │  │                                                              │  │
@@ -781,8 +780,8 @@ Footer (Persistent)
 │  │  │              │  │              │  │              │      │  │
 │  │  │ Never ask for│  │We never touch│  │You upload it.│      │  │
 │  │  │your password.│  │your accounts.│  │You control it│      │  │
-│  │  │Manual upload │  │  100% local  │  │You delete it.│      │  │
-│  │  │     only.    │  │  processing. │  │   Anytime.   │      │  │
+│  │  │Manual upload │  │ 80%+ local   │  │You delete it.│      │  │
+│  │  │     only.    │  │ processing.  │  │   Anytime.   │      │  │
 │  │  │ (Body, 16px) │  │ (Body, 16px) │  │ (Body, 16px) │      │  │
 │  │  │              │  │              │  │              │      │  │
 │  │  └──────────────┘  └──────────────┘  └──────────────┘      │  │
@@ -816,15 +815,15 @@ Footer (Persistent)
 │  │  └────────┘         └────────┘         └────────┘           │  │
 │  │  (Cards: White bg, shadow-md, 32px padding, 48px gap)       │  │
 │  │                                                              │  │
-│  │         [Get Started Free →] (Button, Orange-500)            │  │
+│  │         [Get Started Free →] (Button, Orange-600)            │  │
 │  │                                                              │  │
 │  └──────────────────────────────────────────────────────────────┘  │
 │                                                                    │
 ├────────────────────────────────────────────────────────────────────┤
 │                      Footer (64px)                                 │
 │  ┌──────────────────────────────────────────────────────────────┐  │
-│  │ Privacy | Terms | FAQ | GitHub        © 2025 Visual Social  │  │
-│  │ (Links, Gray-600, 14px)                Graph (Gray-500)      │  │
+│  │ Privacy | Terms | FAQ        © 2025 Visual Social Graph      │  │
+│  │ (Links, Gray-600, 14px)                                      │  │
 │  └──────────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────────────────┘
 ```
@@ -920,7 +919,7 @@ Footer (Persistent)
 ```css
 /* Default State */
 .cta-button {
-  background: #F97316; /* Orange-500 */
+  background: #EA580C; /* Orange-600 (AA for 16–18px white text) */
   color: #FFFFFF;
   padding: 16px 32px;
   font-size: 18px;
@@ -932,20 +931,20 @@ Footer (Persistent)
 
 /* Hover State */
 .cta-button:hover {
-  background: #EA580C; /* Orange-600 */
+  background: #C2410C; /* Orange-700 */
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
 /* Active State */
 .cta-button:active {
-  background: #C2410C; /* Orange-700 */
+  background: #9A3412; /* Orange-800 */
   transform: translateY(0);
 }
 
 /* Focus State (keyboard navigation) */
 .cta-button:focus-visible {
-  outline: 2px solid #F97316;
+  outline: 2px solid #EA580C;
   outline-offset: 2px;
 }
 ```
@@ -1072,15 +1071,15 @@ Desktop (1440px):
 │  │  (H4, 20px, Gray-800)                                    │  │
 │  │                                                          │  │
 │  │  1. Go to Twitter Settings → Account → Download archive │  │
-│  │  2. Wait 24-48 hours for email notification             │  │
-│  │  3. Download ZIP file (typically 50-500MB)              │  │
+│  │  2. Wait 24-48 hours for platform notification          │  │
+│  │  3. Download ZIP file (size varies by account)          │  │
 │  │  4. Upload ZIP below (we'll extract locally)            │  │
 │  │  (Ordered list, Body, 16px, 8px gap between items)      │  │
 │  │                                                          │  │
 │  │  [Watch Video Tutorial] (Link, Orange-700, w/ icon)     │  │
 │  │                                                          │  │
 │  │  ⏱️ Wait Time: 24-48 hours (one-time)                   │  │
-│  │  📦 File Size: ~50-500MB                                 │  │
+│  │  📦 File Size: varies by account (up to 2GB cap)         │  │
 │  │  (Body Small, 14px, Gray-600, with emoji icons)         │  │
 │  │                                                          │  │
 │  ├──────────────────────────────────────────────────────────┤  │
@@ -1103,8 +1102,9 @@ Desktop (1440px):
 │  │                 or click to browse                       │  │
 │  │             (Body, 16px, Gray-700, centered)             │  │
 │  │                                                          │  │
-│  │                  ⚡ Max 500MB | .zip only                 │  │
-│  │            🔒 Scanned for viruses | Never stored         │  │
+│  │                  ⚡ Max 2GB | .zip only                   │  │
+│  │     🔒 Processed locally by default | Raw archive deleted after processing │  │
+│  │     Processed graph (pseudonymized) stored until you delete it │  │
 │  │          (Body Small, 14px, Gray-600, centered)          │  │
 │  │                                                          │  │
 │  └──────────────────────────────────────────────────────────┘  │
@@ -1173,12 +1173,12 @@ Desktop (1440px):
 │                Calculating insights                           │
 │              (List: Body, 16px, checkmarks Green-500)         │
 │                                                                │
-│                   Estimated time: 30 seconds                  │
+│                  Estimated time: 30-60 seconds                │
 │                  (Caption, 12px, Gray-600)                    │
 │                                                                │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │         🔒 Your data is being processed locally           │  │
-│  │            Nothing sent to our servers yet.               │  │
+│  │         🔒 Processing locally by default                  │  │
+│  │   If server-side fallback is needed, we'll ask first.     │  │
 │  │         (Info banner: Blue-50 bg, Blue-700 text)          │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                                                                │
@@ -1197,7 +1197,7 @@ Desktop (1440px):
 │              ⏰ Your Data Will Be Ready in 24-48 Hours         │
 │                    (H2, 36px, Gray-900)                        │
 │                                                                │
-│         We'll email you when Twitter sends your archive.       │
+│         Your platform will notify you when your archive is ready.│
 │              Meanwhile, explore a sample network:              │
 │                  (Body, 16px, Gray-700)                        │
 │                                                                │
@@ -1224,10 +1224,9 @@ Desktop (1440px):
 
 ✅ Platform cards: Touch-friendly (48px icon + 24px padding = 96px min-height)
 ✅ Upload zone: Works with drag-drop AND click-to-browse
-✅ File validation: Shows clear error if not ZIP or >500MB
+✅ File validation: Shows clear error if not ZIP or >2GB
 ✅ Processing: Never blank screen, progress visible within 100ms
 ✅ Sample network: Loads <1s, all interactions functional
-✅ Email reminder: Sent 24hrs after download request
 ✅ Keyboard accessible: Tab through all interactive elements
 
 ### 3.4 Visualization Interface
@@ -1306,7 +1305,7 @@ Desktop (1440px):
 
 #### 5-Stage Guided Reveal (First-Time Experience)
 
-**Stage 1: The Center (0-5 seconds)**
+**Stage 1: The Center (0-2 seconds)**
 
 ```
 Visual:
@@ -1322,7 +1321,9 @@ Animation:
 - Gentle pulse animation (1.0x → 1.1x → 1.0x, 2s loop)
 - Text fades in (delay 500ms, duration 1s)
 
-Interaction: Disabled (auto-advance after 5s)
+Interaction: Disabled (auto-advance after 2s)
+
+Controls: Skip, pause, replay
 
 Implementation:
 d3.select('#you-node')
@@ -1333,7 +1334,7 @@ d3.select('#you-node')
   .attr('fill', '#F97316');
 ```
 
-**Stage 2: Inner Circle (5-10 seconds)**
+**Stage 2: Inner Circle (2-5 seconds)**
 
 ```
 Visual:
@@ -1351,14 +1352,14 @@ Animation:
 
 Interaction: Still disabled
 
-Duration: 5 seconds (hold at end 2s before Stage 3)
+Duration: 3 seconds
 ```
 
-**Stage 3: Full Network (10-20 seconds)**
+**Stage 3: Full Network (5-8 seconds)**
 
 ```
 Visual:
-- All nodes visible (<1000) or sampled (>1000)
+- All nodes visible (≤5K) or sampled (>5K)
 - Community colors applied (8-color palette)
 - All edges visible (opacity based on weight: 0.2-0.8)
 - Camera: Zoom to full view (fit all nodes in viewport)
@@ -1373,10 +1374,10 @@ Animation:
 
 Interaction: Still disabled
 
-Duration: 10 seconds (progressive reveal, not instant)
+Duration: 3 seconds
 ```
 
-**Stage 4: Spotlight Insight (20-30 seconds)**
+**Stage 4: Spotlight Insight (8-10 seconds)**
 
 ```
 Visual:
@@ -1398,10 +1399,10 @@ Animation:
 
 Interaction: Still disabled (read-only)
 
-Duration: 10 seconds (allow time to read insight)
+Duration: 2 seconds (short spotlight; user can pause/replay)
 ```
 
-**Stage 5: Unlock Interactions (30+ seconds)**
+**Stage 5: Unlock Interactions (10+ seconds)**
 
 ```
 Visual:
@@ -1515,7 +1516,9 @@ node.on('mouseenter', function(event, d) {
   // Highlight connected edges
   svg.selectAll('line.edge')
     .attr('stroke-opacity', edge => {
-      if (edge.source === d || edge.target === d) return 1.0;
+      const sourceId = (typeof edge.source === 'string') ? edge.source : edge.source.id;
+      const targetId = (typeof edge.target === 'string') ? edge.target : edge.target.id;
+      if (sourceId === d.id || targetId === d.id) return 1.0;
       return 0.1; // Dim others
     });
 
@@ -1557,11 +1560,16 @@ node.on('click', function(event, d) {
     .attr('stroke-width', 4);
 
   // Focus camera on node (600ms smooth zoom)
+  // Apply transforms to an inner viewport <g> (not the <svg> element).
+  const viewport = svg.select('g.viewport').empty()
+    ? svg.append('g').attr('class', 'viewport')
+    : svg.select('g.viewport');
+
   const scale = 2.0;
   const x = -d.x * scale + width / 2;
   const y = -d.y * scale + height / 2;
 
-  svg.transition()
+  viewport.transition()
     .duration(600)
     .ease(d3.easeCubicInOut)
     .attr('transform', `translate(${x}, ${y}) scale(${scale})`);
@@ -1570,7 +1578,9 @@ node.on('click', function(event, d) {
   showDetailPanel(d);
 
   // Update URL (deep linking)
-  history.pushState(null, '', `?selected=${d.id}`);
+  const url = new URL(window.location.href);
+  url.searchParams.set('selected', d.id);
+  history.pushState(null, '', url);
 });
 ```
 
@@ -1666,9 +1676,9 @@ node.on('click', function(event, d) {
 
 #### Acceptance Criteria
 
-✅ 5-stage guided reveal completes in 30s (exact timing: 5s, 5s, 10s, 10s, unlock)
+✅ 5-stage guided reveal completes in 10-12s (exact timing: 2s, 3s, 3s, 2s, unlock)
 ✅ Graph renders <2s for 1K nodes, <5s for 5K nodes
-✅ Maintains 60 FPS during all interactions (zoom, pan, hover)
+✅ Maintains 60 FPS for <1K nodes; 30-60 FPS acceptable for 1K-5K nodes
 ✅ Touch gestures work (pinch, pan, tap) on all mobile devices
 ✅ Keyboard navigable (Tab to controls, Arrow keys pan, +/- zoom, Enter selects)
 ✅ Screen reader announces graph state ("247 nodes, 1,832 edges")
@@ -1801,7 +1811,7 @@ node.on('click', function(event, d) {
 
 #### Acceptance Criteria
 
-✅ Insights load <500ms (pre-computed server-side)
+✅ Insights load <500ms once computed (from local cache or server)
 ✅ Cards are touch-friendly (24px padding, 48px min button height)
 ✅ "View in Graph" link focuses visualization on relevant nodes
 ✅ Dismiss action removes card (localStorage: dismissed insights)
@@ -1977,14 +1987,20 @@ All graph interactions must maintain 60 FPS (16.67ms frame budget).
 **Behavior:**
 
 ```javascript
+const viewport = svg.select('g.viewport').empty()
+  ? svg.append('g').attr('class', 'viewport')
+  : svg.select('g.viewport');
+
 const zoom = d3.zoom()
   .scaleExtent([0.1, 10]) // Min 0.1x, max 10x
   .duration(300) // Smooth transition
+  .on('start', () => svg.style('cursor', 'grabbing'))
   .on('zoom', (event) => {
-    svg.attr('transform', event.transform);
-  });
+    viewport.attr('transform', event.transform);
+  })
+  .on('end', () => svg.style('cursor', 'grab'));
 
-svg.call(zoom);
+svg.style('cursor', 'grab').call(zoom);
 ```
 
 **Specifications:**
@@ -2013,7 +2029,7 @@ zoomOut.on('click', () => {
 
 // [⊡] fit button
 fitView.on('click', () => {
-  const bounds = svg.node().getBBox();
+  const bounds = viewport.node().getBBox();
   const fullWidth = bounds.width;
   const fullHeight = bounds.height;
   const scale = 0.9 / Math.max(fullWidth / width, fullHeight / height);
@@ -2043,21 +2059,9 @@ fitView.on('click', () => {
 
 **Implementation:**
 ```javascript
-const drag = d3.drag()
-  .on('start', () => {
-    svg.style('cursor', 'grabbing');
-  })
-  .on('drag', (event) => {
-    const transform = d3.zoomTransform(svg.node());
-    transform.x += event.dx;
-    transform.y += event.dy;
-    svg.attr('transform', transform);
-  })
-  .on('end', () => {
-    svg.style('cursor', 'grab');
-  });
-
-svg.call(drag);
+// Pan is handled by the same zoom behavior (drag-to-pan is built in).
+// No separate d3.drag() handler is needed; it can conflict with zoom transforms.
+svg.style('cursor', 'grab').call(zoom);
 ```
 
 **Keyboard Pan:**
@@ -2113,7 +2117,9 @@ node.on('mouseenter', function(event, d) {
       .transition()
       .duration(150)
       .attr('stroke-opacity', edge => {
-        const isConnected = edge.source.id === d.id || edge.target.id === d.id;
+        const sourceId = (typeof edge.source === 'string') ? edge.source : edge.source.id;
+        const targetId = (typeof edge.target === 'string') ? edge.target : edge.target.id;
+        const isConnected = sourceId === d.id || targetId === d.id;
         return isConnected ? 1.0 : 0.1;
       });
 
@@ -2329,6 +2335,10 @@ function renderSkeleton(nodeCount) {
   // Show spinner immediately
   showSpinner();
 
+  const viewport = svg.select('g.viewport').empty()
+    ? svg.append('g').attr('class', 'viewport')
+    : svg.select('g.viewport');
+
   // Create placeholder nodes (instant)
   const placeholders = Array.from({ length: Math.min(nodeCount, 100) }, (_, i) => ({
     id: `placeholder-${i}`,
@@ -2336,7 +2346,7 @@ function renderSkeleton(nodeCount) {
     y: Math.random() * height
   }));
 
-  svg.selectAll('circle.placeholder')
+  viewport.selectAll('circle.placeholder')
     .data(placeholders)
     .join('circle')
     .attr('class', 'placeholder')
@@ -2367,12 +2377,19 @@ function renderSkeleton(nodeCount) {
 **Implementation:**
 
 ```javascript
+// Module-scope so later stages can check alpha() for stability.
+let simulation;
+
 function renderNodes() {
+  const viewport = svg.select('g.viewport').empty()
+    ? svg.append('g').attr('class', 'viewport')
+    : svg.select('g.viewport');
+
   // Remove placeholders
-  svg.selectAll('circle.placeholder').remove();
+  viewport.selectAll('circle.placeholder').remove();
 
   // Initialize force simulation
-  const simulation = d3.forceSimulation(nodes)
+  simulation = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(edges).distance(50))
     .force('charge', d3.forceManyBody().strength(-100))
     .force('center', d3.forceCenter(width / 2, height / 2))
@@ -2380,7 +2397,7 @@ function renderNodes() {
     .alphaDecay(0.05); // Slower decay for smooth animation
 
   // Render nodes
-  const node = svg.selectAll('circle.node')
+  const node = viewport.selectAll('circle.node')
     .data(nodes)
     .join('circle')
     .attr('class', 'node')
@@ -2415,6 +2432,10 @@ function renderNodes() {
 **Force Simulation Optimization:**
 
 ```javascript
+if (!simulation) {
+  throw new Error('Simulation not initialized');
+}
+
 // For large graphs (>1000 nodes), use Barnes-Hut approximation
 if (nodes.length > 1000) {
   simulation.force('charge', d3.forceManyBody()
@@ -2448,13 +2469,17 @@ simulation.alphaTarget(0).on('tick', () => {
 
 ```javascript
 function renderCoreEdges() {
+  const viewport = svg.select('g.viewport').empty()
+    ? svg.append('g').attr('class', 'viewport')
+    : svg.select('g.viewport');
+
   // Sort edges by weight, take top 20%
-  const sortedEdges = edges.sort((a, b) => b.weight - a.weight);
+  const sortedEdges = edges.slice().sort((a, b) => b.weight - a.weight);
   const coreEdgeCount = Math.floor(edges.length * 0.2);
   const coreEdges = sortedEdges.slice(0, coreEdgeCount);
 
   // Render core edges
-  const edge = svg.selectAll('line.edge')
+  const edge = viewport.selectAll('line.edge')
     .data(coreEdges)
     .join('line')
     .attr('class', 'edge')
@@ -2470,7 +2495,7 @@ function renderCoreEdges() {
   const BATCH_SIZE = 100;
   for (let i = 0; i < coreEdges.length; i += BATCH_SIZE) {
     setTimeout(() => {
-      svg.selectAll('line.edge')
+      viewport.selectAll('line.edge')
         .filter((d, idx) => idx >= i && idx < i + BATCH_SIZE)
         .transition()
         .duration(300)
@@ -2500,14 +2525,25 @@ function renderCoreEdges() {
 
 ```javascript
 function renderRemainingEdges() {
+  const viewport = svg.select('g.viewport').empty()
+    ? svg.append('g').attr('class', 'viewport')
+    : svg.select('g.viewport');
+
+  const edgeKey = (e) => {
+    const sourceId = (typeof e.source === 'string') ? e.source : e.source.id;
+    const targetId = (typeof e.target === 'string') ? e.target : e.target.id;
+    return `${sourceId}-${targetId}`;
+  };
+
   // Get remaining 80% of edges
-  const sortedEdges = edges.sort((a, b) => b.weight - a.weight);
+  const sortedEdges = edges.slice().sort((a, b) => b.weight - a.weight);
   const coreEdgeCount = Math.floor(edges.length * 0.2);
   const remainingEdges = sortedEdges.slice(coreEdgeCount);
+  const remainingEdgeKeys = new Set(remainingEdges.map(edgeKey));
 
   // Update data binding to include all edges
-  const edge = svg.selectAll('line.edge')
-    .data(edges, d => `${d.source.id}-${d.target.id}`)
+  const edge = viewport.selectAll('line.edge')
+    .data(edges, edgeKey)
     .join('line')
     .attr('class', 'edge')
     .attr('x1', d => d.source.x)
@@ -2519,8 +2555,8 @@ function renderRemainingEdges() {
     .attr('stroke-opacity', d => edgeOpacity(d));
 
   // Fade in remaining edges (faster, less prominent)
-  svg.selectAll('line.edge')
-    .filter(d => remainingEdges.includes(d))
+  viewport.selectAll('line.edge')
+    .filter(d => remainingEdgeKeys.has(edgeKey(d)))
     .attr('stroke-opacity', 0)
     .transition()
     .duration(1000)
@@ -2528,7 +2564,7 @@ function renderRemainingEdges() {
 
   // Wait for layout to stabilize
   const checkStable = setInterval(() => {
-    if (simulation.alpha() < 0.01) {
+    if (simulation && simulation.alpha() < 0.01) {
       clearInterval(checkStable);
       setTimeout(() => renderLabelsAndEnable(), 100);
     }
@@ -3070,7 +3106,7 @@ Action: [Retry] button (Orange-500, 48px height)
   - "Graph visualization loaded. 247 nodes, 1,832 edges."
   - "Node selected: Sarah Johnson, Blue Community, 84 connections"
 ✅ URL updates on selection (`?selected=node_123`)
-✅ Guided reveal completes in 30 seconds (first-time only)
+✅ Guided reveal completes in 10-12 seconds (first-time only)
 ✅ Unit test coverage >80%
 
 #### React Implementation Example
@@ -3257,7 +3293,7 @@ label:hover {
 ```typescript
 interface UploadZoneProps {
   onUpload: (file: File) => Promise<void>;
-  maxSizeMB?: number;                // Default: 500
+  maxSizeMB?: number;                // Default: 2048
   acceptedFormats?: string[];        // Default: ['.zip']
   onProgress?: (percent: number) => void;
 }
@@ -3275,8 +3311,10 @@ interface UploadZoneProps {
 │           or click to browse           │
 │      (Body, 16px, Gray-700)            │
 │                                        │
-│         ⚡ Max 500MB | .zip only        │
-│   🔒 Scanned for viruses | Never stored│
+│          ⚡ Max 2GB | .zip only         │
+│     🔒 Processed locally by default     │
+│   Raw archive deleted after processing  │
+│ Processed graph stored until you delete│
 │     (Body Small, 14px, Gray-600)       │
 │                                        │
 └────────────────────────────────────────┘
@@ -3311,7 +3349,7 @@ Text: "Drop to upload" (Orange-700)
 **Error State:**
 ```
 (Border: 2px solid Red-500, bg: Red-50)
-❌ Upload failed: File too large (max 500MB)
+❌ Upload failed: File too large (max 2GB)
 [Try Again] (Button, Orange-500)
 ```
 
@@ -3320,7 +3358,7 @@ Text: "Drop to upload" (Orange-700)
 ```typescript
 const UploadZone: React.FC<UploadZoneProps> = ({
   onUpload,
-  maxSizeMB = 500,
+  maxSizeMB = 2048,
   acceptedFormats = ['.zip'],
   onProgress
 }) => {
@@ -3909,7 +3947,7 @@ interface BadgeProps {
    ├─ Privacy Policy
    ├─ Terms
    ├─ FAQ
-   └─ GitHub
+
 ```
 
 **Keyboard Shortcuts Reference:**
@@ -4054,7 +4092,7 @@ announcement.textContent = `Selected: ${node.name}, ${node.community} community,
 </div>
 
 <div id="upload-instructions" class="sr-only">
-  Maximum file size 500 megabytes. Accepted format: ZIP only.
+  Maximum file size 2GB. Accepted format: ZIP only.
 </div>
 ```
 
@@ -4425,7 +4463,6 @@ module.exports = {
    - Interactive graph visualization (D3.js)
    - Smooth animations (CSS transitions, Framer Motion)
    - Touch gestures
-   - Real-time updates
 
 3. **Premium (High-end devices):**
    - 60 FPS animations
@@ -5022,13 +5059,13 @@ jobs:
 
 #### 5-Stage Guided Reveal
 
-**Decision:** Progressive disclosure of graph in 5 stages over 30 seconds (first-time experience).
+**Decision:** Progressive disclosure of graph in 5 stages over 10-12 seconds (first-time experience).
 
 **Rationale:**
 - **Cognitive Load:** Full graph at once is overwhelming (247 nodes, 1,832 edges). Stages prevent information overload.
 - **Storytelling:** Builds narrative: "You" → "Core relationships" → "Communities" → "Key insight" → "Explore".
 - **Aha Moment:** Stage 4 spotlight creates emotional payoff, justifies download friction.
-- **Perceived Performance:** Progressive reveal feels faster than staring at blank screen for 30s.
+- **Perceived Performance:** Progressive reveal feels faster than staring at a blank screen.
 - **User Testing Insight:** Early prototypes showed 62% drop-off when showing full graph immediately. Guided reveal reduced to 18% drop-off.
 
 **Trade-offs:**
@@ -5059,7 +5096,7 @@ jobs:
 - **Privacy Moat:** Competitive advantage. "We don't connect to your accounts" is powerful differentiation.
 - **Risk Mitigation:** No API rate limits, no OAuth token revocations, no platform policy changes.
 - **Trust:** Users concerned about data privacy (especially creators) prefer manual upload.
-- **Platform Independence:** Works with ANY platform (Twitter, Instagram, LinkedIn, TikTok, even defunct platforms like Google+).
+- **Platform Independence:** Works with ANY platform (Twitter/X, Instagram, LinkedIn, Facebook, TikTok, even defunct platforms like Google+).
 - **One-Time Friction:** Download wait (24-48hrs) is one-time. Subsequent uploads instant.
 
 **Trade-offs:**
@@ -5107,7 +5144,7 @@ jobs:
 | D3.js for graphs | Architecture v1.0 | 3.2 Frontend Stack | ✅ Examples (Section 5.1, 9.3) |
 | Framer Motion animations | Architecture v1.0 | 3.2 Frontend Stack | ✅ Referenced (Section 4.3) |
 
-**No Conflicts Found** ✅
+**No P0 conflicts after alignment updates** ✅
 
 ### 11.3 Glossary
 
@@ -5138,6 +5175,21 @@ jobs:
 
 **Major Sections Added:**
 1. Design Philosophy & Rationale (aligned with CLAUDE_ACE, VSG_DESIGN_PRINCIPLE)
+
+#### v1.1 (December 26, 2025) - SRS/Architecture Alignment
+
+**Changes:**
+- Updated trust messaging to match the 80% client-side processing rule
+- Updated upload constraints to 2GB and clarified “local by default / server-side fallback is opt-in”
+- Aligned guided reveal timings and sampling threshold to match SRS performance constraints
+
+#### v1.2 (December 26, 2025) - UX Contract Hardening
+
+**Changes:**
+- Removed email-based reminders/copy and UI GitHub references
+- Removed “virus/security scan” claims; kept validation/extraction checks only
+- Corrected incorrect D3 interaction snippets (transform target, zoom/pan behavior, edge filtering)
+- Updated wireframe copy to avoid implying a 500MB cap (max remains 2GB)
 2. Design System Foundation
    - Orange/Black/White color palette (full spectrum with contrast ratios)
    - Typography (system fonts, responsive scale)

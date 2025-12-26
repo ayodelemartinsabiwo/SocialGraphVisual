@@ -163,7 +163,7 @@ Our approach: Say no to almost everything
 From Product Strategy Document:
 "Features must meet 3 of 4 criteria:
  (1) Serves primary user segment
- (2) Strengthens core value prop  
+ (2) Strengthens core value prop
  (3) Requested by >20% of users
  (4) Feasible within 2-week sprint"
 
@@ -518,7 +518,7 @@ From PRD v2.1:
  But we still need to prove we can actually build this."
 
 **Key questions to answer:**
-1. Can we reliably parse all 3 platform formats? (>95% success rate)
+1. Can we reliably parse all 5 platform formats? (>95% success rate)
 2. Can browsers handle the processing? (<60 seconds)
 3. Do users feel the "aha moment"? (4/5 in testing)
 4. Are there critical UX blockers? (show-stoppers)
@@ -540,6 +540,9 @@ Download actual data exports:
 ├─ Twitter/X: Founder's personal archive (2-10 min process)
 ├─ Instagram: Founder's personal archive (10-30 min process)
 ├─ LinkedIn: Founder's personal connections (10-45 min process)
+├─ Facebook: Founder's personal archive (time varies)
+└─ TikTok: Founder's personal archive (time varies)
+
 └─ Create test dataset library (small, medium, large accounts)
 
 Test with varied account sizes:
@@ -555,7 +558,7 @@ Document exact file structures:
 └─ Document edge cases (empty files, corrupted data)
 ```
 
-**Deliverable:** Test dataset library (9 files: 3 platforms × 3 sizes)
+**Deliverable:** Test dataset library (15 files: 5 platforms × 3 sizes)
 
 **Day 3-4: Build Minimal Parsers**
 
@@ -585,6 +588,16 @@ LinkedIn parser:
 ├─ Support non-Latin characters (Chinese, Arabic, etc.)
 └─ Unit tests with real data (all 3 sizes)
 
+Facebook parser:
+├─ Detect supported export variants
+├─ Extract: connections graph (where available)
+└─ Unit tests with real data (all 3 sizes)
+
+TikTok parser:
+├─ Detect supported export variants
+├─ Extract: connections graph (where available)
+└─ Unit tests with real data (all 3 sizes)
+
 Version detection logic:
 ├─ Detect Twitter format version (2023 vs 2024 vs 2025)
 ├─ Detect Instagram format version (old vs new)
@@ -600,8 +613,8 @@ Testing: Vitest (unit tests)
 Error handling: Try-catch with specific error types
 ```
 
-**Deliverable:** 
-- 3 working parsers (Twitter, Instagram, LinkedIn)
+**Deliverable:**
+- 5 working parsers (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 - Unit test suite (>90% coverage)
 - Performance benchmarks (parsing speed per file size)
 
@@ -626,7 +639,7 @@ Parsing speed testing:
 Mobile browser testing:
 ├─ iOS Safari (known issues with large files)
 ├─ Android Chrome (better support)
-├─ File upload limits (iOS <500MB?)
+├─ File upload limits (iOS Safari; validate up to 2GB cap)
 └─ Document limitations (set user expectations)
 
 Edge cases:
@@ -757,23 +770,23 @@ class UploadFlow {
       this.showError("Invalid file for platform");
       return;
     }
-    
+
     // 2. Parse in Web Worker (non-blocking)
     const worker = new Worker('parser-worker.js');
     const parsed = await this.parseFile(file, platform, worker);
-    
+
     // 3. Show preview
     const preview = this.generatePreview(parsed);
     const confirmed = await this.userConfirms(preview);
-    
+
     if (!confirmed) return;
-    
+
     // 4. Build graph
     const graph = this.buildGraph(parsed);
-    
+
     // 5. Render with progressive reveal
     await this.renderGraph(graph);
-    
+
     // 6. Mark as complete
     this.showSuccess(graph.stats);
   }
@@ -871,7 +884,7 @@ User 5 (Large network):
 ```
 GO to Phase 1 if ALL of:
 ✅ Parser success rate >95% (technical validation)
-   ├─ Tested with 9 files (3 platforms × 3 sizes)
+   ├─ Tested with 15 files (5 platforms × 3 sizes)
    ├─ Success = extracted core data (followers, following, posts)
    └─ Failure = crashes, corrupts data, or completely wrong output
 
@@ -953,7 +966,7 @@ Store in: Project wiki, share with team/advisors
 ### **3.5 Phase 0 Deliverables Summary**
 
 **Code:**
-- 3 platform parsers (Twitter, Instagram, LinkedIn)
+- 5 platform parsers (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 - Version detection logic
 - Basic graph visualization (D3.js)
 - Upload UI prototype
@@ -973,7 +986,7 @@ Store in: Project wiki, share with team/advisors
 - What to build next (Phase 1 priorities)
 
 **Artifacts:**
-- Test dataset library (9 files)
+- Test dataset library (15 files)
 - User testing videos (5 participants)
 - Screenshots of aha moments
 - Feature request backlog (prioritized)
@@ -1016,7 +1029,7 @@ Landing page design:
 ├─ Trust statement: "We don't connect to your accounts"
 ├─ Social proof: Testimonials (from Phase 0 users)
 ├─ How it works: 3 steps (download, upload, discover)
-├─ Platform logos: Twitter, Instagram, LinkedIn
+├─ Platform logos: Twitter/X, Instagram, LinkedIn, Facebook, TikTok
 ├─ CTA: "Visualize Your Network (Free)"
 └─ FAQ: Address common concerns (privacy, time, etc.)
 
@@ -1202,7 +1215,7 @@ Privacy-first architecture:
 **Testing:**
 ```
 Test matrix (expand from Phase 0):
-├─ 9 test files (3 platforms × 3 sizes) → 30 test files
+├─ 15 test files (5 platforms × 3 sizes) → 30 test files
 ├─ Include: Edge cases (corrupted, incomplete, very old)
 ├─ Browsers: Chrome, Safari, Firefox (Windows, Mac, Linux)
 ├─ Mobile: iOS Safari, Android Chrome (limited testing)
@@ -1216,7 +1229,7 @@ Success criteria:
 ```
 
 **Deliverable:**
-- Complete upload flow (all 3 platforms)
+- Complete upload flow (all 5 platforms)
 - Production-grade parsers (>95% success rate)
 - Privacy-first architecture (80% client-side)
 - Comprehensive test suite (30 test files)
@@ -1287,7 +1300,7 @@ Key Connector insight:
 function detectCommunities(graph) {
   // Use Louvain algorithm (library: graphology-communities)
   const communities = louvain(graph);
-  
+
   // Generate insight
   const insight = {
     type: 'community_detection',
@@ -1300,7 +1313,7 @@ function detectCommunities(graph) {
     narrative: generateNarrative('community_detection', data),
     actions: generateActions('community_detection', data)
   };
-  
+
   return insight;
 }
 ```
@@ -1572,10 +1585,10 @@ If quantitative metrics pass but qualitative signals weak:
 
 **Product:**
 - Complete web app (Next.js + React)
-- 3 platform parsers (production-grade)
+- 5 platform parsers (production-grade)
 - Interactive network graph (D3.js visualization)
 - 4 basic insights (with confidence levels)
-- Upload flow (all 3 platforms)
+- Upload flow (all 5 platforms)
 - User authentication (magic link + Google)
 
 **Infrastructure:**
@@ -1683,7 +1696,7 @@ This is the "killer feature" that differentiates us from static graph tools.
 class RecommendationEngine {
   async generateRecommendations(graph, user) {
     const recommendations = [];
-    
+
     // 1. Bridge Accounts (high-value connections)
     const bridges = this.findBridges(graph);
     recommendations.push({
@@ -1693,7 +1706,7 @@ class RecommendationEngine {
       narrative: this.generateBridgeNarrative(bridges),
       action: this.generateBridgeActions(bridges)
     });
-    
+
     // 2. Untapped Segments (re-engagement opportunity)
     const untapped = this.findUntappedSegments(graph);
     recommendations.push({
@@ -1703,7 +1716,7 @@ class RecommendationEngine {
       narrative: this.generateUntappedNarrative(untapped),
       action: this.generateUntappedActions(untapped)
     });
-    
+
     // 3. Collaboration Potential (audience overlap)
     const collaborators = await this.findCollaborators(graph, user);
     recommendations.push({
@@ -1713,7 +1726,7 @@ class RecommendationEngine {
       narrative: this.generateCollabNarrative(collaborators),
       action: this.generateCollabActions(collaborators)
     });
-    
+
     return recommendations;
   }
 }
@@ -3188,7 +3201,7 @@ No wrong answer. Each path is valid. Align with personal goals and market condit
 
 ```
 Phase 0:
-├─ Platform parsers (Twitter, Instagram, LinkedIn)
+├─ Platform parsers (Twitter/X, Instagram, LinkedIn, Facebook, TikTok)
 ├─ File upload (chunked, resumable)
 └─ Basic graph visualization (D3.js force-directed)
 

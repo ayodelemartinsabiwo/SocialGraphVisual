@@ -145,9 +145,9 @@ Deliverable: Development environment ready, can run empty app
 
 ### **Week 3: Phase 0 Execution**
 
-**Days 11-14: Parser Implementation & Testing**
+**Days 11-16: Parser Implementation & Testing**
 ```
-Objective: Build and validate all 3 parsers (>95% success rate)
+Objective: Build and validate all 5 parsers (>95% success rate)
 
 Development:
 ├─ Day 11: Twitter parser
@@ -164,7 +164,13 @@ Development:
 │  ├─ Implement: CSV parsing (PapaParse)
 │  ├─ Handle: Missing data (empty email), encoding (UTF-8)
 │  └─ Test: 10 LinkedIn files (aim for 100% success)
-├─ Day 14: Performance testing & optimization
+├─ Day 14: Facebook parser
+│  ├─ Implement: ZIP extraction + supported export variant detection
+│  └─ Test: Facebook files (aim for maximum coverage of known variants)
+├─ Day 15: TikTok parser
+│  ├─ Implement: ZIP extraction + supported export variant detection
+│  └─ Test: TikTok files (aim for maximum coverage of known variants)
+├─ Day 16: Performance testing & optimization
 │  ├─ Measure: Time to parse each file
 │  ├─ Optimize: Web Worker implementation, streaming
 │  └─ Target: <60 seconds for 500MB file
@@ -173,7 +179,7 @@ Testing:
 ├─ Success criteria: >95% parser success rate (28/30 files minimum)
 ├─ Performance: <60 seconds for typical account (measured)
 ├─ Documentation: Parser version map (which files use which parser)
-└─ Deliverable: 3 production-ready parsers, test report
+└─ Deliverable: 5 production-ready parsers, test report
 
 Decision gate preparation:
 ├─ Metric 1: Parser success rate (target: >95%)
@@ -182,24 +188,24 @@ Decision gate preparation:
 └─ Documentation: Phase 0 validation report
 ```
 
-**Days 15-17: Basic Visualization & Aha Moment Test**
+**Days 17-19: Basic Visualization & Aha Moment Test**
 ```
 Objective: Render force-directed graph and validate aha moment with 5 users
 
 Development:
-├─ Day 15: D3.js force-directed graph
+├─ Day 17: D3.js force-directed graph
 │  ├─ Implement: Basic force simulation (charge, link, center)
 │  ├─ Rendering: SVG (start simple, Canvas later)
 │  ├─ Data: Use parsed graph from Week 3 Day 11-13
 │  └─ Test: Renders without crashing, visually coherent
-├─ Day 16: Basic interactions
+├─ Day 18: Basic interactions
 │  ├─ Zoom/pan: D3-zoom
 │  ├─ Hover: Highlight node + connected edges
 │  └─ Performance: 60 FPS for <1K nodes (measure)
-├─ Day 17: User testing (Aha Moment validation)
+├─ Day 19: User testing (Aha Moment validation)
 │  ├─ Recruit: 5 test users (2 creators, 2 professionals, 1 technical)
 │  ├─ Process:
-│  │  ├─ User downloads their own data (Twitter/Instagram/LinkedIn)
+│  │  ├─ User downloads their own data (supported platforms)
 │  │  ├─ User uploads to prototype
 │  │  ├─ Observe: Emotional reaction (surprise, delight, curiosity)
 │  │  └─ Interview: "What did you discover?" "Would you use this?"
