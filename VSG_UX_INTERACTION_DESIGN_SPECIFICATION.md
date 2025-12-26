@@ -1,5 +1,5 @@
 # Visual Social Graph: UX/Interaction Design Specification
-## Version 1.0 - Comprehensive Design System & Interface Specifications
+## Version 1.1 - Comprehensive Design System & Interface Specifications
 
 *"Every pixel should sing. Every color should have purpose. Every interaction should feel inevitable."*
 
@@ -9,9 +9,9 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Version** | 1.0 |
-| **Date** | December 25, 2025 |
-| **Status** | Approved - Ready for Implementation |
+| **Version** | 1.1 |
+| **Date** | December 26, 2025 |
+| **Status** | Revised - Ready for Implementation |
 | **Owner** | Product Design / UX Team |
 | **Review Cycle** | Weekly (Phase 1), Monthly (Phase 2+) |
 | **Philosophy Alignment** | CLAUDE_ACE.md, VSG_DESIGN_PRINCIPLE.md |
@@ -44,6 +44,7 @@
    - 3.4 [Visualization Interface](#34-visualization-interface)
    - 3.5 [Insights Dashboard](#35-insights-dashboard)
    - 3.6 [Empty & Error States](#36-empty--error-states)
+  - 3.7 [Settings & Data Management](#37-settings--data-management)
 4. [Interaction Specifications](#4-interaction-specifications)
    - 4.1 [Graph Interactions](#41-graph-interactions)
    - 4.2 [Progressive Graph Rendering](#42-progressive-graph-rendering)
@@ -135,9 +136,11 @@ This UX specification embodies the six core principles from CLAUDE_ACE.md:
 **Privacy-First Architecture**
 
 **UX Implications:**
-- Manual upload only - no OAuth, no API connections
+- Manual upload only (no social platform OAuth or API connections)
+- Sign-in options (Magic Link / optional Google) authenticate to VSG only and DO NOT grant access to social accounts
 - Trust signals everywhere: "We don't connect to your accounts. We respect them."
 - 80% client-side processing - visible in UX (progress shows "Analyzing locally...")
+- Optional "Offline / Local-Only" mode: zero uploads, no account required, export standalone visualization
 - Data deletion prominent: Clear "Delete My Account" button in settings
 
 **Visual Language:**
@@ -676,13 +679,14 @@ Respect user preferences:
 
 ```
 /                           Landing Page
-├─ /signup                  User Registration (Magic Link)
-├─ /login                   User Login (Magic Link)
+├─ /signup                  User Registration (Magic Link / Google)
+├─ /login                   User Login (Magic Link / Google)
 ├─ /upload                  Upload Flow
+│  ├─ Choose Analysis Mode (Standard vs Offline / Local-Only)
 │  ├─ Platform Selection
 │  ├─ Download Instructions (per platform)
 │  ├─ File Upload (drag & drop)
-│  ├─ Processing (wait-time engagement)
+│  ├─ Processing (with progress)
 │  └─ Success (redirect to visualization)
 ├─ /visualize/:graphId      Visualization Interface
 │  ├─ Guided Reveal (first-time)
@@ -780,23 +784,19 @@ Footer (Persistent)
 │  │  │              │  │              │  │              │      │  │
 │  │  │ Never ask for│  │We never touch│  │You upload it.│      │  │
 │  │  │your password.│  │your accounts.│  │You control it│      │  │
-│  │  │Manual upload │  │ 80%+ local   │  │You delete it.│      │  │
-│  │  │     only.    │  │ processing.  │  │   Anytime.   │      │  │
+│  │  │Manual upload │  │Local-first   │  │You delete it.│      │  │
+│  │  │     only.    │  │processing.   │  │   Anytime.   │      │  │
 │  │  │ (Body, 16px) │  │ (Body, 16px) │  │ (Body, 16px) │      │  │
 │  │  │              │  │              │  │              │      │  │
 │  │  └──────────────┘  └──────────────┘  └──────────────┘      │  │
 │  │  (Cards: Orange-100 bg, 24px padding, shadow-sm, 24px gap)  │  │
 │  │                                                              │  │
 │  │         [Why Privacy Matters →] (Link, Orange-700)           │  │
+│  │         Prefer zero uploads? [Offline / Local-Only →] (Link) │  │
 │  │                                                              │  │
-│  └──────────────────────────────────────────────────────────────┘  │
-│                                                                    │
-├────────────────────────────────────────────────────────────────────┤
-│                                                                    │
 │               How It Works (3-Step Timeline)                       │
 │  ┌──────────────────────────────────────────────────────────────┐  │
 │  │                                                              │  │
-│  │             From Data to Insights in 5 Minutes               │  │
 │  │              (H2, 36px, Gray-900, centered)                  │  │
 │  │                   (64px gap below)                           │  │
 │  │                                                              │  │
@@ -969,11 +969,42 @@ Footer (Persistent)
 ### 3.3 Upload Flow
 
 **Emotional Journey:**
-1. Platform Selection → Clear, organized
-2. Download Instructions → Supportive, patient
-3. Upload → Trustworthy, secure
-4. Processing → Engaging, not boring
-5. Success → Exciting, anticipation
+1. Choose Mode → Empowering, clear
+2. Platform Selection → Clear, organized
+3. Download Instructions → Supportive, patient
+4. Upload → Trustworthy, secure
+5. Processing → Engaging, not boring
+6. Success → Exciting, anticipation
+
+#### Screen 0: Choose Analysis Mode
+
+**Goal:** Make the privacy/storage tradeoffs explicit before any file interaction.
+
+**Modes:**
+- **Standard (Recommended):** Local parsing + optional cloud features (history, multi-device access). Saves only a pseudonymized graph.
+- **Offline / Local-Only:** Zero uploads, no account required. Stores analysis only in this browser/device. Supports export of a standalone visualization.
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                                                                │
+│                 Choose Analysis Mode                           │
+│                    (H2, 36px, Gray-900)                        │
+│                                                                │
+│  ○ Standard (Recommended)                                      │
+│    • Best for saved history and multi-device access            │
+│    • Uploads pseudonymized graph only (no raw archives)        │
+│                                                                │
+│  ● Offline / Local-Only 🔐                                     │
+│    • Zero uploads, no account required                         │
+│    • Stores analysis on this device only                        │
+│    • Export standalone HTML visualization                       │
+│                                                                │
+│  [Continue] (Button, Orange-500)                               │
+│                                                                │
+│  (If user selects Standard and is logged out: prompt Magic Link
+│   login before continuing.)                                     │
+└────────────────────────────────────────────────────────────────┘
+```
 
 #### Screen 1: Platform Selection
 
@@ -1103,8 +1134,8 @@ Desktop (1440px):
 │  │             (Body, 16px, Gray-700, centered)             │  │
 │  │                                                          │  │
 │  │                  ⚡ Max 2GB | .zip only                   │  │
-│  │     🔒 Processed locally by default | Raw archive deleted after processing │  │
-│  │     Processed graph (pseudonymized) stored until you delete it │  │
+│  │     🔒 Standard: Process locally; store pseudonymized graph until you delete │  │
+│  │     🔐 Local-Only: No uploads; analysis stored on this device only │  │
 │  │          (Body Small, 14px, Gray-600, centered)          │  │
 │  │                                                          │  │
 │  └──────────────────────────────────────────────────────────┘  │
@@ -1177,8 +1208,9 @@ Desktop (1440px):
 │                  (Caption, 12px, Gray-600)                    │
 │                                                                │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │         🔒 Processing locally by default                  │  │
-│  │   If server-side fallback is needed, we'll ask first.     │  │
+│  │         🔒 Your data is being processed locally           │  │
+│  │         Standard: saves a pseudonymized graph to your account
+│  │         Local-Only: no network requests (this device only)
 │  │         (Info banner: Blue-50 bg, Blue-700 text)          │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                                                                │
@@ -1881,6 +1913,32 @@ node.on('click', function(event, d) {
 └────────────────────────────────────────────────────────────────┘
 ```
 
+#### Warning State: Partial Import (Some Data Skipped)
+
+**When it happens:** The parser can extract most records but some files/rows are corrupted or unsupported.
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                    ⚠️ Icon (64px, Amber-500)                   │
+│                                                                │
+│                 Imported With Warnings                         │
+│                 (H2, 36px, Gray-900)                           │
+│                                                                │
+│   We imported most of your archive, but skipped some items.    │
+│   Your graph is still usable; some insights may be lower       │
+│   confidence.                                                  │
+│                                                                │
+│   Summary:                                                     │
+│   • Imported: 9,842 records                                    │
+│   • Skipped: 317 records (corrupted/unsupported)               │
+│                                                                │
+│   [Continue to Visualization] (Button, Orange-500)             │
+│   [Re-upload] (Button, Gray-200)                               │
+│                                                                │
+│   [View Skipped Items] (Expandable list + copyable details)    │
+└────────────────────────────────────────────────────────────────┘
+```
+
 #### Error State: Network Too Large
 
 ```
@@ -1966,6 +2024,42 @@ node.on('click', function(event, d) {
 ✅ Empty states guide to next logical step (never just "No data")
 ✅ Icons reinforce message (visual + text)
 ✅ Tone is helpful, not blaming ("We couldn't..." not "You failed...")
+
+---
+
+### 3.7 Settings & Data Management
+
+**Goal:** Make user control real and auditable (delete/export/understand storage).
+
+#### Settings → Data Management (Key Screen)
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│ Settings                                                      │
+│ Tabs: Account | Privacy | Data Management                      │
+├────────────────────────────────────────────────────────────────┤
+│ Data Management                                                │
+│                                                                │
+│ Storage & Retention                                            │
+│ • Raw archives: processed locally; not stored long-term         │
+│ • Standard mode: pseudonymized graphs saved until you delete    │
+│ • Local-only mode: stored on this device only                   │
+│ • Exports: auto-delete after 7 days                             │
+│                                                                │
+│ Delete a Network                                                │
+│ [Select network ▾]   [Delete Network] (Button, Red-500)        │
+│ Helper text: Recoverable for 30 days, then permanently removed. │
+│                                                                │
+│ Delete Account                                                  │
+│ [Delete My Account] (Button, Red-500)                           │
+│ Helper text: Removed from production systems promptly; backups  │
+│ are purged within 90 days.                                      │
+└────────────────────────────────────────────────────────────────┘
+```
+
+**Copy requirements (must be consistent across UI):**
+- Never imply "instant deletion from backups".
+- Separate: (1) delete from active systems, (2) backup purge window, (3) recoverable soft-delete windows.
 
 ---
 
@@ -5090,7 +5184,9 @@ jobs:
 
 #### Manual Upload Only (No OAuth)
 
-**Decision:** Users manually download data archives from platforms, then upload ZIPs. No OAuth/API connections.
+**Decision:** Users manually download data archives from platforms, then upload ZIPs. No social platform OAuth/API connections.
+
+**Clarification:** VSG may offer Magic Link and/or Google sign-in for user authentication, but this does not grant access to any social platform accounts.
 
 **Rationale:**
 - **Privacy Moat:** Competitive advantage. "We don't connect to your accounts" is powerful differentiation.
@@ -5168,6 +5264,14 @@ jobs:
 ### 11.4 Change Log
 
 **Version History**
+
+#### v1.1 (December 26, 2025) - Privacy/Mode Alignment Update
+
+**Changes:**
+1. Added explicit analysis mode selection (Standard vs Offline / Local-Only)
+2. Clarified privacy contract language (no social OAuth; local-first processing; pseudonymized storage in Standard mode)
+3. Added Partial Import warning state (graceful degradation)
+4. Added Settings & Data Management screen with retention/deletion copy requirements
 
 #### v1.0 (December 25, 2025) - Initial Release
 
