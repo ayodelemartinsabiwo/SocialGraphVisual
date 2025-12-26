@@ -5216,9 +5216,3 @@ jobs:
 **Owner:** Product Design / UX Team
 **Reviewers:** Product Manager, Lead Engineer, Accessibility Specialist
 **Approval Date:** December 25, 2025
-
----
-
-*Generated with [Claude Code](https://claude.com/claude-code)*
-
-*Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>*
