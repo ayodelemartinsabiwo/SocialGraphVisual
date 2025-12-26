@@ -142,7 +142,7 @@ This UX specification embodies the six core principles from CLAUDE_ACE.md:
 
 **Visual Language:**
 - Privacy badges: Lock icons, "Local Processing" labels
-- Upload flow: Emphasize format validation and encrypted transfer
+- Upload flow: Emphasize format validation (format, size, extraction checks) and encrypted transfer
 - Transparency: Show exactly what data is being processed
 
 **Performance-First**
@@ -1197,7 +1197,7 @@ Desktop (1440px):
 │              ⏰ Your Data Will Be Ready in 24-48 Hours         │
 │                    (H2, 36px, Gray-900)                        │
 │                                                                │
-│         Your platform will notify you when your archive is ready.│
+│   Your platform will notify you when your archive is ready.    │
 │              Meanwhile, explore a sample network:              │
 │                  (Body, 16px, Gray-700)                        │
 │                                                                │
