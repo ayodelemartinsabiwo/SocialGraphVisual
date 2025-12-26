@@ -142,7 +142,7 @@ This UX specification embodies the six core principles from CLAUDE_ACE.md:
 
 **Visual Language:**
 - Privacy badges: Lock icons, "Local Processing" labels
-- Upload flow: Emphasize security scan, virus check, format validation
+- Upload flow: Emphasize format validation (format, size, extraction checks) and encrypted transfer
 - Transparency: Show exactly what data is being processed
 
 **Performance-First**
@@ -717,7 +717,6 @@ Footer (Persistent)
 ├─ Privacy Policy
 ├─ Terms of Service
 ├─ FAQ
-├─ GitHub (open source)
 └─ © 2025 Visual Social Graph
 ```
 
@@ -1103,8 +1102,9 @@ Desktop (1440px):
 │  │                 or click to browse                       │  │
 │  │             (Body, 16px, Gray-700, centered)             │  │
 │  │                                                          │  │
-│  │                  ⚡ Max 500MB | .zip only                 │  │
-│  │            🔒 Scanned for viruses | Never stored         │  │
+│  │                  ⚡ Max 2GB | .zip only                   │  │
+│  │     🔒 Processed locally by default | Raw archive deleted after processing │  │
+│  │     Processed graph (pseudonymized) stored until you delete it │  │
 │  │          (Body Small, 14px, Gray-600, centered)          │  │
 │  │                                                          │  │
 │  └──────────────────────────────────────────────────────────┘  │
@@ -1197,7 +1197,7 @@ Desktop (1440px):
 │              ⏰ Your Data Will Be Ready in 24-48 Hours         │
 │                    (H2, 36px, Gray-900)                        │
 │                                                                │
-│         We'll email you when Twitter sends your archive.       │
+│   Your platform will notify you when your archive is ready.    │
 │              Meanwhile, explore a sample network:              │
 │                  (Body, 16px, Gray-700)                        │
 │                                                                │
@@ -1224,10 +1224,9 @@ Desktop (1440px):
 
 ✅ Platform cards: Touch-friendly (48px icon + 24px padding = 96px min-height)
 ✅ Upload zone: Works with drag-drop AND click-to-browse
-✅ File validation: Shows clear error if not ZIP or >500MB
+✅ File validation: Shows clear error if not ZIP or >2GB
 ✅ Processing: Never blank screen, progress visible within 100ms
 ✅ Sample network: Loads <1s, all interactions functional
-✅ Email reminder: Sent 24hrs after download request
 ✅ Keyboard accessible: Tab through all interactive elements
 
 ### 3.4 Visualization Interface
@@ -3275,8 +3274,10 @@ interface UploadZoneProps {
 │           or click to browse           │
 │      (Body, 16px, Gray-700)            │
 │                                        │
-│         ⚡ Max 500MB | .zip only        │
-│   🔒 Scanned for viruses | Never stored│
+│          ⚡ Max 2GB | .zip only         │
+│     🔒 Processed locally by default     │
+│   Raw archive deleted after processing  │
+│ Processed graph stored until you delete│
 │     (Body Small, 14px, Gray-600)       │
 │                                        │
 └────────────────────────────────────────┘
@@ -3909,7 +3910,7 @@ interface BadgeProps {
    ├─ Privacy Policy
    ├─ Terms
    ├─ FAQ
-   └─ GitHub
+
 ```
 
 **Keyboard Shortcuts Reference:**
