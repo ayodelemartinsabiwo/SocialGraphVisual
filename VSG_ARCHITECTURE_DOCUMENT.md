@@ -300,7 +300,7 @@ Example:
 │  │  │  └─ Session management (JWT + Redis)                      │ │
 │  │  ├─ Upload Service                                           │ │
 │  │  │  ├─ Tus protocol server (resumable uploads)               │ │
-│  │  │  ├─ File validation, virus scanning                       │ │
+│  │  │  ├─ File validation (format, size, extraction checks)     │ │
 │  │  │  └─ Temporary storage (R2)                                │ │
 │  │  ├─ Insight Engine ⭐ ALGORITHM-FIRST CORE                    │ │
 │  │  │  ├─ Graph Analyzer (graphology + algorithms)              │ │

@@ -472,7 +472,7 @@ While you wait, learn:
 ├─ Day 1: "What is network centrality?" [2-min video]
 ├─ Day 2: "Why engagement quality matters" [article]
 ├─ Day 3: "Reading your first visualization" [interactive tutorial]
-└─ Email drip keeps engagement warm
+└─ In-product learning sequence keeps engagement warm
 
 Benefit: Educated users extract more value
 ```
@@ -515,7 +515,7 @@ Each card:
 │                                     │
 │  1. Go to Settings → Account        │
 │  2. Click "Download archive"        │
-│  3. Wait for email (usually 1-2hrs) │
+│  3. Wait for platform notification  │
 │  4. Download ZIP file               │
 │  5. Upload here ↓                   │
 │                                     │
@@ -538,7 +538,7 @@ Each card:
 │  1. Settings → Security → Download  │
 │  2. Select "JSON" format (not HTML) │
 │  3. Choose "All time" date range    │
-│  4. Wait for email (10-30 minutes)  │
+│  4. Wait for platform notification  │
 │  5. Upload ZIP file here ↓          │
 │                                     │
 │  [Video Tutorial] [Screenshots]     │
@@ -560,7 +560,7 @@ Each card:
 │  1. Me → Settings & Privacy         │
 │  2. Data Privacy → Get a copy       │
 │  3. Select "Connections" only       │
-│  4. Wait for email (10-45 minutes)  │
+│  4. Wait for platform notification  │
 │  5. Upload ZIP file here ↓          │
 │                                     │
 │  [Video Tutorial] [Screenshots]     │
@@ -598,7 +598,7 @@ Each card:
 
 On drop:
 ├─ Instant file validation
-├─ Security scan animation (builds trust)
+├─ Trust-building validation feedback (format, size, extraction checks)
 ├─ Progress bar: "Extracting..." → "Parsing..." → "Analyzing..."
 └─ Micro-interactions: checkmarks, sparkles
 
@@ -2129,7 +2129,7 @@ Week 19-20: Marketing Launch
 │  └─ Logo, brand assets, founder story
 ├─ Product Hunt launch preparation
 │  └─ Teaser campaign, hunter outreach
-└─ Email drip campaigns (activation, retention)
+└─ In-product onboarding nudges (activation, retention)
 ```
 
 ---
@@ -2544,7 +2544,7 @@ Mitigation:
 ├─ Exceptional landing page (show the magic, inspire action)
 ├─ Video tutorials (reduce perceived friction from 10 min → 2 min)
 ├─ Wait-time engagement (sample network while waiting)
-├─ Email drip campaign (nudges, reminders, education)
+├─ In-product nudges (reminders, education)
 ├─ Gamification ("Unlock your social DNA" framing)
 ├─ Social proof (testimonials from real users)
 ├─ Clear value prop: "5 minutes to strategic clarity"
@@ -3719,7 +3719,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 2. **Weekly/Daily Re-Upload UX (Low-Cost Option)**
    - Streamlined re-upload flow (remember last upload)
-   - Email reminders to download fresh data
+  - In-app reminders to refresh (user-controlled)
    - One-click update comparison
    - Pros: Maintains privacy promise, minimal development
    - Cons: Still manual, user friction
