@@ -2652,6 +2652,433 @@ jobs:
 
 ---
 
+### **3.5 Theming Architecture (Dark Mode)**
+
+**Philosophy Alignment:**
+> *"Obsess Over Details: Every pixel, every color, every timing matters."* - CLAUDE_ACE.md
+> *"Accessibility wins over aesthetics."* - VSG_UI_SPECIFICATION.md
+
+**Design Decision:** Dark mode is a Phase 1 feature (not deferred). Default behavior respects system preference with explicit user override.
+
+---
+
+#### **3.5.1 Theme Strategy Overview**
+
+```
+Theming Architecture:
+├─ CSS Custom Properties (design tokens)
+├─ Class-based toggle (.dark on <html>)
+├─ React Context for state management
+├─ System preference detection (prefers-color-scheme)
+├─ User preference persistence (localStorage)
+├─ SSR-safe (no flash-of-wrong-theme)
+└─ Graph visualization theme integration
+```
+
+**Preference Cascade:**
+```
+1. Check localStorage for user override → use if exists
+2. Check prefers-color-scheme media query → use system preference
+3. Fallback → light mode (default)
+```
+
+---
+
+#### **3.5.2 Theme Provider Implementation**
+
+```typescript
+// /components/providers/ThemeProvider.tsx
+
+'use client';
+
+import { createContext, useContext, useEffect, useState } from 'react';
+
+type Theme = 'light' | 'dark' | 'system';
+type ResolvedTheme = 'light' | 'dark';
+
+interface ThemeContextType {
+  theme: Theme;
+  resolvedTheme: ResolvedTheme;
+  setTheme: (theme: Theme) => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+const STORAGE_KEY = 'vsg-theme';
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>('system');
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light');
+
+  // Initialize from localStorage or system preference
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+    if (stored && ['light', 'dark', 'system'].includes(stored)) {
+      setThemeState(stored);
+    }
+  }, []);
+
+  // Resolve theme based on system preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const resolveTheme = () => {
+      if (theme === 'system') {
+        setResolvedTheme(mediaQuery.matches ? 'dark' : 'light');
+      } else {
+        setResolvedTheme(theme);
+      }
+    };
+
+    resolveTheme();
+
+    // Listen for system preference changes
+    mediaQuery.addEventListener('change', resolveTheme);
+    return () => mediaQuery.removeEventListener('change', resolveTheme);
+  }, [theme]);
+
+  // Apply theme class to <html>
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(resolvedTheme);
+
+    // Update meta theme-color for mobile browsers
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute('content', resolvedTheme === 'dark' ? '#111827' : '#ffffff');
+    }
+  }, [resolvedTheme]);
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    localStorage.setItem(STORAGE_KEY, newTheme);
+
+    // Announce to screen readers
+    const announcement = `Theme changed to ${newTheme === 'system' ? 'system preference' : newTheme} mode`;
+    announceToScreenReader(announcement);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error('useTheme must be used within ThemeProvider');
+  return context;
+}
+
+function announceToScreenReader(message: string) {
+  const announcement = document.createElement('div');
+  announcement.setAttribute('role', 'status');
+  announcement.setAttribute('aria-live', 'polite');
+  announcement.setAttribute('aria-atomic', 'true');
+  announcement.className = 'sr-only';
+  announcement.textContent = message;
+  document.body.appendChild(announcement);
+  setTimeout(() => announcement.remove(), 1000);
+}
+```
+
+---
+
+#### **3.5.3 SSR-Safe Theme Initialization (No Flash)**
+
+```typescript
+// /app/layout.tsx - Root Layout with Theme Script
+
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
+
+// Blocking script to prevent flash-of-wrong-theme (FOWT)
+const themeScript = `
+  (function() {
+    const stored = localStorage.getItem('vsg-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    let theme = 'light';
+    if (stored === 'dark' || (stored === 'system' && prefersDark) || (!stored && prefersDark)) {
+      theme = 'dark';
+    }
+
+    document.documentElement.classList.add(theme);
+
+    // Update theme-color meta
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#111827' : '#ffffff');
+  })();
+`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="theme-color" content="#ffffff" />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+#### **3.5.4 CSS Token Architecture for Theming**
+
+```css
+/* /styles/tokens.css - Design Tokens with Dark Mode Support */
+
+:root {
+  /* Primitive Tokens (raw values) */
+  --vsg-gray-50: #F9FAFB;
+  --vsg-gray-100: #F3F4F6;
+  --vsg-gray-200: #E5E7EB;
+  --vsg-gray-300: #D1D5DB;
+  --vsg-gray-400: #9CA3AF;
+  --vsg-gray-500: #6B7280;
+  --vsg-gray-600: #4B5563;
+  --vsg-gray-700: #374151;
+  --vsg-gray-800: #1F2937;
+  --vsg-gray-900: #111827;
+
+  --vsg-orange-400: #FB923C;
+  --vsg-orange-500: #F97316;
+  --vsg-orange-600: #EA580C;
+  --vsg-orange-700: #C2410C;
+
+  /* Semantic Tokens (Light Mode - Default) */
+  --vsg-bg-primary: var(--vsg-gray-50);
+  --vsg-bg-secondary: #FFFFFF;
+  --vsg-bg-tertiary: var(--vsg-gray-100);
+
+  --vsg-text-primary: var(--vsg-gray-900);
+  --vsg-text-secondary: var(--vsg-gray-600);
+  --vsg-text-tertiary: var(--vsg-gray-500);
+  --vsg-text-disabled: var(--vsg-gray-400);
+
+  --vsg-border-default: var(--vsg-gray-200);
+  --vsg-border-strong: var(--vsg-gray-300);
+
+  --vsg-accent-primary: var(--vsg-orange-500);
+  --vsg-accent-primary-hover: var(--vsg-orange-600);
+  --vsg-accent-text: var(--vsg-orange-700); /* WCAG AA compliant on light bg */
+
+  /* Graph-specific tokens */
+  --vsg-graph-bg: #FFFFFF;
+  --vsg-graph-node-default: var(--vsg-gray-400);
+  --vsg-graph-edge-default: var(--vsg-gray-300);
+  --vsg-graph-label: var(--vsg-gray-700);
+}
+
+/* Dark Mode Semantic Tokens */
+html.dark {
+  --vsg-bg-primary: var(--vsg-gray-900);
+  --vsg-bg-secondary: var(--vsg-gray-800);
+  --vsg-bg-tertiary: var(--vsg-gray-700);
+
+  --vsg-text-primary: var(--vsg-gray-50);
+  --vsg-text-secondary: var(--vsg-gray-300);
+  --vsg-text-tertiary: var(--vsg-gray-400);
+  --vsg-text-disabled: var(--vsg-gray-500);
+
+  --vsg-border-default: var(--vsg-gray-700);
+  --vsg-border-strong: var(--vsg-gray-600);
+
+  --vsg-accent-primary: var(--vsg-orange-500);
+  --vsg-accent-primary-hover: var(--vsg-orange-400);
+  --vsg-accent-text: var(--vsg-orange-400); /* WCAG AA compliant on dark bg */
+
+  /* Graph-specific tokens (dark) */
+  --vsg-graph-bg: var(--vsg-gray-900);
+  --vsg-graph-node-default: var(--vsg-gray-500);
+  --vsg-graph-edge-default: var(--vsg-gray-600);
+  --vsg-graph-label: var(--vsg-gray-200);
+}
+```
+
+---
+
+#### **3.5.5 Theme Toggle Component**
+
+```typescript
+// /components/ui/ThemeToggle.tsx
+
+'use client';
+
+import { useTheme } from '@/components/providers/ThemeProvider';
+import { Sun, Moon, Monitor } from 'lucide-react';
+
+interface ThemeToggleProps {
+  variant?: 'icon' | 'dropdown';
+  className?: string;
+}
+
+export function ThemeToggle({ variant = 'icon', className }: ThemeToggleProps) {
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  if (variant === 'icon') {
+    // Simple toggle: cycles through system → light → dark
+    const cycleTheme = () => {
+      const next = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
+      setTheme(next);
+    };
+
+    return (
+      <button
+        onClick={cycleTheme}
+        className={`p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${className}`}
+        aria-label={`Current theme: ${theme}. Click to change.`}
+        title={`Theme: ${theme}`}
+      >
+        {resolvedTheme === 'dark' ? (
+          <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+        ) : (
+          <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+        )}
+      </button>
+    );
+  }
+
+  // Dropdown variant
+  return (
+    <div className={`relative ${className}`}>
+      <select
+        value={theme}
+        onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'system')}
+        className="appearance-none bg-transparent border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 pr-8 text-sm"
+        aria-label="Select theme"
+      >
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+        {theme === 'system' && <Monitor className="w-4 h-4" />}
+        {theme === 'light' && <Sun className="w-4 h-4" />}
+        {theme === 'dark' && <Moon className="w-4 h-4" />}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+#### **3.5.6 Graph Visualization Theme Integration**
+
+```typescript
+// /lib/visualization/theme-config.ts
+
+import { useTheme } from '@/components/providers/ThemeProvider';
+
+export interface GraphTheme {
+  background: string;
+  nodeDefault: string;
+  nodeHighlight: string;
+  edgeDefault: string;
+  edgeHighlight: string;
+  labelColor: string;
+  communityColors: string[];
+}
+
+export const lightGraphTheme: GraphTheme = {
+  background: '#FFFFFF',
+  nodeDefault: '#9CA3AF',
+  nodeHighlight: '#F97316',
+  edgeDefault: '#D1D5DB',
+  edgeHighlight: '#F97316',
+  labelColor: '#374151',
+  communityColors: [
+    '#3B82F6', // Blue
+    '#10B981', // Green
+    '#F59E0B', // Amber
+    '#EF4444', // Red
+    '#8B5CF6', // Purple
+    '#EC4899', // Pink
+    '#06B6D4', // Cyan
+    '#84CC16', // Lime
+  ],
+};
+
+export const darkGraphTheme: GraphTheme = {
+  background: '#111827',
+  nodeDefault: '#6B7280',
+  nodeHighlight: '#FB923C',
+  edgeDefault: '#374151',
+  edgeHighlight: '#FB923C',
+  labelColor: '#E5E7EB',
+  communityColors: [
+    '#60A5FA', // Blue (lighter)
+    '#34D399', // Green (lighter)
+    '#FBBF24', // Amber (lighter)
+    '#F87171', // Red (lighter)
+    '#A78BFA', // Purple (lighter)
+    '#F472B6', // Pink (lighter)
+    '#22D3EE', // Cyan (lighter)
+    '#A3E635', // Lime (lighter)
+  ],
+};
+
+export function useGraphTheme(): GraphTheme {
+  const { resolvedTheme } = useTheme();
+  return resolvedTheme === 'dark' ? darkGraphTheme : lightGraphTheme;
+}
+```
+
+---
+
+#### **3.5.7 Tailwind CSS Dark Mode Configuration**
+
+```javascript
+// tailwind.config.js
+
+module.exports = {
+  darkMode: 'class', // Use class-based dark mode (not media query)
+  content: [
+    './app/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Map to CSS custom properties
+        'bg-primary': 'var(--vsg-bg-primary)',
+        'bg-secondary': 'var(--vsg-bg-secondary)',
+        'text-primary': 'var(--vsg-text-primary)',
+        'text-secondary': 'var(--vsg-text-secondary)',
+        'accent': 'var(--vsg-accent-primary)',
+        'accent-hover': 'var(--vsg-accent-primary-hover)',
+      },
+    },
+  },
+  plugins: [],
+};
+```
+
+---
+
+#### **3.5.8 Phase 1 Acceptance Criteria**
+
+- ✅ Theme defaults to system preference (`prefers-color-scheme`)
+- ✅ User can override with explicit Light/Dark/System toggle
+- ✅ Preference persists in localStorage
+- ✅ No flash-of-wrong-theme (FOWT) on page load
+- ✅ All semantic tokens defined for both light and dark modes
+- ✅ Graph visualization uses theme-aware colors
+- ✅ 4.5:1 contrast ratio validated for BOTH modes
+- ✅ Theme change announced to screen readers
+- ✅ Mobile browser theme-color meta tag updates with theme
+
+---
+
 ## **4. Backend Architecture**
 
 ### **4.1 Technology Stack**

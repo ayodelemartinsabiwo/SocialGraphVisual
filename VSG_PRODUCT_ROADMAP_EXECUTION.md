@@ -1058,6 +1058,23 @@ Component library:
 ├─ Tooltips (top, bottom, left, right)
 ├─ Alerts (success, error, warning, info)
 └─ Navigation (header, footer, breadcrumbs)
+
+Theming system (dark mode):
+├─ Dark mode token definitions (inverted gray scale, adjusted accents)
+├─ Light/dark theme toggle component (3-state: System/Light/Dark)
+├─ System preference detection (prefers-color-scheme) as default
+├─ User preference persistence (localStorage)
+├─ CSS custom properties for token switching (.dark class toggle)
+├─ Graph visualization dark mode styles (canvas bg, node/edge colors)
+├─ Accessibility: 4.5:1 contrast validation for BOTH modes
+└─ SSR-safe: No flash-of-wrong-theme (blocking script in <head>)
+
+Custom icon creation:
+├─ 12 VSG-specific icons (network-graph, insight-spark, community-cluster, etc.)
+├─ Based on Heroicons with modifications
+├─ Format: SVG with currentColor for automatic dark mode support
+├─ Directory: /public/assets/icons/custom/
+└─ Naming: kebab-case.svg
 ```
 
 **Design principles (from "ultrathink"):**

@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Network - Visual Social Graph</title>
+  <link rel="stylesheet" href="css/components.css">
+
+  <script>
+    (function() {
+      const theme = localStorage.getItem('vsg-theme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .canvas-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 60px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* App Header */
+    .app-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--vsg-space-4);
+      background-color: var(--vsg-bg-primary);
+      border-bottom: 1px solid var(--vsg-border-light);
+      z-index: var(--vsg-z-sticky);
+    }
+
+    .app-header .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-2);
+      text-decoration: none;
+      color: var(--vsg-text-primary);
+      font-weight: var(--vsg-font-semibold);
+    }
+
+    .app-header .logo-icon {
+      width: 28px;
+      height: 28px;
+      color: var(--vsg-accent-primary);
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-4);
+    }
+
+    .network-name {
+      font-weight: var(--vsg-font-semibold);
+    }
+
+    .network-stats {
+      display: flex;
+      gap: var(--vsg-space-4);
+      font-size: var(--vsg-text-sm);
+      color: var(--vsg-text-secondary);
+    }
+
+    .stat-mini {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-1);
+    }
+
+    .stat-mini strong {
+      color: var(--vsg-text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-2);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--vsg-bg-secondary);
+      border-right: 1px solid var(--vsg-border-light);
+      overflow: hidden;
+    }
+
+    .sidebar-section {
+      padding: var(--vsg-space-4);
+      border-bottom: 1px solid var(--vsg-border-light);
+    }
+
+    .sidebar-section:last-child {
+      flex: 1;
+      overflow-y: auto;
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: var(--vsg-text-xs);
+      font-weight: var(--vsg-font-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--vsg-text-tertiary);
+      margin-bottom: var(--vsg-space-3);
+    }
+
+    /* Search */
+    .search-input {
+      position: relative;
+    }
+
+    .search-input input {
+      width: 100%;
+      padding: var(--vsg-space-2) var(--vsg-space-3);
+      padding-left: var(--vsg-space-10);
+      border: 1px solid var(--vsg-border-light);
+      border-radius: var(--vsg-radius-sm);
+      background-color: var(--vsg-bg-primary);
+      font-size: var(--vsg-text-sm);
+    }
+
+    .search-input input:focus {
+      outline: none;
+      border-color: var(--vsg-accent-primary);
+      box-shadow: var(--vsg-shadow-focus);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: var(--vsg-space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--vsg-text-tertiary);
+      pointer-events: none;
+    }
+
+    /* Community List */
+    .community-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--vsg-space-2);
+    }
+
+    .community-item {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-3);
+      padding: var(--vsg-space-2);
+      border-radius: var(--vsg-radius-sm);
+      cursor: pointer;
+      transition: background-color var(--vsg-duration-fast);
+    }
+
+    .community-item:hover {
+      background-color: var(--vsg-bg-tertiary);
+    }
+
+    .community-item.active {
+      background-color: var(--vsg-orange-50);
+    }
+
+    .community-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--vsg-border-medium);
+      border-radius: var(--vsg-radius-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .community-item.active .community-checkbox {
+      background-color: var(--vsg-accent-primary);
+      border-color: var(--vsg-accent-primary);
+    }
+
+    .community-item.active .community-checkbox svg {
+      color: var(--vsg-white);
+    }
+
+    .community-color {
+      width: 12px;
+      height: 12px;
+      border-radius: var(--vsg-radius-full);
+      flex-shrink: 0;
+    }
+
+    .community-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .community-name {
+      font-size: var(--vsg-text-sm);
+      font-weight: var(--vsg-font-medium);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .community-count {
+      font-size: var(--vsg-text-xs);
+      color: var(--vsg-text-tertiary);
+    }
+
+    /* Quick Insights */
+    .quick-insight {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--vsg-space-3);
+      padding: var(--vsg-space-3);
+      background-color: var(--vsg-bg-primary);
+      border-radius: var(--vsg-radius-sm);
+      margin-bottom: var(--vsg-space-2);
+      cursor: pointer;
+      transition: all var(--vsg-duration-fast);
+      border: 1px solid transparent;
+    }
+
+    .quick-insight:hover {
+      border-color: var(--vsg-accent-primary);
+    }
+
+    .insight-mini-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--vsg-radius-sm);
+      background-color: var(--vsg-orange-100);
+      color: var(--vsg-accent-primary);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .insight-mini-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .insight-mini-title {
+      font-size: var(--vsg-text-sm);
+      font-weight: var(--vsg-font-medium);
+      margin-bottom: var(--vsg-space-1);
+    }
+
+    .insight-mini-desc {
+      font-size: var(--vsg-text-xs);
+      color: var(--vsg-text-secondary);
+    }
+
+    /* Canvas Container */
+    .canvas-main {
+      position: relative;
+      background-color: var(--vsg-bg-primary);
+      overflow: hidden;
+    }
+
+    .graph-canvas {
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at center, transparent 0%, var(--vsg-bg-primary) 100%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, var(--vsg-border-light) 39px, var(--vsg-border-light) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, var(--vsg-border-light) 39px, var(--vsg-border-light) 40px);
+    }
+
+    /* Canvas Controls */
+    .canvas-controls {
+      position: absolute;
+      bottom: var(--vsg-space-4);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-2);
+      padding: var(--vsg-space-2);
+      background-color: var(--vsg-bg-primary);
+      border-radius: var(--vsg-radius-md);
+      box-shadow: var(--vsg-shadow-lg);
+      border: 1px solid var(--vsg-border-light);
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      border-radius: var(--vsg-radius-sm);
+      cursor: pointer;
+      color: var(--vsg-text-secondary);
+      transition: all var(--vsg-duration-fast);
+    }
+
+    .control-btn:hover {
+      background-color: var(--vsg-bg-tertiary);
+      color: var(--vsg-text-primary);
+    }
+
+    .control-btn.active {
+      background-color: var(--vsg-orange-100);
+      color: var(--vsg-accent-primary);
+    }
+
+    .control-divider {
+      width: 1px;
+      height: 24px;
+      background-color: var(--vsg-border-light);
+    }
+
+    .zoom-slider {
+      width: 100px;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--vsg-bg-tertiary);
+      border-radius: var(--vsg-radius-full);
+      outline: none;
+    }
+
+    .zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--vsg-accent-primary);
+      border-radius: var(--vsg-radius-full);
+      cursor: pointer;
+    }
+
+    .zoom-label {
+      font-size: var(--vsg-text-xs);
+      color: var(--vsg-text-tertiary);
+      min-width: 40px;
+      text-align: center;
+    }
+
+    /* Mini-map */
+    .minimap {
+      position: absolute;
+      bottom: var(--vsg-space-4);
+      right: var(--vsg-space-4);
+      width: 150px;
+      height: 100px;
+      background-color: var(--vsg-bg-primary);
+      border-radius: var(--vsg-radius-sm);
+      box-shadow: var(--vsg-shadow-lg);
+      border: 1px solid var(--vsg-border-light);
+      overflow: hidden;
+    }
+
+    .minimap-viewport {
+      position: absolute;
+      border: 2px solid var(--vsg-accent-primary);
+      background-color: rgba(249, 115, 22, 0.1);
+      cursor: move;
+    }
+
+    /* Node Inspector Panel */
+    .inspector-panel {
+      position: absolute;
+      top: var(--vsg-space-4);
+      right: var(--vsg-space-4);
+      width: 320px;
+      background-color: var(--vsg-bg-primary);
+      border-radius: var(--vsg-radius-md);
+      box-shadow: var(--vsg-shadow-xl);
+      border: 1px solid var(--vsg-border-light);
+      overflow: hidden;
+      animation: slideIn var(--vsg-duration-normal) var(--vsg-ease-out);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .inspector-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--vsg-space-4);
+      border-bottom: 1px solid var(--vsg-border-light);
+    }
+
+    .inspector-header h3 {
+      font-size: var(--vsg-text-base);
+      font-weight: var(--vsg-font-semibold);
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      border-radius: var(--vsg-radius-sm);
+      cursor: pointer;
+      color: var(--vsg-text-tertiary);
+    }
+
+    .close-btn:hover {
+      background-color: var(--vsg-bg-tertiary);
+      color: var(--vsg-text-primary);
+    }
+
+    .inspector-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-3);
+      padding: var(--vsg-space-4);
+      border-bottom: 1px solid var(--vsg-border-light);
+    }
+
+    .profile-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--vsg-radius-full);
+      background: linear-gradient(135deg, var(--vsg-orange-400), var(--vsg-orange-600));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--vsg-white);
+      font-weight: var(--vsg-font-bold);
+      font-size: var(--vsg-text-lg);
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-weight: var(--vsg-font-semibold);
+      margin-bottom: var(--vsg-space-1);
+    }
+
+    .profile-handle {
+      font-size: var(--vsg-text-sm);
+      color: var(--vsg-text-secondary);
+    }
+
+    .inspector-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vsg-space-3);
+      padding: var(--vsg-space-4);
+      border-bottom: 1px solid var(--vsg-border-light);
+    }
+
+    .metric-item {
+      text-align: center;
+      padding: var(--vsg-space-2);
+      background-color: var(--vsg-bg-secondary);
+      border-radius: var(--vsg-radius-sm);
+    }
+
+    .metric-value {
+      font-size: var(--vsg-text-lg);
+      font-weight: var(--vsg-font-bold);
+      color: var(--vsg-accent-primary);
+    }
+
+    .metric-label {
+      font-size: var(--vsg-text-xs);
+      color: var(--vsg-text-tertiary);
+    }
+
+    .inspector-community {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-2);
+      padding: var(--vsg-space-4);
+      border-bottom: 1px solid var(--vsg-border-light);
+    }
+
+    .inspector-actions {
+      padding: var(--vsg-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--vsg-space-2);
+    }
+
+    /* Reveal Animation Overlay */
+    .reveal-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      opacity: 1;
+      transition: opacity var(--vsg-duration-slow);
+    }
+
+    .reveal-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .reveal-stage {
+      text-align: center;
+      animation: fadeIn var(--vsg-duration-normal) var(--vsg-ease-out);
+    }
+
+    .reveal-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--vsg-space-4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    .reveal-title {
+      font-size: var(--vsg-text-2xl);
+      font-weight: var(--vsg-font-bold);
+      margin-bottom: var(--vsg-space-2);
+    }
+
+    .reveal-subtitle {
+      font-size: var(--vsg-text-lg);
+      color: var(--vsg-text-secondary);
+      margin-bottom: var(--vsg-space-6);
+    }
+
+    .reveal-progress {
+      display: flex;
+      gap: var(--vsg-space-2);
+      margin-bottom: var(--vsg-space-6);
+    }
+
+    .reveal-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--vsg-border-medium);
+      border-radius: var(--vsg-radius-full);
+      transition: background-color var(--vsg-duration-fast);
+    }
+
+    .reveal-dot.active {
+      background-color: var(--vsg-accent-primary);
+    }
+
+    /* SVG Graph Visualization */
+    .graph-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .node {
+      cursor: pointer;
+      transition: transform var(--vsg-duration-fast);
+    }
+
+    .node:hover {
+      transform: scale(1.1);
+    }
+
+    .node-circle {
+      fill: var(--vsg-accent-primary);
+      stroke: var(--vsg-white);
+      stroke-width: 2;
+    }
+
+    .node-label {
+      font-size: 10px;
+      fill: var(--vsg-text-primary);
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .edge {
+      stroke: var(--vsg-border-medium);
+      stroke-width: 1;
+      fill: none;
+      opacity: 0.6;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 767px) {
+      .canvas-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: 60px 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 280px;
+        z-index: var(--vsg-z-modal);
+        transform: translateX(-100%);
+        transition: transform var(--vsg-duration-normal) var(--vsg-ease-out);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        top: 60px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: calc(var(--vsg-z-modal) - 1);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--vsg-duration-normal);
+      }
+
+      .sidebar-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .inspector-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        width: 100%;
+        max-height: 60vh;
+        border-radius: var(--vsg-radius-lg) var(--vsg-radius-lg) 0 0;
+        animation: slideUp var(--vsg-duration-normal) var(--vsg-ease-out);
+      }
+
+      @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+      }
+
+      .header-center {
+        display: none;
+      }
+
+      .minimap {
+        display: none;
+      }
+
+      .canvas-controls {
+        bottom: var(--vsg-space-2);
+        padding: var(--vsg-space-1);
+      }
+
+      .control-btn {
+        width: 36px;
+        height: 36px;
+      }
+
+      .zoom-slider {
+        width: 60px;
+      }
+    }
+
+    .dark .reveal-overlay {
+      background: radial-gradient(circle at center, rgba(23,23,23,0.95) 0%, rgba(23,23,23,0.98) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-layout">
+    <!-- App Header -->
+    <header class="app-header">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+          <circle cx="16" cy="16" r="6" fill="currentColor"/>
+          <circle cx="16" cy="6" r="3" fill="currentColor"/>
+          <circle cx="24" cy="20" r="3" fill="currentColor"/>
+          <circle cx="8" cy="20" r="3" fill="currentColor"/>
+        </svg>
+        <span>VSG</span>
+      </a>
+
+      <div class="header-center">
+        <span class="network-name">Alex Morgan's Network</span>
+        <div class="network-stats">
+          <span class="stat-mini"><strong>247</strong> connections</span>
+          <span class="stat-mini"><strong>8</strong> communities</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-ghost btn-sm" id="menuToggle" style="display: none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <a href="insights.html" class="btn btn-secondary btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Insights
+        </a>
+        <a href="settings.html" class="btn btn-ghost btn-sm">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </a>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Search -->
+      <div class="sidebar-section">
+        <div class="search-input">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Search connections..." id="searchInput">
+        </div>
+      </div>
+
+      <!-- Communities Filter -->
+      <div class="sidebar-section">
+        <div class="section-title">Communities</div>
+        <div class="community-list" id="communityList">
+          <div class="community-item active" data-community="all">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-info">
+              <div class="community-name">All Communities</div>
+              <div class="community-count">247 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="tech">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-1);"></div>
+            <div class="community-info">
+              <div class="community-name">Tech Industry</div>
+              <div class="community-count">67 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="college">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-2);"></div>
+            <div class="community-info">
+              <div class="community-name">College Alumni</div>
+              <div class="community-count">54 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="startup">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-3);"></div>
+            <div class="community-info">
+              <div class="community-name">Startup Founders</div>
+              <div class="community-count">42 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="design">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-4);"></div>
+            <div class="community-info">
+              <div class="community-name">Design Community</div>
+              <div class="community-count">38 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="media">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-5);"></div>
+            <div class="community-info">
+              <div class="community-name">Media & Journalists</div>
+              <div class="community-count">23 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="investors">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-6);"></div>
+            <div class="community-info">
+              <div class="community-name">Investors & VCs</div>
+              <div class="community-count">15 connections</div>
+            </div>
+          </div>
+          <div class="community-item active" data-community="local">
+            <div class="community-checkbox">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+            </div>
+            <div class="community-color" style="background-color: var(--vsg-community-7);"></div>
+            <div class="community-info">
+              <div class="community-name">Local SF Network</div>
+              <div class="community-count">8 connections</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Insights -->
+      <div class="sidebar-section">
+        <div class="section-title">Top Insights</div>
+        <div class="quick-insight" onclick="showInsight('bridge')">
+          <div class="insight-mini-icon">🌉</div>
+          <div class="insight-mini-content">
+            <div class="insight-mini-title">Bridge Connector</div>
+            <div class="insight-mini-desc">Marcus bridges 3 groups</div>
+          </div>
+        </div>
+        <div class="quick-insight" onclick="showInsight('dormant')">
+          <div class="insight-mini-icon">💤</div>
+          <div class="insight-mini-content">
+            <div class="insight-mini-title">Dormant Ties</div>
+            <div class="insight-mini-desc">12 valuable reconnections</div>
+          </div>
+        </div>
+        <div class="quick-insight" onclick="showInsight('rising')">
+          <div class="insight-mini-icon">🚀</div>
+          <div class="insight-mini-content">
+            <div class="insight-mini-title">Rising Star</div>
+            <div class="insight-mini-desc">Sarah gaining influence</div>
+          </div>
+        </div>
+        <a href="insights.html" class="btn btn-ghost btn-sm btn-block mt-3">
+          View All Insights →
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Canvas Area -->
+    <main class="canvas-main">
+      <!-- Graph SVG Canvas -->
+      <svg class="graph-svg" id="graphCanvas">
+        <!-- Graph will be rendered here -->
+      </svg>
+
+      <!-- Reveal Animation Overlay -->
+      <div class="reveal-overlay" id="revealOverlay">
+        <div class="reveal-stage" id="revealStage">
+          <div class="reveal-icon">🔍</div>
+          <h2 class="reveal-title" id="revealTitle">Discovering Your Network</h2>
+          <p class="reveal-subtitle" id="revealSubtitle">We found 247 connections in your data</p>
+          <div class="reveal-progress">
+            <div class="reveal-dot active"></div>
+            <div class="reveal-dot"></div>
+            <div class="reveal-dot"></div>
+            <div class="reveal-dot"></div>
+            <div class="reveal-dot"></div>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="advanceReveal()">Continue</button>
+        </div>
+      </div>
+
+      <!-- Canvas Controls Bar -->
+      <div class="canvas-controls">
+        <button class="control-btn" id="zoomOut" title="Zoom Out">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </button>
+        <input type="range" class="zoom-slider" id="zoomSlider" min="10" max="200" value="100">
+        <button class="control-btn" id="zoomIn" title="Zoom In">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            <line x1="11" y1="8" x2="11" y2="14"/>
+            <line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </button>
+        <span class="zoom-label" id="zoomLabel">100%</span>
+
+        <div class="control-divider"></div>
+
+        <button class="control-btn" id="fitView" title="Fit to View">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+          </svg>
+        </button>
+        <button class="control-btn active" id="layoutBtn" title="Force Layout">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="19" cy="5" r="2"/>
+            <circle cx="5" cy="5" r="2"/>
+            <circle cx="19" cy="19" r="2"/>
+            <circle cx="5" cy="19" r="2"/>
+            <line x1="12" y1="9" x2="12" y2="5"/>
+            <line x1="9" y1="12" x2="5" y2="12"/>
+            <line x1="15" y1="12" x2="19" y2="12"/>
+            <line x1="12" y1="15" x2="12" y2="19"/>
+          </svg>
+        </button>
+
+        <div class="control-divider"></div>
+
+        <button class="control-btn" id="exportBtn" title="Export">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17,8 12,3 7,8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </button>
+        <button class="control-btn" id="shareBtn" title="Share">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="18" cy="5" r="3"/>
+            <circle cx="6" cy="12" r="3"/>
+            <circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mini-map -->
+      <div class="minimap" id="minimap">
+        <svg width="100%" height="100%" id="minimapSvg">
+          <!-- Minimap content -->
+        </svg>
+        <div class="minimap-viewport" id="minimapViewport" style="left: 25%; top: 20%; width: 50%; height: 60%;"></div>
+      </div>
+
+      <!-- Node Inspector Panel (shown when node selected) -->
+      <div class="inspector-panel" id="inspectorPanel" style="display: none;">
+        <div class="inspector-header">
+          <h3>Connection Details</h3>
+          <button class="close-btn" onclick="closeInspector()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="inspector-profile">
+          <div class="profile-avatar" id="inspectorAvatar">SC</div>
+          <div class="profile-info">
+            <div class="profile-name" id="inspectorName">Sarah Chen</div>
+            <div class="profile-handle" id="inspectorHandle">@sarahchen</div>
+          </div>
+        </div>
+        <div class="inspector-metrics">
+          <div class="metric-item">
+            <div class="metric-value" id="metricConnections">42</div>
+            <div class="metric-label">Connections</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value" id="metricBetweenness">0.23</div>
+            <div class="metric-label">Betweenness</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value" id="metricPagerank">0.034</div>
+            <div class="metric-label">PageRank</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value" id="metricMutual">8</div>
+            <div class="metric-label">Mutual</div>
+          </div>
+        </div>
+        <div class="inspector-community">
+          <div class="community-color" style="background-color: var(--vsg-community-1);" id="inspectorCommunityColor"></div>
+          <span id="inspectorCommunity">Tech Industry</span>
+          <span class="badge badge-success ml-2" id="inspectorBadge">Rising Star</span>
+        </div>
+        <div class="inspector-actions">
+          <button class="btn btn-primary btn-sm btn-block">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            Draft Reconnection
+          </button>
+          <button class="btn btn-secondary btn-sm btn-block">
+            View Full Profile
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/mock-data.js"></script>
+  <script>
+    // Theme toggle
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('vsg-theme', isDark ? 'dark' : 'light');
+    }
+
+    // Mobile sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (window.innerWidth <= 767) {
+      menuToggle.style.display = 'flex';
+    }
+
+    window.addEventListener('resize', () => {
+      menuToggle.style.display = window.innerWidth <= 767 ? 'flex' : 'none';
+    });
+
+    menuToggle?.addEventListener('click', () => {
+      sidebar.classList.add('open');
+      sidebarOverlay.classList.add('visible');
+    });
+
+    sidebarOverlay?.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('visible');
+    });
+
+    // Community filter toggle
+    document.querySelectorAll('.community-item').forEach(item => {
+      item.addEventListener('click', () => {
+        item.classList.toggle('active');
+        renderGraph(); // Re-render with new filter
+      });
+    });
+
+    // Reveal animation
+    let revealStage = 0;
+    const revealStages = [
+      { icon: '🔍', title: 'Discovering Your Network', subtitle: 'We found 247 connections in your data' },
+      { icon: '🏘️', title: 'Mapping Communities', subtitle: 'Identified 8 distinct social groups' },
+      { icon: '🌉', title: 'Finding Bridges', subtitle: 'Discovered key connectors in your network' },
+      { icon: '💡', title: 'Generating Insights', subtitle: '12 actionable recommendations ready' },
+      { icon: '✨', title: 'Your Network Awaits', subtitle: 'Click anywhere to explore' }
+    ];
+
+    function advanceReveal() {
+      revealStage++;
+
+      if (revealStage >= revealStages.length) {
+        document.getElementById('revealOverlay').classList.add('hidden');
+        return;
+      }
+
+      const stage = revealStages[revealStage];
+      document.querySelector('.reveal-icon').textContent = stage.icon;
+      document.getElementById('revealTitle').textContent = stage.title;
+      document.getElementById('revealSubtitle').textContent = stage.subtitle;
+
+      // Update progress dots
+      document.querySelectorAll('.reveal-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i <= revealStage);
+      });
+
+      // Final stage: click anywhere to dismiss
+      if (revealStage === revealStages.length - 1) {
+        const btn = document.querySelector('.reveal-stage .btn');
+        btn.textContent = 'Explore Network';
+      }
+    }
+
+    // Zoom controls
+    const zoomSlider = document.getElementById('zoomSlider');
+    const zoomLabel = document.getElementById('zoomLabel');
+    let currentZoom = 100;
+
+    zoomSlider.addEventListener('input', (e) => {
+      currentZoom = parseInt(e.target.value);
+      zoomLabel.textContent = currentZoom + '%';
+      applyZoom();
+    });
+
+    document.getElementById('zoomIn').addEventListener('click', () => {
+      currentZoom = Math.min(200, currentZoom + 10);
+      zoomSlider.value = currentZoom;
+      zoomLabel.textContent = currentZoom + '%';
+      applyZoom();
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', () => {
+      currentZoom = Math.max(10, currentZoom - 10);
+      zoomSlider.value = currentZoom;
+      zoomLabel.textContent = currentZoom + '%';
+      applyZoom();
+    });
+
+    function applyZoom() {
+      const canvas = document.getElementById('graphCanvas');
+      canvas.style.transform = `scale(${currentZoom / 100})`;
+      canvas.style.transformOrigin = 'center center';
+    }
+
+    // Inspector panel
+    function showInspector(node) {
+      const panel = document.getElementById('inspectorPanel');
+      panel.style.display = 'block';
+
+      document.getElementById('inspectorAvatar').textContent = node.name.split(' ').map(n => n[0]).join('');
+      document.getElementById('inspectorName').textContent = node.name;
+      document.getElementById('inspectorHandle').textContent = '@' + node.handle;
+      document.getElementById('metricConnections').textContent = node.connections || 42;
+      document.getElementById('metricBetweenness').textContent = node.betweenness?.toFixed(2) || '0.23';
+      document.getElementById('metricPagerank').textContent = node.pagerank?.toFixed(3) || '0.034';
+      document.getElementById('metricMutual').textContent = node.mutual || 8;
+      document.getElementById('inspectorCommunity').textContent = node.community || 'Tech Industry';
+    }
+
+    function closeInspector() {
+      document.getElementById('inspectorPanel').style.display = 'none';
+    }
+
+    function showInsight(type) {
+      // Navigate to insights page with focus on specific insight
+      window.location.href = 'insights.html#' + type;
+    }
+
+    // Simple graph rendering (placeholder - would use D3.js in production)
+    function renderGraph() {
+      const svg = document.getElementById('graphCanvas');
+      const width = svg.clientWidth;
+      const height = svg.clientHeight;
+
+      // Clear existing
+      svg.innerHTML = '';
+
+      // Sample nodes for demo
+      const nodes = [
+        { id: 1, name: 'Alex Morgan', handle: 'alexmorgan', x: width/2, y: height/2, r: 20, color: '#F97316', community: 'You' },
+        { id: 2, name: 'Sarah Chen', handle: 'sarahchen', x: width/2 + 120, y: height/2 - 80, r: 14, color: '#F97316', community: 'Tech Industry', betweenness: 0.23, pagerank: 0.034 },
+        { id: 3, name: 'Marcus Johnson', handle: 'marcusj', x: width/2 - 100, y: height/2 - 120, r: 16, color: '#3B82F6', community: 'College Alumni', betweenness: 0.45, pagerank: 0.052 },
+        { id: 4, name: 'Emily Rodriguez', handle: 'emilyrod', x: width/2 + 180, y: height/2 + 60, r: 12, color: '#10B981', community: 'Startup Founders', betweenness: 0.18, pagerank: 0.028 },
+        { id: 5, name: 'David Kim', handle: 'davidkim', x: width/2 - 150, y: height/2 + 100, r: 13, color: '#8B5CF6', community: 'Design Community', betweenness: 0.31, pagerank: 0.041 },
+        { id: 6, name: 'Lisa Wang', handle: 'lisawang', x: width/2 + 80, y: height/2 + 140, r: 11, color: '#EC4899', community: 'Media & Journalists', betweenness: 0.15, pagerank: 0.025 },
+        { id: 7, name: 'James Wilson', handle: 'jameswilson', x: width/2 - 200, y: height/2 - 40, r: 10, color: '#F59E0B', community: 'Investors & VCs', betweenness: 0.28, pagerank: 0.038 },
+        { id: 8, name: 'Nina Patel', handle: 'ninapatel', x: width/2 + 220, y: height/2 - 20, r: 12, color: '#06B6D4', community: 'Local SF Network', betweenness: 0.22, pagerank: 0.031 },
+      ];
+
+      const edges = [
+        { source: 1, target: 2 },
+        { source: 1, target: 3 },
+        { source: 1, target: 4 },
+        { source: 1, target: 5 },
+        { source: 1, target: 6 },
+        { source: 1, target: 7 },
+        { source: 1, target: 8 },
+        { source: 2, target: 3 },
+        { source: 2, target: 4 },
+        { source: 3, target: 5 },
+        { source: 4, target: 6 },
+        { source: 5, target: 7 },
+        { source: 6, target: 8 },
+        { source: 3, target: 7 },
+      ];
+
+      // Draw edges
+      edges.forEach(edge => {
+        const source = nodes.find(n => n.id === edge.source);
+        const target = nodes.find(n => n.id === edge.target);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', source.x);
+        line.setAttribute('y1', source.y);
+        line.setAttribute('x2', target.x);
+        line.setAttribute('y2', target.y);
+        line.setAttribute('class', 'edge');
+        svg.appendChild(line);
+      });
+
+      // Draw nodes
+      nodes.forEach(node => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'node');
+        g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+        g.style.cursor = 'pointer';
+        g.onclick = () => showInspector(node);
+
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('r', node.r);
+        circle.setAttribute('fill', node.color);
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2');
+        g.appendChild(circle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('y', node.r + 14);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('class', 'node-label');
+        text.textContent = node.name.split(' ')[0];
+        g.appendChild(text);
+
+        svg.appendChild(g);
+      });
+    }
+
+    // Initial render
+    window.addEventListener('load', () => {
+      setTimeout(renderGraph, 100);
+    });
+
+    window.addEventListener('resize', renderGraph);
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      // Filter nodes based on search
+      console.log('Searching for:', query);
+    });
+  </script>
+</body>
+</html>

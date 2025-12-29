@@ -191,6 +191,8 @@ This specification covers Phase 1 MVP features only:
 - Visualization interface with 5-stage guided reveal
 - Basic insights dashboard
 - Core components (GraphCanvas, FilterPanel, UploadZone, InsightCard)
+- **Dark mode theming** (system preference default with user override)
+- Illustration & icon system (see [VSG_ILLUSTRATION_ICON_GUIDE.md](./VSG_ILLUSTRATION_ICON_GUIDE.md))
 
 **Deferred to Phase 2+:**
 - Secondary views (Engagement Circles, Content Resonance, Network Health)
@@ -232,7 +234,7 @@ Component Tokens (Specific)
 
 **Benefits:**
 - Consistency: Change one token, update entire system
-- Scalability: Easy to add dark mode (future Phase 2)
+- Theming: Dark mode support included (Phase 1, system preference default)
 - Maintainability: Semantic names prevent magic values in code
 
 ### 2.2 Color System
@@ -367,6 +369,105 @@ edge.stroke = '#525252'; // Gray-600
 edge.strokeOpacity = edgeOpacity(edge.weight);
 edge.strokeWidth = edge.weight * 3; // 1px to 3px
 ```
+
+#### Dark Mode Color System
+
+Dark mode is a **Phase 1** feature. The system defaults to user's system preference (`prefers-color-scheme`) with an explicit toggle for override.
+
+**Design Philosophy:**
+- System preference as default (respects user settings)
+- Explicit 3-state toggle: System / Light / Dark
+- User override persists in localStorage
+- No flash-of-wrong-theme (FOWT) via blocking script
+
+**Dark Mode Semantic Tokens:**
+
+| Token | Light Mode | Dark Mode | Usage |
+|-------|------------|-----------|-------|
+| `--vsg-bg-primary` | Gray-50 (#F9FAFB) | Gray-900 (#111827) | Page backgrounds |
+| `--vsg-bg-secondary` | White (#FFFFFF) | Gray-800 (#1F2937) | Card backgrounds |
+| `--vsg-bg-tertiary` | Gray-100 (#F3F4F6) | Gray-700 (#374151) | Subtle backgrounds |
+| `--vsg-text-primary` | Gray-900 (#111827) | Gray-50 (#F9FAFB) | Primary text |
+| `--vsg-text-secondary` | Gray-600 (#4B5563) | Gray-300 (#D1D5DB) | Secondary text |
+| `--vsg-text-tertiary` | Gray-500 (#6B7280) | Gray-400 (#9CA3AF) | Tertiary text |
+| `--vsg-text-disabled` | Gray-400 (#9CA3AF) | Gray-500 (#6B7280) | Disabled text |
+| `--vsg-border-default` | Gray-200 (#E5E7EB) | Gray-700 (#374151) | Default borders |
+| `--vsg-border-strong` | Gray-300 (#D1D5DB) | Gray-600 (#4B5563) | Strong borders |
+| `--vsg-accent-primary` | Orange-500 (#F97316) | Orange-500 (#F97316) | Brand accent |
+| `--vsg-accent-hover` | Orange-600 (#EA580C) | Orange-400 (#FB923C) | Hover accent |
+| `--vsg-accent-text` | Orange-700 (#C2410C) | Orange-400 (#FB923C) | Accent text (AA compliant) |
+
+**Dark Mode Graph Colors:**
+
+| Token | Light Mode | Dark Mode | Usage |
+|-------|------------|-----------|-------|
+| `--vsg-graph-bg` | White (#FFFFFF) | Gray-900 (#111827) | Canvas background |
+| `--vsg-graph-node-default` | Gray-400 (#9CA3AF) | Gray-500 (#6B7280) | Default node fill |
+| `--vsg-graph-edge-default` | Gray-300 (#D1D5DB) | Gray-600 (#4B5563) | Default edge stroke |
+| `--vsg-graph-label` | Gray-700 (#374151) | Gray-200 (#E5E7EB) | Node labels |
+
+**Dark Mode Community Colors (Adjusted for Dark Backgrounds):**
+
+| Community | Light Mode | Dark Mode | Notes |
+|-----------|------------|-----------|-------|
+| Community-1 | Orange-500 (#F97316) | Orange-400 (#FB923C) | Brand primary |
+| Community-2 | Blue-500 (#3B82F6) | Blue-400 (#60A5FA) | Lighter for visibility |
+| Community-3 | Green-500 (#10B981) | Green-400 (#34D399) | Lighter for visibility |
+| Community-4 | Purple-500 (#8B5CF6) | Purple-400 (#A78BFA) | Lighter for visibility |
+| Community-5 | Pink-500 (#EC4899) | Pink-400 (#F472B6) | Lighter for visibility |
+| Community-6 | Amber-500 (#F59E0B) | Amber-400 (#FBBF24) | Lighter for visibility |
+| Community-7 | Cyan-500 (#06B6D4) | Cyan-400 (#22D3EE) | Lighter for visibility |
+| Community-8 | Lime-500 (#84CC16) | Lime-400 (#A3E635) | Lighter for visibility |
+
+**CSS Implementation:**
+
+```css
+/* /styles/tokens.css */
+
+:root {
+  /* Light mode (default) */
+  --vsg-bg-primary: #F9FAFB;
+  --vsg-bg-secondary: #FFFFFF;
+  --vsg-bg-tertiary: #F3F4F6;
+  --vsg-text-primary: #111827;
+  --vsg-text-secondary: #4B5563;
+  --vsg-text-tertiary: #6B7280;
+  --vsg-border-default: #E5E7EB;
+  --vsg-accent-primary: #F97316;
+  --vsg-accent-text: #C2410C;
+  --vsg-graph-bg: #FFFFFF;
+  --vsg-graph-label: #374151;
+}
+
+html.dark {
+  /* Dark mode overrides */
+  --vsg-bg-primary: #111827;
+  --vsg-bg-secondary: #1F2937;
+  --vsg-bg-tertiary: #374151;
+  --vsg-text-primary: #F9FAFB;
+  --vsg-text-secondary: #D1D5DB;
+  --vsg-text-tertiary: #9CA3AF;
+  --vsg-border-default: #374151;
+  --vsg-accent-primary: #F97316;
+  --vsg-accent-text: #FB923C;
+  --vsg-graph-bg: #111827;
+  --vsg-graph-label: #E5E7EB;
+}
+```
+
+**Theme Toggle Behavior:**
+
+| State | Icon | Behavior |
+|-------|------|----------|
+| System (default) | Monitor icon | Follows `prefers-color-scheme` |
+| Light | Sun icon | Forces light mode |
+| Dark | Moon icon | Forces dark mode |
+
+**Accessibility Requirements:**
+- All text maintains 4.5:1 contrast in both modes
+- Focus indicators visible in both modes
+- Theme change announced to screen readers
+- No motion/flash during theme transition
 
 ### 2.3 Typography
 
@@ -965,6 +1066,124 @@ Footer (Persistent)
 ✅ All touch targets ≥44px
 ✅ Keyboard navigable (Tab order: Logo → CTA → Features → Pricing → FAQ → Login → Sign Up)
 ✅ Screen reader announces: "See Your Digital Self. Transform your social media data..."
+
+#### 3.2.1 Return Visit Landing State
+
+**Purpose:** Welcome returning users and guide them to update their network data or view existing insights.
+
+**Detection Logic:**
+```typescript
+// Detect returning user
+const isReturningUser = () => {
+  return localStorage.getItem('vsg-last-upload') !== null ||
+         document.cookie.includes('vsg-user=');
+};
+```
+
+**Return Visit Hero Variant:**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│                    Welcome Back!                             │
+│              (H1, 48px, Orange-500, centered)                │
+│                                                              │
+│       Your network is waiting. Upload new data to           │
+│            see how your connections evolved.                 │
+│         (Body Large, 18px, Gray-700, centered)               │
+│                                                              │
+│         ┌────────────────────────────────────┐               │
+│         │   Update My Network (Free)        │               │
+│         │   (Button: 56px h, Orange-600 bg) │               │
+│         └────────────────────────────────────┘               │
+│                                                              │
+│    ┌─────────────────────────────────────────────┐           │
+│    │  📊 Last Upload: December 15, 2025          │           │
+│    │  👥 2,847 connections analyzed              │           │
+│    │  💡 12 insights discovered                  │           │
+│    │                                             │           │
+│    │  [View My Dashboard →]                      │           │
+│    └─────────────────────────────────────────────┘           │
+│    (Card: Gray-50 bg, 24px padding, subtle border)           │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Return Visit Copy Patterns:**
+
+| Element | First-Time User | Returning User |
+|---------|-----------------|----------------|
+| **Hero H1** | "See Your Digital Self" | "Welcome Back!" |
+| **Hero Subhead** | "Transform your social media data into strategic network intelligence. Privately." | "Your network is waiting. Upload new data to see how your connections evolved." |
+| **Primary CTA** | "Visualize Your Network (Free)" | "Update My Network (Free)" |
+| **Secondary Action** | - | "View My Dashboard →" |
+| **Social Proof** | Testimonials from new users | User's own stats (last upload, connections, insights) |
+
+**User Stats Card:**
+
+```tsx
+// /components/landing/ReturningUserCard.tsx
+
+interface ReturningUserStats {
+  lastUpload: Date;
+  connectionCount: number;
+  insightCount: number;
+  primaryPlatform: string;
+}
+
+export function ReturningUserCard({ stats }: { stats: ReturningUserStats }) {
+  const daysSinceUpload = differenceInDays(new Date(), stats.lastUpload);
+
+  return (
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <CalendarIcon className="w-5 h-5 text-gray-500" />
+          <span className="text-gray-700 dark:text-gray-300">
+            Last upload: {format(stats.lastUpload, 'MMMM d, yyyy')}
+            {daysSinceUpload > 30 && (
+              <span className="text-orange-600 dark:text-orange-400 ml-2">
+                ({daysSinceUpload} days ago)
+              </span>
+            )}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <UsersIcon className="w-5 h-5 text-gray-500" />
+          <span className="text-gray-700 dark:text-gray-300">
+            {stats.connectionCount.toLocaleString()} connections analyzed
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <LightBulbIcon className="w-5 h-5 text-gray-500" />
+          <span className="text-gray-700 dark:text-gray-300">
+            {stats.insightCount} insights discovered
+          </span>
+        </div>
+      </div>
+
+      <Link
+        href="/dashboard"
+        className="mt-4 inline-flex items-center text-orange-700 dark:text-orange-400 font-medium hover:underline"
+      >
+        View My Dashboard
+        <ArrowRightIcon className="w-4 h-4 ml-1" />
+      </Link>
+    </div>
+  );
+}
+```
+
+**Time-Based Prompts:**
+
+| Days Since Upload | Prompt Message |
+|-------------------|----------------|
+| 0-7 days | "Your network is up to date!" (no prompt) |
+| 8-30 days | "It's been a while! Upload new data to see recent changes." |
+| 31-90 days | "A lot can change in a month. Update your network?" |
+| 90+ days | "Your network data is getting stale. Time for a refresh!" |
 
 ### 3.3 Upload Flow
 
@@ -1851,16 +2070,144 @@ node.on('click', function(event, d) {
 ✅ Keyboard navigable (Tab through cards, Enter to activate links)
 ✅ Screen reader reads full insight + confidence level
 
+#### 3.5.1 Return Visit Dashboard Narrative
+
+**Purpose:** Show returning users how their network has evolved since their last upload.
+
+**Trigger:** User has 2+ uploads (current + at least 1 historical).
+
+**Network Evolution Header:**
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                                                                │
+│                  Since Your Last Upload...                     │
+│                   (H2, 36px, Gray-900)                         │
+│             December 15, 2025 → December 29, 2025              │
+│               (Body, 16px, Gray-600, italic)                   │
+│                                                                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐         │
+│  │     +142     │  │      +3      │  │      4       │         │
+│  │ Connections  │  │  Communities │  │ New Insights │         │
+│  │   (Green)    │  │   (Blue)     │  │   (Orange)   │         │
+│  └──────────────┘  └──────────────┘  └──────────────┘         │
+│  (Stats Cards: 120px wide, 16px gap, centered)                │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+**Evolution Insight Templates:**
+
+| Metric | Template | Example |
+|--------|----------|---------|
+| **New Connections** | "You've grown your network by {n} people since {date}." | "You've grown your network by 142 people since December 15." |
+| **Lost Connections** | "{n} connections are no longer in your data—they may have unfollowed or deleted accounts." | "23 connections are no longer in your data..." |
+| **New Communities** | "We detected {n} new clusters forming in your network." | "We detected 3 new clusters forming in your network." |
+| **Community Shift** | "{name} has moved from {community_a} to {community_b}." | "Sarah has moved from 'Tech Twitter' to 'Startup Founders'." |
+| **Rising Star** | "{name} gained {n}% more centrality—they're becoming more influential." | "Alex gained 45% more centrality..." |
+| **Fading Connection** | "Your engagement with {name} has dropped significantly." | "Your engagement with Jordan has dropped significantly." |
+
+**Evolution Card Component:**
+
+```tsx
+// /components/insights/EvolutionCard.tsx
+
+interface EvolutionInsight {
+  type: 'growth' | 'decline' | 'shift' | 'new';
+  metric: string;
+  previousValue: number;
+  currentValue: number;
+  changePercent: number;
+  narrative: string;
+}
+
+export function EvolutionCard({ insight }: { insight: EvolutionInsight }) {
+  const isPositive = insight.changePercent > 0;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          {insight.metric}
+        </span>
+        <span className={`text-lg font-bold ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+          {isPositive ? '+' : ''}{insight.changePercent}%
+        </span>
+      </div>
+
+      <div className="flex items-baseline gap-2 mb-3">
+        <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {insight.currentValue.toLocaleString()}
+        </span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          from {insight.previousValue.toLocaleString()}
+        </span>
+      </div>
+
+      <p className="text-gray-700 dark:text-gray-300 text-sm">
+        {insight.narrative}
+      </p>
+    </div>
+  );
+}
+```
+
+**No Evolution Data State:**
+
+When user has only 1 upload (no comparison possible):
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                                                                │
+│                    📈 Want to track growth?                    │
+│                   (H3, 24px, Gray-900)                         │
+│                                                                │
+│         Upload new data in a few weeks to see how your        │
+│              network evolves over time.                        │
+│                (Body, 16px, Gray-700)                          │
+│                                                                │
+│  [Set a Reminder] (Button, outline, Gray-600)                  │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
 ### 3.6 Empty & Error States
 
 **Philosophy:** Never show blank screens. Always guide next action.
+
+**Illustration Assets:** See [VSG_ILLUSTRATION_ICON_GUIDE.md](./VSG_ILLUSTRATION_ICON_GUIDE.md) Section 5 for empty state illustration specifications.
+
+#### Empty State Design Pattern
+
+All empty states follow this structure:
+
+```tsx
+// /components/ui/EmptyState.tsx
+
+interface EmptyStateProps {
+  illustration: 'no-networks' | 'no-insights' | 'parse-error' | 'offline-mode';
+  title: string;
+  description: string;
+  primaryAction?: { label: string; onClick: () => void };
+  secondaryAction?: { label: string; href: string };
+}
+```
+
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Illustration stroke | Gray-700 (#374151) | Gray-200 (#E5E7EB) |
+| Illustration accent | Orange-500 (#F97316) | Orange-400 (#FB923C) |
+| Title | Gray-900 (#111827) | Gray-50 (#F9FAFB) |
+| Description | Gray-600 (#4B5563) | Gray-400 (#9CA3AF) |
+| Background | Gray-50 (#F9FAFB) | Gray-900 (#111827) |
 
 #### Empty State: No Graphs Uploaded
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│                    📊 Icon (64px, Gray-400)                    │
+│           [no-networks.svg illustration]                       │
+│           (200×200px max, from /assets/illustrations/)         │
 │                                                                │
 │                  No Networks Yet                               │
 │                 (H2, 36px, Gray-900)                           │
@@ -1882,7 +2229,9 @@ node.on('click', function(event, d) {
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│                    ⚠️ Icon (64px, Red-500)                     │
+│           [parse-error.svg illustration]                       │
+│           (160×160px, from /assets/illustrations/)             │
+│           (Icon uses Heroicons: exclamation-triangle)          │
 │                                                                │
 │              Failed to Parse Your Data                         │
 │                 (H2, 36px, Gray-900)                           │
@@ -1897,8 +2246,8 @@ node.on('click', function(event, d) {
 │                                                                │
 │       ────────────────────────────────────────────────────     │
 │                                                                │
-│       🔧 What to try:                                          │
-│       (Overline, 12px, Orange-800)                            │
+│       What to try:                                             │
+│       (Overline, 12px, Orange-800)                             │
 │                                                                │
 │       1. Re-download your archive from Twitter                 │
 │       2. Ensure ZIP file is fully downloaded (check file size) │
@@ -1913,13 +2262,23 @@ node.on('click', function(event, d) {
 └────────────────────────────────────────────────────────────────┘
 ```
 
+**Error State Colors:**
+
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Error icon | Red-500 (#EF4444) | Red-400 (#F87171) |
+| Error title | Gray-900 (#111827) | Gray-50 (#F9FAFB) |
+| Error background | Red-50 (#FEF2F2) | Red-950 (#450A0A) |
+| Border | Red-200 (#FECACA) | Red-800 (#991B1B) |
+
 #### Warning State: Partial Import (Some Data Skipped)
 
 **When it happens:** The parser can extract most records but some files/rows are corrupted or unsupported.
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                    ⚠️ Icon (64px, Amber-500)                   │
+│           [Heroicons: exclamation-circle (Amber-500)]          │
+│           (48px, inline with title)                            │
 │                                                                │
 │                 Imported With Warnings                         │
 │                 (H2, 36px, Gray-900)                           │
@@ -1939,11 +2298,20 @@ node.on('click', function(event, d) {
 └────────────────────────────────────────────────────────────────┘
 ```
 
+**Warning State Colors:**
+
+| Element | Light Mode | Dark Mode |
+|---------|------------|-----------|
+| Warning icon | Amber-500 (#F59E0B) | Amber-400 (#FBBF24) |
+| Warning background | Amber-50 (#FFFBEB) | Amber-950 (#451A03) |
+| Border | Amber-200 (#FDE68A) | Amber-800 (#92400E) |
+
 #### Error State: Network Too Large
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                    📈 Icon (64px, Amber-500)                   │
+│           [Heroicons: chart-bar-square (Amber-500)]            │
+│           (48px, inline with title)                            │
 │                                                                │
 │                Your Network is Huge!                           │
 │                 (H2, 36px, Gray-900)                           │
@@ -1974,7 +2342,8 @@ node.on('click', function(event, d) {
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                    🔍 Icon (64px, Gray-400)                    │
+│           [no-insights.svg illustration]                       │
+│           (160×160px, from /assets/illustrations/)             │
 │                                                                │
 │              No New Insights Right Now                         │
 │                 (H2, 36px, Gray-900)                           │
@@ -1984,7 +2353,7 @@ node.on('click', function(event, d) {
 │                  engaged for a few weeks.                      │
 │                (Body, 16px, Gray-700)                          │
 │                                                                │
-│       💡 Insights appear when we detect:                       │
+│       Insights appear when we detect:                          │
 │       • Bridge connections (link communities)                  │
 │       • Engagement patterns (dormant relationships)            │
 │       • Network growth (rising stars)                          │
@@ -2000,7 +2369,9 @@ node.on('click', function(event, d) {
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│                    📡 Icon (64px, Gray-400)                    │
+│           [offline-mode.svg illustration]                      │
+│           (120×120px, from /assets/illustrations/)             │
+│           (Uses Heroicons: signal-slash as fallback)           │
 │                                                                │
 │              Connection Lost                                   │
 │                 (H2, 36px, Gray-900)                           │
@@ -2010,7 +2381,7 @@ node.on('click', function(event, d) {
 │                                                                │
 │            [Retry] (Button, Orange-500)                        │
 │                                                                │
-│  ℹ️ Viewing cached data from: 2 hours ago                      │
+│  Viewing cached data from: 2 hours ago                         │
 │  (Info banner: Blue-50 bg, Blue-700 text, 12px)                │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
@@ -2022,7 +2393,8 @@ node.on('click', function(event, d) {
 ✅ Error messages human-readable (no "Error 500" or stack traces)
 ✅ Technical details expandable (for advanced users/debugging)
 ✅ Empty states guide to next logical step (never just "No data")
-✅ Icons reinforce message (visual + text)
+✅ Icons from Heroicons library; illustrations from /assets/illustrations/
+✅ All empty/error states support dark mode (see color tables above)
 ✅ Tone is helpful, not blaming ("We couldn't..." not "You failed...")
 
 ---
@@ -3922,6 +4294,250 @@ interface BadgeProps {
 }
 ```
 
+### 5.7 Unified Loading State Patterns
+
+**Philosophy:** Users should always know something is happening. Never leave them wondering.
+
+**Loading State Decision Matrix:**
+
+| State Type | Use When | Duration | Animation |
+|------------|----------|----------|-----------|
+| **Skeleton** | Layout is known, content loading | 0.5-3s | Shimmer pulse |
+| **Spinner** | Duration unknown, compact space | 0.3-5s | Rotation |
+| **Progress Bar** | Duration measurable (uploads, parsing) | Variable | Linear fill |
+| **Stage Indicator** | Multi-step process | Variable | Step highlight |
+
+#### 5.7.1 Skeleton Loading
+
+**Use for:** Cards, lists, dashboards, graph canvas placeholder.
+
+```css
+/* Skeleton Base */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--vsg-gray-200) 0%,
+    var(--vsg-gray-100) 50%,
+    var(--vsg-gray-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite ease-in-out;
+  border-radius: 4px;
+}
+
+/* Dark mode skeleton */
+html.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--vsg-gray-700) 0%,
+    var(--vsg-gray-800) 50%,
+    var(--vsg-gray-700) 100%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Skeleton shapes */
+.skeleton-text { height: 16px; width: 100%; margin-bottom: 8px; }
+.skeleton-heading { height: 24px; width: 60%; margin-bottom: 16px; }
+.skeleton-avatar { height: 48px; width: 48px; border-radius: 50%; }
+.skeleton-card { height: 200px; width: 100%; border-radius: 12px; }
+```
+
+**Skeleton Component:**
+
+```tsx
+// /components/ui/Skeleton.tsx
+
+interface SkeletonProps {
+  variant: 'text' | 'heading' | 'avatar' | 'card' | 'graph';
+  width?: string | number;
+  height?: string | number;
+  className?: string;
+}
+
+export function Skeleton({ variant, width, height, className }: SkeletonProps) {
+  const baseClasses = 'skeleton';
+
+  const variantClasses = {
+    text: 'h-4 w-full rounded',
+    heading: 'h-6 w-3/5 rounded',
+    avatar: 'h-12 w-12 rounded-full',
+    card: 'h-48 w-full rounded-xl',
+    graph: 'h-96 w-full rounded-xl',
+  };
+
+  return (
+    <div
+      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      style={{ width, height }}
+      role="status"
+      aria-label="Loading..."
+    />
+  );
+}
+```
+
+#### 5.7.2 Spinner Loading
+
+**Use for:** Buttons (inline), small components, quick operations.
+
+```css
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--vsg-gray-200);
+  border-top-color: var(--vsg-orange-500);
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+html.dark .spinner {
+  border-color: var(--vsg-gray-700);
+  border-top-color: var(--vsg-orange-400);
+}
+
+@keyframes spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Size variants */
+.spinner-sm { width: 16px; height: 16px; border-width: 2px; }
+.spinner-md { width: 24px; height: 24px; border-width: 2px; }
+.spinner-lg { width: 32px; height: 32px; border-width: 3px; }
+.spinner-xl { width: 48px; height: 48px; border-width: 4px; }
+```
+
+#### 5.7.3 Progress Bar
+
+**Use for:** File uploads, parsing progress, multi-step processes.
+
+```tsx
+// /components/ui/ProgressBar.tsx
+
+interface ProgressBarProps {
+  value: number;           // 0-100
+  variant?: 'default' | 'success' | 'error';
+  showLabel?: boolean;
+  label?: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+export function ProgressBar({
+  value,
+  variant = 'default',
+  showLabel = true,
+  label,
+  size = 'md'
+}: ProgressBarProps) {
+  const heights = { sm: 'h-1', md: 'h-2', lg: 'h-3' };
+  const colors = {
+    default: 'bg-orange-500',
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+  };
+
+  return (
+    <div className="w-full">
+      {(showLabel || label) && (
+        <div className="flex justify-between mb-1 text-sm">
+          <span className="text-gray-700 dark:text-gray-300">{label}</span>
+          <span className="text-gray-500 dark:text-gray-400">{Math.round(value)}%</span>
+        </div>
+      )}
+      <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full ${heights[size]}`}>
+        <div
+          className={`${colors[variant]} ${heights[size]} rounded-full transition-all duration-300 ease-out`}
+          style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+          role="progressbar"
+          aria-valuenow={value}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+#### 5.7.4 Stage Indicator
+
+**Use for:** Graph rendering stages, onboarding flows.
+
+```tsx
+// /components/ui/StageIndicator.tsx
+
+interface Stage {
+  id: string;
+  label: string;
+  status: 'pending' | 'active' | 'complete';
+}
+
+interface StageIndicatorProps {
+  stages: Stage[];
+  currentStage: string;
+}
+
+export function StageIndicator({ stages, currentStage }: StageIndicatorProps) {
+  return (
+    <div className="flex items-center gap-2">
+      {stages.map((stage, index) => (
+        <React.Fragment key={stage.id}>
+          {/* Stage dot */}
+          <div
+            className={`
+              flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium
+              ${stage.status === 'complete' ? 'bg-green-500 text-white' : ''}
+              ${stage.status === 'active' ? 'bg-orange-500 text-white animate-pulse' : ''}
+              ${stage.status === 'pending' ? 'bg-gray-200 dark:bg-gray-700 text-gray-500' : ''}
+            `}
+          >
+            {stage.status === 'complete' ? '✓' : index + 1}
+          </div>
+
+          {/* Connector line (except last) */}
+          {index < stages.length - 1 && (
+            <div
+              className={`
+                flex-1 h-0.5
+                ${stages[index + 1].status !== 'pending' ? 'bg-orange-500' : 'bg-gray-200 dark:bg-gray-700'}
+              `}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+```
+
+#### 5.7.5 Loading State Accessibility
+
+```tsx
+// All loading states must be accessible
+
+// Announce loading to screen readers
+<div role="status" aria-live="polite" aria-busy="true">
+  <Spinner />
+  <span className="sr-only">Loading your network data...</span>
+</div>
+
+// Progress updates for screen readers
+<ProgressBar
+  value={progress}
+  aria-label={`Upload progress: ${progress}% complete`}
+/>
+
+// Stage changes announced
+useEffect(() => {
+  announceToScreenReader(`Now ${currentStage.label}`);
+}, [currentStage]);
+```
+
 ---
 
 ## 6. Accessibility Requirements
@@ -4360,6 +4976,111 @@ if (process.env.NODE_ENV === 'development') {
 }
 ```
 
+#### Contrast Enforcement Rules
+
+**MUST use these variants for WCAG AA compliance:**
+
+| Context | Light Mode | Dark Mode | Minimum Ratio |
+|---------|------------|-----------|---------------|
+| **Body text (primary)** | Gray-700 (#404040) | Gray-100 (#F3F4F6) | 7:1+ |
+| **Body text (secondary)** | Gray-600 (#525252) | Gray-300 (#D1D5DB) | 4.5:1+ |
+| **Link/accent text** | Orange-700 (#C2410C) | Orange-400 (#FB923C) | 4.5:1+ |
+| **Error text** | Red-700 (#B91C1C) | Red-400 (#F87171) | 4.5:1+ |
+| **Success text** | Green-700 (#15803D) | Green-400 (#4ADE80) | 4.5:1+ |
+| **Warning text** | Amber-700 (#B45309) | Amber-400 (#FBBF24) | 4.5:1+ |
+
+**NEVER use these for body text:**
+- Orange-500 or lighter on white (fails 4.5:1)
+- Gray-400 or lighter on white (fails 4.5:1)
+- Green-500/Red-500/Amber-500 on white (fails 4.5:1)
+
+### 6.5.1 Dark Mode Contrast Validation
+
+**Dark Mode Text Combinations - WCAG AA Compliance**
+
+#### Body Text on Dark Backgrounds (4.5:1 minimum)
+
+| Foreground | Background | Ratio | Pass | Usage |
+|------------|------------|-------|------|-------|
+| Gray-50 (#F9FAFB) | Gray-900 (#111827) | 17.1:1 | ✅ AAA | Primary text |
+| Gray-100 (#F3F4F6) | Gray-900 | 15.8:1 | ✅ AAA | Primary text alt |
+| Gray-200 (#E5E7EB) | Gray-900 | 13.4:1 | ✅ AAA | Secondary text |
+| Gray-300 (#D1D5DB) | Gray-900 | 10.5:1 | ✅ AAA | Tertiary text |
+| Gray-400 (#9CA3AF) | Gray-900 | 6.3:1 | ✅ AAA | Subtle text |
+| Gray-500 (#6B7280) | Gray-900 | 3.9:1 | ❌ Fail | Disabled text only |
+| Orange-400 (#FB923C) | Gray-900 | 8.1:1 | ✅ AAA | Accent/link text |
+| Orange-300 (#FDBA74) | Gray-900 | 10.8:1 | ✅ AAA | Highlight text |
+
+#### Semantic Colors on Dark Backgrounds
+
+| Foreground | Background | Ratio | Pass | Usage |
+|------------|------------|-------|------|-------|
+| Green-400 (#4ADE80) | Gray-900 | 9.2:1 | ✅ AAA | Success text |
+| Red-400 (#F87171) | Gray-900 | 6.2:1 | ✅ AAA | Error text |
+| Amber-400 (#FBBF24) | Gray-900 | 10.7:1 | ✅ AAA | Warning text |
+| Blue-400 (#60A5FA) | Gray-900 | 6.4:1 | ✅ AAA | Info text |
+
+#### Colored Backgrounds in Dark Mode
+
+| Foreground | Background | Ratio | Pass | Usage |
+|------------|------------|-------|------|-------|
+| Gray-900 (#111827) | Orange-400 (#FB923C) | 8.1:1 | ✅ AAA | Primary button text |
+| White (#FFFFFF) | Orange-500 (#F97316) | 3.0:1 | ✅ AA* | Button text (large) |
+| Gray-900 (#111827) | Green-400 (#4ADE80) | 9.2:1 | ✅ AAA | Success button text |
+| Gray-900 (#111827) | Red-400 (#F87171) | 6.2:1 | ✅ AAA | Danger button text |
+
+*Note: For buttons with text smaller than 18px, use dark text on bright backgrounds in dark mode.
+
+#### Automated Testing for Both Modes
+
+```typescript
+// /tests/accessibility/contrast.test.ts
+
+import { test, expect } from '@playwright/test';
+
+const themes = ['light', 'dark'];
+
+themes.forEach(theme => {
+  test.describe(`Contrast validation (${theme} mode)`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto('/');
+      await page.evaluate((t) => {
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(t);
+      }, theme);
+    });
+
+    test('body text has sufficient contrast', async ({ page }) => {
+      const textElements = page.locator('p, span, li');
+      // Use jest-axe for automated contrast checking
+      const results = await axe(page);
+      const contrastIssues = results.violations.filter(
+        v => v.id === 'color-contrast'
+      );
+      expect(contrastIssues).toHaveLength(0);
+    });
+  });
+});
+```
+
+**CI Integration (jest-axe):**
+
+```javascript
+// jest.setup.js
+import { toHaveNoViolations } from 'jest-axe';
+expect.extend(toHaveNoViolations);
+
+// component.test.tsx
+import { axe } from 'jest-axe';
+import { render } from '@testing-library/react';
+
+test('InsightCard has no accessibility violations', async () => {
+  const { container } = render(<InsightCard {...props} />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
 ---
 
 ## 7. Responsive Design
@@ -4618,6 +5339,200 @@ if (hasWebGL && nodes.length > 10000) {
     `;
   }
 </script>
+```
+
+### 7.4 Mobile Graph Performance Strategy
+
+**Philosophy:** Graphs should feel native on mobile, not a compromised desktop experience.
+
+**Device Tier Classification:**
+
+| Tier | RAM | Cores | Example Devices | Strategy |
+|------|-----|-------|-----------------|----------|
+| **Low-end** | <3GB | 2-4 | Budget Android, iPhone 6/7 | Static snapshot + list view |
+| **Mid-range** | 3-6GB | 4-6 | iPhone 11, Pixel 4a | Reduced physics, essential gestures |
+| **High-end** | >6GB | 6+ | iPhone 14 Pro, Galaxy S23 | Full interactivity, WebGL if available |
+
+**Node Count Thresholds:**
+
+| Nodes | Mobile Strategy | Desktop Strategy | FPS Target |
+|-------|-----------------|------------------|------------|
+| **<500** | Full physics, all interactions | Full physics, all interactions | 60 FPS |
+| **500-2K** | Static layout, pan/zoom only | Full physics | 30-60 FPS |
+| **2K-5K** | Static snapshot + list view fallback | Reduced physics, LOD | 30 FPS |
+| **>5K** | Image preview + "View on Desktop" prompt | WebGL rendering, LOD | 30 FPS |
+
+**Mobile-Specific Optimizations:**
+
+```typescript
+// /lib/visualization/mobile-optimizer.ts
+
+interface MobileGraphConfig {
+  nodeLimit: number;
+  physicsEnabled: boolean;
+  interactionMode: 'full' | 'reduced' | 'static';
+  renderMode: 'svg' | 'canvas' | 'image';
+}
+
+export function getMobileGraphConfig(
+  nodeCount: number,
+  deviceTier: 'low' | 'mid' | 'high'
+): MobileGraphConfig {
+  // Low-end devices
+  if (deviceTier === 'low') {
+    return {
+      nodeLimit: 500,
+      physicsEnabled: nodeCount < 200,
+      interactionMode: nodeCount < 200 ? 'reduced' : 'static',
+      renderMode: nodeCount < 500 ? 'canvas' : 'image'
+    };
+  }
+
+  // Mid-range devices
+  if (deviceTier === 'mid') {
+    return {
+      nodeLimit: 2000,
+      physicsEnabled: nodeCount < 500,
+      interactionMode: nodeCount < 1000 ? 'full' : 'reduced',
+      renderMode: 'canvas'
+    };
+  }
+
+  // High-end devices
+  return {
+    nodeLimit: 5000,
+    physicsEnabled: nodeCount < 2000,
+    interactionMode: 'full',
+    renderMode: 'canvas'
+  };
+}
+
+// Device tier detection
+export function detectDeviceTier(): 'low' | 'mid' | 'high' {
+  const memory = (navigator as any).deviceMemory;
+  const cores = navigator.hardwareConcurrency;
+
+  if (memory && memory < 3) return 'low';
+  if (memory && memory < 6) return 'mid';
+  if (cores && cores < 4) return 'low';
+  if (cores && cores < 6) return 'mid';
+
+  return 'high';
+}
+```
+
+**Touch Target Requirements:**
+
+| Element | Minimum Size | Recommended | Spacing |
+|---------|--------------|-------------|---------|
+| **Graph nodes** | 44×44px tap area | 48×48px | 8px between |
+| **Control buttons** | 44×44px | 48×48px | 4px between |
+| **Filter chips** | 32px height | 36px height | 8px between |
+| **Close buttons** | 44×44px | 48×48px | Corner placement |
+
+**Mobile Gesture Simplification:**
+
+| Gesture | Desktop Equivalent | Mobile Behavior |
+|---------|-------------------|-----------------|
+| **Tap node** | Click node | Select + show detail panel |
+| **Pinch zoom** | Scroll wheel | Zoom in/out (min 0.5x, max 4x) |
+| **Two-finger pan** | Click-drag canvas | Move viewport |
+| **Long press** | Right-click | Context menu (if any) |
+| **Swipe up on panel** | - | Expand insight panel |
+| **Swipe down on panel** | - | Collapse insight panel |
+
+**Disabled on Mobile:**
+- Multi-select drag (too complex)
+- Hover states (no hover on touch)
+- Keyboard shortcuts (no keyboard)
+- Node dragging (conflicts with pan)
+
+**Large Graph Fallback (>2K nodes on mobile):**
+
+```tsx
+// /components/visualization/MobileGraphFallback.tsx
+
+export function MobileGraphFallback({ graph, onViewDesktop }: Props) {
+  return (
+    <div className="flex flex-col items-center py-8 px-4">
+      {/* Static image preview */}
+      <div className="relative w-full aspect-square mb-6">
+        <img
+          src={graph.previewImageUrl}
+          alt="Network graph preview"
+          className="w-full h-full object-contain rounded-lg border"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-lg" />
+        <p className="absolute bottom-4 left-4 text-white text-sm">
+          {graph.nodeCount.toLocaleString()} connections
+        </p>
+      </div>
+
+      {/* Explanation */}
+      <p className="text-center text-gray-600 dark:text-gray-400 mb-4">
+        Your network has {graph.nodeCount.toLocaleString()} connections.
+        For the best experience with large networks, we recommend viewing on desktop.
+      </p>
+
+      {/* Actions */}
+      <div className="flex flex-col gap-3 w-full max-w-xs">
+        <button
+          onClick={onViewDesktop}
+          className="w-full py-3 bg-orange-500 text-white rounded-lg font-medium"
+        >
+          Email Me a Link
+        </button>
+        <button
+          onClick={() => setShowListView(true)}
+          className="w-full py-3 border border-gray-300 dark:border-gray-600 rounded-lg font-medium"
+        >
+          View as List Instead
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+**Mobile FPS Monitoring:**
+
+```typescript
+// Monitor mobile performance in production
+export function trackMobileFPS(callback: (fps: number) => void) {
+  let frameCount = 0;
+  let lastTime = performance.now();
+
+  function measureFPS() {
+    frameCount++;
+    const currentTime = performance.now();
+
+    if (currentTime - lastTime >= 1000) {
+      callback(frameCount);
+      frameCount = 0;
+      lastTime = currentTime;
+    }
+
+    requestAnimationFrame(measureFPS);
+  }
+
+  requestAnimationFrame(measureFPS);
+}
+
+// Auto-degrade if FPS drops
+let consecutiveLowFPS = 0;
+
+trackMobileFPS((fps) => {
+  if (fps < 20) {
+    consecutiveLowFPS++;
+    if (consecutiveLowFPS > 3) {
+      // Switch to static mode
+      disablePhysics();
+      showToast('Simplified view enabled for better performance');
+    }
+  } else {
+    consecutiveLowFPS = 0;
+  }
+});
 ```
 
 ---
