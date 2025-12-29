@@ -1,0 +1,296 @@
+/**
+ * Visual Social Graph - Design Tokens
+ * Single Source of Truth for all visual values
+ *
+ * Based on:
+ * - VSG_UX_INTERACTION_DESIGN_SPECIFICATION.md (Section 2)
+ * - VSG_UI_SPECIFICATION.md (Section 3)
+ *
+ * Token Hierarchy: Brand → Semantic → Component
+ */
+
+:root {
+  /* ============================================================
+     BRAND TOKENS (Orange Palette)
+     ============================================================ */
+  --vsg-color-orange-50: #FFF7ED;
+  --vsg-color-orange-100: #FFEDD5;
+  --vsg-color-orange-200: #FED7AA;
+  --vsg-color-orange-300: #FDBA74;
+  --vsg-color-orange-400: #FB923C;
+  --vsg-color-orange-500: #F97316;  /* Brand Primary */
+  --vsg-color-orange-600: #EA580C;
+  --vsg-color-orange-700: #C2410C;
+  --vsg-color-orange-800: #9A3412;
+  --vsg-color-orange-900: #7C2D12;
+
+  /* ============================================================
+     NEUTRAL PALETTE (Black/White/Gray)
+     ============================================================ */
+  --vsg-color-white: #FFFFFF;
+  --vsg-color-black: #000000;
+  --vsg-color-gray-50: #FAFAFA;
+  --vsg-color-gray-100: #F5F5F5;
+  --vsg-color-gray-200: #E5E5E5;
+  --vsg-color-gray-300: #D4D4D4;
+  --vsg-color-gray-400: #A3A3A3;
+  --vsg-color-gray-500: #737373;
+  --vsg-color-gray-600: #525252;
+  --vsg-color-gray-700: #404040;
+  --vsg-color-gray-800: #262626;
+  --vsg-color-gray-900: #171717;
+
+  /* ============================================================
+     SEMANTIC COLORS
+     ============================================================ */
+  --vsg-color-success: #10B981;
+  --vsg-color-success-light: #D1FAE5;
+  --vsg-color-success-dark: #065F46;
+
+  --vsg-color-warning: #F59E0B;
+  --vsg-color-warning-light: #FEF3C7;
+  --vsg-color-warning-dark: #92400E;
+
+  --vsg-color-error: #EF4444;
+  --vsg-color-error-light: #FEE2E2;
+  --vsg-color-error-dark: #B91C1C;
+
+  --vsg-color-info: #3B82F6;
+  --vsg-color-info-light: #DBEAFE;
+  --vsg-color-info-dark: #1E40AF;
+
+  /* ============================================================
+     COMMUNITY COLORS (Graph Visualization)
+     ============================================================ */
+  --vsg-community-1: #F97316;  /* Orange */
+  --vsg-community-2: #3B82F6;  /* Blue */
+  --vsg-community-3: #10B981;  /* Green */
+  --vsg-community-4: #8B5CF6;  /* Purple */
+  --vsg-community-5: #EC4899;  /* Pink */
+  --vsg-community-6: #F59E0B;  /* Amber */
+  --vsg-community-7: #06B6D4;  /* Cyan */
+  --vsg-community-8: #84CC16;  /* Lime */
+
+  /* ============================================================
+     SEMANTIC TOKENS (Light Mode)
+     ============================================================ */
+  --vsg-bg-primary: #FAFAFA;
+  --vsg-bg-secondary: #FFFFFF;
+  --vsg-bg-tertiary: #F5F5F5;
+
+  --vsg-text-primary: #171717;
+  --vsg-text-secondary: #525252;
+  --vsg-text-tertiary: #737373;
+  --vsg-text-disabled: #A3A3A3;
+
+  --vsg-border-default: #E5E5E5;
+  --vsg-border-strong: #D4D4D4;
+
+  --vsg-accent-primary: var(--vsg-color-orange-500);
+  --vsg-accent-hover: var(--vsg-color-orange-600);
+  --vsg-accent-active: var(--vsg-color-orange-700);
+  --vsg-accent-text: var(--vsg-color-orange-700);
+  --vsg-accent-subtle: var(--vsg-color-orange-50);
+
+  /* ============================================================
+     GRAPH TOKENS (Light Mode)
+     ============================================================ */
+  --vsg-graph-bg: #FFFFFF;
+  --vsg-graph-node-default: #A3A3A3;
+  --vsg-graph-edge-default: #D4D4D4;
+  --vsg-graph-label: #404040;
+  --vsg-graph-hover: var(--vsg-color-orange-500);
+
+  /* ============================================================
+     SPACING (8-point grid, base = 4px)
+     ============================================================ */
+  --spacing-0: 0;
+  --spacing-1: 4px;    /* 0.25rem */
+  --spacing-2: 8px;    /* 0.5rem */
+  --spacing-3: 12px;   /* 0.75rem */
+  --spacing-4: 16px;   /* 1rem */
+  --spacing-5: 20px;   /* 1.25rem */
+  --spacing-6: 24px;   /* 1.5rem */
+  --spacing-8: 32px;   /* 2rem */
+  --spacing-10: 40px;  /* 2.5rem */
+  --spacing-12: 48px;  /* 3rem */
+  --spacing-16: 64px;  /* 4rem */
+  --spacing-20: 80px;  /* 5rem */
+  --spacing-24: 96px;  /* 6rem */
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-family-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", "Courier New", monospace;
+
+  /* Font Sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --font-size-5xl: 48px;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.167;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /* ============================================================
+     BORDER RADIUS
+     ============================================================ */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ============================================================
+     SHADOWS (Elevation)
+     ============================================================ */
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-4: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* ============================================================
+     Z-INDEX (Layering)
+     ============================================================ */
+  --z-index-base: 0;
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  /* ============================================================
+     ANIMATION
+     ============================================================ */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-moderate: 300ms;
+  --duration-slow: 500ms;
+
+  --easing-linear: linear;
+  --easing-ease: ease;
+  --easing-ease-in: ease-in;
+  --easing-ease-out: ease-out;
+  --easing-ease-in-out: ease-in-out;
+  --easing-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ============================================================
+     COMPONENT TOKENS
+     ============================================================ */
+
+  /* Buttons */
+  --button-bg-primary: var(--vsg-accent-primary);
+  --button-bg-primary-hover: var(--vsg-accent-hover);
+  --button-bg-primary-active: var(--vsg-accent-active);
+  --button-text-primary: var(--vsg-color-white);
+
+  --button-bg-secondary: var(--vsg-bg-secondary);
+  --button-bg-secondary-hover: var(--vsg-color-gray-50);
+  --button-border-secondary: var(--vsg-accent-primary);
+  --button-text-secondary: var(--vsg-accent-primary);
+
+  --button-bg-tertiary: transparent;
+  --button-bg-tertiary-hover: var(--vsg-accent-subtle);
+  --button-text-tertiary: var(--vsg-accent-primary);
+
+  /* Inputs */
+  --input-bg: var(--vsg-bg-secondary);
+  --input-border: var(--vsg-border-default);
+  --input-border-focus: var(--vsg-accent-primary);
+  --input-text: var(--vsg-text-primary);
+  --input-placeholder: var(--vsg-text-tertiary);
+
+  /* Cards */
+  --card-bg: var(--vsg-bg-secondary);
+  --card-border: var(--vsg-border-default);
+  --card-shadow: var(--shadow-1);
+  --card-shadow-hover: var(--shadow-2);
+
+  /* Touch Targets */
+  --touch-target-min: 44px;
+
+  /* Transitions */
+  --transition-base: all var(--duration-base) var(--easing-ease-out);
+  --transition-fast: all var(--duration-fast) var(--easing-ease);
+  --transition-moderate: all var(--duration-moderate) var(--easing-ease-out);
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   ============================================================ */
+html.dark {
+  --vsg-bg-primary: #111827;
+  --vsg-bg-secondary: #1F2937;
+  --vsg-bg-tertiary: #374151;
+
+  --vsg-text-primary: #F9FAFB;
+  --vsg-text-secondary: #D1D5DB;
+  --vsg-text-tertiary: #9CA3AF;
+  --vsg-text-disabled: #6B7280;
+
+  --vsg-border-default: #374151;
+  --vsg-border-strong: #4B5563;
+
+  --vsg-accent-primary: #F97316;
+  --vsg-accent-hover: #FB923C;
+  --vsg-accent-active: #EA580C;
+  --vsg-accent-text: #FB923C;
+  --vsg-accent-subtle: #7C2D12;
+
+  --vsg-graph-bg: #111827;
+  --vsg-graph-node-default: #6B7280;
+  --vsg-graph-edge-default: #4B5563;
+  --vsg-graph-label: #E5E7EB;
+
+  /* Community colors adjusted for dark backgrounds */
+  --vsg-community-1: #FB923C;  /* Orange-400 */
+  --vsg-community-2: #60A5FA;  /* Blue-400 */
+  --vsg-community-3: #34D399;  /* Green-400 */
+  --vsg-community-4: #A78BFA;  /* Purple-400 */
+  --vsg-community-5: #F472B6;  /* Pink-400 */
+  --vsg-community-6: #FBBF24;  /* Amber-400 */
+  --vsg-community-7: #22D3EE;  /* Cyan-400 */
+  --vsg-community-8: #A3E635;  /* Lime-400 */
+
+  /* Shadows adjusted for dark mode */
+  --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-4: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+
+  /* Component overrides */
+  --card-bg: var(--vsg-bg-secondary);
+  --input-bg: var(--vsg-bg-tertiary);
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-moderate: 0ms;
+    --duration-slow: 0ms;
+  }
+}

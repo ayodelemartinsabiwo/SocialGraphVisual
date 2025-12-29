@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Visual Social Graph - Transform your social network data into actionable insights. Privacy-first, algorithm-driven network intelligence.">
+  <title>Visual Social Graph - Personal Network Intelligence</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  <style>
+    /* Hero Section */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, var(--vsg-bg-primary) 0%, var(--vsg-bg-secondary) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 50%;
+      height: 100%;
+      background: radial-gradient(circle at top right, var(--vsg-accent-subtle) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: var(--line-height-tight);
+      margin-bottom: var(--spacing-6);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.125rem, 2vw, 1.5rem);
+      color: var(--vsg-text-secondary);
+      margin-bottom: var(--spacing-8);
+      max-width: 600px;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: var(--spacing-4);
+      flex-wrap: wrap;
+    }
+
+    .hero-visual {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      background: var(--vsg-graph-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--vsg-border-default);
+      margin-top: var(--spacing-8);
+    }
+
+    /* Features Section */
+    .features {
+      background-color: var(--vsg-bg-secondary);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-8);
+      margin-top: var(--spacing-12);
+    }
+
+    .feature-card {
+      text-align: center;
+      padding: var(--spacing-8);
+    }
+
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--spacing-6);
+      background-color: var(--vsg-accent-subtle);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--vsg-accent-primary);
+    }
+
+    .feature-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .feature-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-3);
+    }
+
+    .feature-description {
+      color: var(--vsg-text-secondary);
+      line-height: var(--line-height-relaxed);
+    }
+
+    /* Trust Section */
+    .trust {
+      background-color: var(--vsg-bg-primary);
+    }
+
+    .trust-badges {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--spacing-6);
+      margin-top: var(--spacing-8);
+    }
+
+    .trust-badge {
+      background-color: var(--vsg-bg-secondary);
+      border: 1px solid var(--vsg-border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+      text-align: center;
+      transition: var(--transition-base);
+    }
+
+    .trust-badge:hover {
+      border-color: var(--vsg-accent-primary);
+      box-shadow: var(--shadow-2);
+    }
+
+    .trust-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto var(--spacing-4);
+      color: var(--vsg-accent-primary);
+    }
+
+    .trust-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .trust-title {
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-2);
+    }
+
+    .trust-text {
+      color: var(--vsg-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, var(--vsg-accent-primary) 0%, var(--vsg-accent-hover) 100%);
+      color: white;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      color: white;
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: var(--spacing-6);
+    }
+
+    .cta-section p {
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--spacing-8);
+      opacity: 0.95;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 767px) {
+      .hero {
+        min-height: auto;
+        padding-top: var(--spacing-12);
+        padding-bottom: var(--spacing-12);
+      }
+
+      .hero-cta {
+        flex-direction: column;
+      }
+
+      .hero-cta .btn {
+        width: 100%;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trust-badges {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Network Visualization Preview (Decorative) */
+    .network-preview {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .network-node {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--vsg-accent-primary);
+      opacity: 0.8;
+      animation: pulse 3s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    .network-line {
+      position: absolute;
+      height: 1px;
+      background-color: var(--vsg-border-strong);
+      transform-origin: left center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="#" class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>
+            <circle cx="5" cy="7" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="7" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="5" cy="17" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="17" r="2" fill="currentColor" stroke="none"/>
+            <path d="M12 12L5 7M12 12L19 7M12 12L5 17M12 12L19 17"/>
+          </svg>
+          Visual Social Graph
+        </a>
+        <nav class="nav">
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#how-it-works" class="nav-link">How It Works</a>
+          <a href="#" class="nav-link">Pricing</a>
+          <button class="theme-toggle" aria-label="Toggle dark mode" id="theme-toggle">
+            <svg id="sun-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+            </svg>
+            <svg id="moon-icon" viewBox="0 0 20 20" fill="currentColor" style="display: none;">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+            </svg>
+          </button>
+          <a href="02-upload.html" class="btn btn-primary btn-sm">Get Started</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Discover the Hidden Patterns<br>in Your Social Network
+        </h1>
+        <p class="hero-subtitle">
+          Transform your LinkedIn, Twitter, or Instagram connections into actionable insights.
+          Privacy-first. Algorithm-driven. No AI black boxes.
+        </p>
+        <div class="hero-cta">
+          <a href="02-upload.html" class="btn btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"/>
+            </svg>
+            Upload Your Data
+          </a>
+          <a href="03-graph-canvas.html?demo=true" class="btn btn-secondary btn-lg">
+            Try Sample Network
+          </a>
+        </div>
+
+        <div class="hero-visual">
+          <div class="network-preview" id="network-preview">
+            <!-- Decorative network visualization -->
+            <svg width="100%" height="100%" viewBox="0 0 600 400">
+              <!-- Edges -->
+              <line x1="100" y1="100" x2="200" y2="150" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+              <line x1="200" y1="150" x2="300" y2="100" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+              <line x1="300" y1="100" x2="400" y2="200" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+              <line x1="100" y1="100" x2="150" y2="250" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+              <line x1="200" y1="150" x2="250" y2="300" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+              <line x1="300" y1="100" x2="350" y2="280" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+              <line x1="400" y1="200" x2="500" y2="200" stroke="var(--vsg-border-strong)" stroke-width="2" opacity="0.5"/>
+
+              <!-- Nodes -->
+              <circle cx="100" cy="100" r="16" fill="var(--vsg-community-1)" opacity="0.9">
+                <animate attributeName="r" values="16;18;16" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="200" cy="150" r="20" fill="var(--vsg-community-2)" opacity="0.9">
+                <animate attributeName="r" values="20;22;20" dur="3.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="300" cy="100" r="18" fill="var(--vsg-community-3)" opacity="0.9">
+                <animate attributeName="r" values="18;20;18" dur="4s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="400" cy="200" r="14" fill="var(--vsg-community-4)" opacity="0.9">
+                <animate attributeName="r" values="14;16;14" dur="3.2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="150" cy="250" r="12" fill="var(--vsg-community-5)" opacity="0.9">
+                <animate attributeName="r" values="12;14;12" dur="2.8s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="250" cy="300" r="14" fill="var(--vsg-community-1)" opacity="0.9">
+                <animate attributeName="r" values="14;16;14" dur="3.3s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="350" cy="280" r="16" fill="var(--vsg-community-2)" opacity="0.9">
+                <animate attributeName="r" values="16;18;16" dur="3.7s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="500" cy="200" r="15" fill="var(--vsg-community-3)" opacity="0.9">
+                <animate attributeName="r" values="15;17;15" dur="3.1s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="section features">
+    <div class="container">
+      <h2 class="text-center">Why Visual Social Graph?</h2>
+      <p class="text-center text-secondary" style="max-width: 600px; margin: 0 auto var(--spacing-12);">
+        Built on graph theory, not guesswork. Powered by algorithms, not opaque AI.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Privacy-First</h3>
+          <p class="feature-description">
+            80% client-side processing. No social platform connections.
+            Your data never leaves your control.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Algorithm-Driven</h3>
+          <p class="feature-description">
+            Betweenness centrality, PageRank, community detection.
+            Transparent, explainable graph-theoretic methods.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Instant Insights</h3>
+          <p class="feature-description">
+            See your network's hidden patterns in seconds.
+            Identify influencers, bridges, and communities instantly.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Section -->
+  <section id="how-it-works" class="section trust">
+    <div class="container">
+      <h2 class="text-center">Built on Trust & Transparency</h2>
+      <p class="text-center text-secondary" style="max-width: 600px; margin: 0 auto;">
+        No AI dependency. No vendor lock-in. Just deterministic graph algorithms.
+      </p>
+
+      <div class="trust-badges">
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <h4 class="trust-title">GDPR Compliant</h4>
+          <p class="trust-text">Full data deletion on request. Your privacy is non-negotiable.</p>
+        </div>
+
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h4 class="trust-title">Open Algorithms</h4>
+          <p class="trust-text">Every insight is explainable. No black-box AI inference.</p>
+        </div>
+
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h4 class="trust-title">Fast & Local</h4>
+          <p class="trust-text">80% processing happens in your browser. No server dependency.</p>
+        </div>
+
+        <div class="trust-badge">
+          <div class="trust-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <h4 class="trust-title">No Vendor Lock-In</h4>
+          <p class="trust-text">Export your visualizations and data anytime. You own your insights.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="section cta-section">
+    <div class="container">
+      <h2>Ready to See Your Network Differently?</h2>
+      <p>Upload your social network data and discover insights in under 60 seconds.</p>
+      <div style="display: flex; gap: var(--spacing-4); justify-content: center; flex-wrap: wrap;">
+        <a href="02-upload.html" class="btn btn-lg" style="background: white; color: var(--vsg-accent-primary);">
+          Start Free Analysis
+        </a>
+        <a href="03-graph-canvas.html?demo=true" class="btn btn-lg btn-secondary" style="border-color: white; color: white;">
+          Explore Sample Network
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Product</h4>
+          <ul class="footer-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Sample Network</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul class="footer-links">
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">GDPR</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">API</a></li>
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Status</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Visual Social Graph. Built with graph theory, not guesswork.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('sun-icon');
+    const moonIcon = document.getElementById('moon-icon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+    if (initialTheme === 'dark') {
+      html.classList.add('dark');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = html.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+      if (isDark) {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
