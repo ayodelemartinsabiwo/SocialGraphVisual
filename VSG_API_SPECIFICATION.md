@@ -9,10 +9,9 @@
 
 | Attribute | Value |
 |-----------|-------|
-| **Version** | 1.0 (Production-Ready) |
+| **Version** | 1.0 (Initial Release) |
 | **Date** | December 27, 2025 |
-| **Status** | ✅ Production-Ready (OpenAPI v1.0 Generated) |
-| **OpenAPI Schema** | [api-specs/openapi.yaml](./api-specs/openapi.yaml) |
+| **Status** | Ready for Implementation |
 | **Owner** | Engineering / API Team |
 | **Review Cycle** | Weekly (Phase 0-1), Bi-weekly (Phase 2+) |
 | **Classification** | Internal - Technical |
@@ -43,1390 +42,1375 @@ Frontend & Third-Party Integration
 
 **Change Log:**
 ```
-v1.0 (Dec 27, 2025) - Production-Ready with OpenAPI 3.1 Schema:
-├─ Core API endpoints with RESTful design
-├─ Security Architecture
-│  ├─ TLS 1.3, HSTS enforcement
-│  ├─ Cookie-based JWT sessions with CSRF protection (double-submit tokens)
-│  ├─ HMAC-SHA256 pseudonymization (server-side, no key exposure)
-│  └─ Magic-link tokens via POST body (prevents URL leakage)
-├─ Privacy-First Data Model
-│  ├─ Day-level timestamp granularity (prevents temporal correlation)
-│  ├─ Server NEVER persists display names/usernames (client-only labels)
-│  └─ GDPR-compliant dual deletion modes (soft/hard with restore endpoint)
-├─ Error Taxonomy Refinement
-│  ├─ QUOTA_EXCEEDED (429, retryable) for time-based limits
-│  ├─ TIER_FEATURE_RESTRICTED (403, not retryable) for plan restrictions
-│  └─ 28 codes across 5 severity levels (TRANSIENT, RECOVERABLE, PARTIAL, CRITICAL, INTEGRITY)
-├─ Feature Gating (Free/Pro/Creator tier specifications with quota enforcement)
-├─ Performance Targets (<500ms p95 for reads, Redis caching, 15-min/1-hour TTL)
-├─ Async Job Support (202 responses for long-running exports, status polling endpoints)
-├─ Stripe Webhook Integration (HMAC signature verification, idempotency tracking)
-├─ Complete Appendices (errors, rates, performance, security)
-└─ ✅ OpenAPI 3.1 Schema Generated (api-specs/openapi.yaml)
-   ├─ 20+ endpoints fully documented
-   ├─ 25+ schema definitions with validation rules
-   ├─ 3 security schemes (cookieAuth, csrfToken, bearerAuth)
-   ├─ 6 reusable error responses (400, 401, 403, 404, 429, 500)
-   └─ Complete request/response examples for all endpoints
-
-**READY FOR IMPLEMENTATION:** Backend teams can now use OpenAPI schema as normative contract.
+v1.0 (Dec 27, 2025) - Initial Release:
+├─ RESTful API design with JSON payloads
+├─ Authentication & authorization endpoints
+├─ Graph upload, storage, and retrieval
+├─ Insight generation (algorithm-first, template-based)
+├─ Export services (PDF, social cards, CSV/JSON)
+├─ Stripe webhook integration
+└─ Privacy-first data handling (pseudonymization)
 ```
 
 ---
 
 ## **Table of Contents**
 
-0. [Scope & Modes](#0-scope--modes)
-   - 0.1 [Two Modes (User-Facing Contract)](#01-two-modes-user-facing-contract)
-   - 0.2 [Server-Side Fallback](#02-server-side-fallback-standard-mode-opt-in)
-1. [API Principles](#1-api-principles-non-negotiables)
-   - 1.1 [API Versioning Strategy](#11-api-versioning-strategy)
-2. [Base URL, Auth, and Headers](#2-base-url-auth-and-headers)
-3. [Error Model](#3-error-model-taxonomy-aligned)
-4. [Core Data Schemas](#4-core-data-schemas-conceptual)
-   - 4.1 [Platform](#41-platform)
-   - 4.2 [Pseudonymized Graph Payload](#42-pseudonymized-graph-payload)
-   - 4.3 [Insight Payload](#43-insight-payload)
-5. [Endpoints](#5-endpoints)
-   - 5.1 [Auth](#51-auth)
-   - 5.2 [Graphs (Standard Mode)](#52-graphs-standard-mode)
-   - 5.3 [Uploads (Server-Side Fallback)](#53-uploads-opt-in-server-side-fallback-via-tus)
-   - 5.4 [Insights (Algorithm-First)](#54-insights-algorithm-first)
-   - 5.5 [Exports](#55-exports)
-   - 5.6 [Account & Data Management](#56-account--data-management)
-   - 5.7 [Webhooks (Stripe Integration)](#57-webhooks-stripe-integration)
-6. [Retention & Deletion Semantics](#6-retention--deletion-semantics-api-visible)
-7. [OpenAPI (Implementation Target)](#7-openapi-implementation-target)
-8. [Security Architecture](#8-security-architecture)
-9. [Out of Scope](#9-out-of-scope-for-this-spec)
-10. [Appendices](#appendices)
-    - [Appendix A: Error Code Taxonomy](#appendix-a-error-code-taxonomy)
-    - [Appendix B: Rate Limits & Quotas](#appendix-b-rate-limits--quotas)
-    - [Appendix C: Performance Targets & Caching Strategy](#appendix-c-performance-targets--caching-strategy)
+1. [API Philosophy & Design Principles](#1-api-philosophy--design-principles)
+2. [API Overview](#2-api-overview)
+3. [Authentication & Authorization](#3-authentication--authorization)
+4. [Core API Endpoints](#4-core-api-endpoints)
+   - 4.1 [Authentication Endpoints](#41-authentication-endpoints)
+   - 4.2 [User Management Endpoints](#42-user-management-endpoints)
+   - 4.3 [Graph Upload & Processing](#43-graph-upload--processing)
+   - 4.4 [Graph Retrieval & Management](#44-graph-retrieval--management)
+   - 4.5 [Insights & Analysis](#45-insights--analysis)
+   - 4.6 [Export Services](#46-export-services)
+   - 4.7 [Subscription & Billing](#47-subscription--billing)
+5. [Data Models & Schemas](#5-data-models--schemas)
+6. [Error Handling](#6-error-handling)
+7. [Rate Limiting & Quotas](#7-rate-limiting--quotas)
+8. [Webhooks](#8-webhooks)
+9. [API Versioning Strategy](#9-api-versioning-strategy)
+10. [Security Considerations](#10-security-considerations)
+11. [Performance & Caching](#11-performance--caching)
+12. [Testing & Validation](#12-testing--validation)
+13. [Migration & Evolution](#13-migration--evolution)
+14. [Appendices](#14-appendices)
 
 ---
 
-## **0. Scope & Modes**
+## **1. API Philosophy & Design Principles**
 
-### **0.1 Two Modes (User-Facing Contract)**
+### **1.1 Alignment with Core Principles**
 
-- **Standard Mode (Account-based, Server-Side Pseudonymization)**
-  - Uses the VSG backend to persist **pseudonymized graph snapshots** and (optionally) precomputed insights.
-  - Client sends **original platform IDs** (not display names/usernames) to server.
-  - Server pseudonymizes IDs at ingestion boundary and returns pseudonymMapping to client.
-  - Server persists only pseudonymized graph structure + metadata (original IDs never stored).
+**Algorithm-First Intelligence (from VSG_DESIGN_PRINCIPLE.md)**
+```
+PRINCIPLE: AI as a design tool, not a runtime dependency
+API IMPLICATION: No external AI API calls at runtime
+ENFORCEMENT:
+├─ Insight generation uses deterministic algorithms + templates
+├─ No OpenAI/Anthropic/Google AI endpoints in production code
+├─ Template matching is rule-based (conditional logic)
+└─ System remains functional if AI services disabled
+```
 
-- **Offline / Local-Only Mode (No account)**
-  - **No API usage**. No network requests.
-  - All parsing, graph building, visualization, and local exports happen on-device.
+**Privacy-First Architecture (from Architecture Document)**
+```
+PRINCIPLE: 80% client-side processing, minimal server data transfer
+API IMPLICATION: Limited data sent to server
+ENFORCEMENT:
+├─ Raw social media files NEVER uploaded to server
+├─ Client sends pseudonymized graph structure only
+├─ Server stores hashed identifiers (keyed hash, non-reversible)
+├─ User can delete all data via API (cascade delete)
+└─ GDPR-compliant data export endpoint
+```
 
-### **0.2 Server-Side Fallback (Standard Mode, Opt-In)**
+**No Account Access Constraint (Tier 1 - Constitutional)**
+```
+PRINCIPLE: Never implement OAuth for social platforms
+API IMPLICATION: No social platform credentials in API
+ENFORCEMENT:
+├─ Authentication endpoints for VSG access only (magic link, Google OAuth)
+├─ NO Twitter/Instagram/LinkedIn/Facebook/TikTok OAuth endpoints
+├─ Upload endpoints accept file data, not API tokens
+└─ Code review blocks any social platform OAuth library
+```
 
-To protect low-end devices, Standard Mode can offer an **opt-in server-side processing fallback**.
+### **1.2 RESTful Design Principles**
 
-- Triggered only when:
-  - user explicitly opts in (“Process on server instead?”), or
-  - client detects failure (memory guardrails).
-- In fallback, the client uploads the **raw ZIP** to the server via **Tus**.
-- The server deletes the raw upload after processing (short retention); the stored artifact remains the **pseudonymized graph**.
+**Resource-Oriented Architecture**
+```
+Resources (Nouns, not Verbs):
+├─ /users/{userId}
+├─ /graphs/{graphId}
+├─ /insights/{insightId}
+├─ /exports/{exportId}
+└─ /subscriptions/{subscriptionId}
+
+NOT:
+├─ /getUser
+├─ /createGraph
+└─ /generateInsight
+```
+
+**HTTP Methods (Semantic)**
+```
+GET     - Retrieve resource(s)
+POST    - Create new resource
+PUT     - Update entire resource (replace)
+PATCH   - Update partial resource (modify)
+DELETE  - Remove resource
+```
+
+**Idempotency**
+```
+Safe (no side effects):     GET, HEAD, OPTIONS
+Idempotent (same result):   GET, PUT, DELETE, HEAD, OPTIONS
+Non-idempotent:             POST, PATCH
+
+Example: PUT /graphs/{graphId} - same request = same outcome
+Example: POST /graphs - same request = multiple graphs created
+```
+
+**HTTP Status Codes (Semantic)**
+```
+2xx Success:
+├─ 200 OK - Request succeeded (GET, PUT, PATCH)
+├─ 201 Created - Resource created (POST)
+├─ 202 Accepted - Async processing started
+├─ 204 No Content - Success, no response body (DELETE)
+
+4xx Client Errors:
+├─ 400 Bad Request - Invalid request body/parameters
+├─ 401 Unauthorized - Missing or invalid authentication
+├─ 403 Forbidden - Authenticated but insufficient permissions
+├─ 404 Not Found - Resource doesn't exist
+├─ 409 Conflict - Request conflicts with current state
+├─ 422 Unprocessable Entity - Validation failed
+├─ 429 Too Many Requests - Rate limit exceeded
+
+5xx Server Errors:
+├─ 500 Internal Server Error - Unhandled exception
+├─ 502 Bad Gateway - Upstream service failure
+├─ 503 Service Unavailable - Temporary unavailability
+└─ 504 Gateway Timeout - Upstream timeout
+```
+
+### **1.3 API Design Goals**
+
+**Developer Experience (DX)**
+```
+├─ Predictable: Consistent naming, structure, behavior
+├─ Self-Documenting: Clear endpoint names, comprehensive schemas
+├─ Forgiving: Accept flexible input, strict output
+├─ Helpful Errors: Actionable error messages with recovery guidance
+└─ Well-Documented: OpenAPI spec, examples, SDKs
+```
+
+**Performance**
+```
+├─ <500ms API response time (p95)
+├─ <100ms for cached responses
+├─ Pagination for large collections (limit 100 default)
+├─ Efficient queries (database indexes, query optimization)
+└─ CDN caching for static assets
+```
+
+**Security**
+```
+├─ HTTPS only (TLS 1.3)
+├─ JWT authentication (short-lived tokens)
+├─ Rate limiting (per user, per IP)
+├─ Input validation (schema validation, sanitization)
+└─ CORS configuration (whitelist origins)
+```
 
 ---
 
-## **1. API Principles (Non-Negotiables)**
-
-- **Privacy-first / data minimization**
-  - Standard path: Client sends **original platform IDs** (for pseudonymization), server pseudonymizes at ingestion, returns mapping.
-  - Display names/usernames NEVER sent to server (client-only local storage).
-  - No social-platform OAuth scopes (Google OAuth is allowed only for VSG authentication).
-
-- **Algorithm-first, deterministic intelligence**
-  - Insight generation must be explainable and reproducible.
-  - No external AI dependency required for core functionality.
-
-- **Graceful degradation + partial success**
-  - APIs support partial outcomes (e.g., some records skipped) and return warnings.
-
-### **1.1 API Versioning Strategy**
-
-**Approach:** URL-based versioning
-
-- All API endpoints include a version prefix: `/api/v1/*`, `/api/v2/*`, etc.
-- The current production version is **v1** (paths shown in this document use `/api` for brevity but implement as `/api/v1`).
-
-**Version Lifecycle:**
-
-- **Major versions** (v1 → v2): Introduce breaking changes (schema incompatibilities, removed fields, behavior changes).
-- **Minor updates** (non-breaking): Handled within the same major version (additive fields, new optional parameters).
-- **Deprecation policy**: When a new major version is released, the previous version remains supported for a **12-month transition period** with clear deprecation warnings in response headers and documentation.
-
-**Breaking Change Examples:**
-- Removing a required field from a request schema
-- Changing error code enums
-- Modifying authentication mechanisms
-
-**Non-Breaking Change Examples:**
-- Adding optional fields to responses
-- Introducing new endpoints
-- Adding new error codes (existing codes unchanged)
-
-**Migration Strategy:**
-- Deprecation notices provided via:
-  - `X-API-Deprecated: true` response header
-  - `X-API-Sunset: 2026-12-31T23:59:59Z` (ISO 8601 date when version will be removed)
-  - Email notifications to affected users (Creator tier with API keys)
-- Migration guides published 6 months before sunset date
-
----
-
-## **2. Base URL, Auth, and Headers**
+## **2. API Overview**
 
 ### **2.1 Base URL**
 
-- Base: `https://{host}`
-- API prefix: `/api`
-
-### **2.2 Authentication**
-
-**Primary Authentication Mechanism: Cookie-Based Sessions**
-
-- Session is represented by a **JWT** stored in an **httpOnly cookie**.
-- Cookie requirements:
-  - `httpOnly` (prevents XSS access)
-  - `Secure` (HTTPS-only transmission)
-  - `SameSite=Lax` (CSRF protection for top-level navigation)
-- Cookie name: `vsg_session`
-- Set via `Set-Cookie` header on successful authentication
-
-**CSRF Protection for State-Changing Operations:**
-
-Since cookies are automatically sent by browsers, all state-changing endpoints (POST, PUT, DELETE) require **double-submit CSRF token** verification:
-
-1. **CSRF Token Generation:**
-   - Server generates a cryptographically random CSRF token (128-bit, Base64-encoded) on login.
-   - Token stored in:
-     - **Cookie**: `vsg_csrf` (NOT httpOnly, readable by JavaScript)
-     - **Session database**: Associated with user session ID
-
-2. **Client CSRF Token Submission:**
-   - Client reads `vsg_csrf` cookie value via JavaScript.
-   - Client includes token in `X-CSRF-Token` request header for all POST/PUT/DELETE requests.
-
-3. **Server CSRF Token Validation:**
-   - Server compares `X-CSRF-Token` header with stored token for the session.
-   - Request rejected with `403 Forbidden` if tokens don't match or token is missing.
-
-**CSRF Token Lifecycle:**
-- Generated on login (`POST /api/auth/verify`, `POST /api/auth/google/callback`)
-- Rotated on logout and session expiry
-- Valid for session lifetime (24 hours)
-
-**Example Request with CSRF Protection:**
-```http
-POST /api/graphs HTTP/1.1
-Host: visualsocialgraph.com
-Cookie: vsg_session=eyJhbGc...; vsg_csrf=abc123...
-X-CSRF-Token: abc123...
-Content-Type: application/json
-
-{ "platform": "twitter", "nodes": [...] }
+```
+Production:  https://api.visualsocialgraph.com/v1
+Staging:     https://api-staging.visualsocialgraph.com/v1
+Development: http://localhost:3001/v1
 ```
 
-**Creator Tier API Key Authentication (Alternative):**
+**API Versioning:**
+- Version in URL path: `/v1`, `/v2`
+- Current version: `v1`
+- Version support policy: 12 months minimum after deprecation notice
 
-For Creator tier programmatic API access (non-browser clients):
+### **2.2 API Architecture**
 
-- **Authentication**: `Authorization: Bearer {api_key}` header
-- **API Keys**: Long-lived tokens (90-day expiry) generated via dashboard
-- **CSRF Protection**: NOT required for Bearer token authentication (tokens not auto-sent by browsers)
-- **Scope**: Read-write access to user's own resources only
-
-**Request Example (API Key):**
-```http
-GET /api/graphs HTTP/1.1
-Host: visualsocialgraph.com
-Authorization: Bearer vsg_live_sk_abc123...
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Client (Browser/App)                      │
+│  ├─ Web Worker: Client-side parsing (80% processing)        │
+│  ├─ API Client: Fetch wrapper with auth, retries            │
+│  └─ State Management: React Query (caching, optimistic UI)  │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ↓ HTTPS (JWT in Authorization header)
+┌─────────────────────────────────────────────────────────────┐
+│              API Gateway (Express Middleware)                │
+│  ├─ Authentication: JWT verification                         │
+│  ├─ Authorization: Tier-based feature gating                │
+│  ├─ Rate Limiting: Redis-backed (per user, per IP)          │
+│  ├─ Request Validation: JSON schema validation             │
+│  ├─ Error Handling: Standardized error responses           │
+│  └─ Logging: Structured JSON logs (Pino)                    │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    Service Layer                             │
+│  ├─ AuthService: Magic link, Google OAuth, JWT generation   │
+│  ├─ GraphService: Graph CRUD, versioning, pseudonymization │
+│  ├─ InsightService: Algorithm execution, template matching  │
+│  ├─ ExportService: PDF, social cards, CSV/JSON generation   │
+│  └─ BillingService: Stripe integration, subscription mgmt   │
+└─────────────────────────────────────────────────────────────┘
+                         │
+                         ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      Data Layer                              │
+│  ├─ PostgreSQL: Users, graphs, insights, subscriptions      │
+│  ├─ Redis: Sessions, rate limits, job queue, cache          │
+│  └─ Cloudflare R2: Temporary file storage (uploads)         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-**Authentication Method Selection:**
-- Web app (browser): Cookie-based with CSRF tokens (PRIMARY)
-- API clients (Creator tier): Bearer token authentication (ALTERNATIVE)
-- Webhooks (Stripe): HMAC signature verification (see Section 5.7)
+### **2.3 Request/Response Format**
 
-### **2.3 Common Request Headers**
+**Content Type:**
+```
+Request:  application/json
+Response: application/json
+Errors:   application/json (problem+json inspired)
+```
 
-- `Content-Type: application/json` (for JSON bodies)
-- `Accept: application/json`
-- Optional idempotency for POST endpoints that create resources:
-  - `Idempotency-Key: <uuid>`
-
----
-
-## **3. Error Model (Taxonomy-Aligned)**
-
-### **3.1 Standard Error Envelope**
-
+**Standard Response Envelope (Success):**
 ```json
 {
-  "error": {
-    "id": "01J...",
-    "level": "TRANSIENT|RECOVERABLE|PARTIAL|CRITICAL|INTEGRITY",
-    "code": "STRING_ENUM",
-    "message": "Human readable summary",
-    "details": { "any": "json" },
-    "retryable": true,
-    "suggestedAction": "Optional user-facing next step"
+  "data": {
+    // Resource data here
+  },
+  "meta": {
+    "timestamp": "2025-12-27T12:00:00Z",
+    "version": "1.0"
   }
 }
 ```
 
-### **3.2 Partial Success Envelope (When Applicable)**
-
-Some endpoints may return `200` with warnings:
-
-```json
-{
-  "data": { "...": "..." },
-  "warnings": [
-    {
-      "code": "PARTIAL_IMPORT_SOME_RECORDS_SKIPPED",
-      "message": "Some records were skipped due to missing fields",
-      "count": 183
-    }
-  ]
-}
-```
-
----
-
-## **4. Core Data Schemas (Conceptual)**
-
-> These types are aligned to the Data & Intelligence Framework. Dates are **ISO 8601 UTC strings** in persisted JSON.
-
-### **4.1 Platform**
-
-```ts
-type Platform = 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'tiktok';
-```
-
-### **4.2 Pseudonymized Graph Payload**
-
-```ts
-interface GraphCreateRequest {
-  platform: Platform;
-  parseVersion: string; // e.g. "twitter_v2.1"
-
-  // Graph structure with ORIGINAL IDs (server-side pseudonymization)
-  graph: {
-    nodes: Array<{
-      externalId: string;   // ORIGINAL platform user ID (e.g., "123456789")
-                            // Transiently processed for pseudonymization, NEVER persisted
-      type: 'self' | 'user';
-      // NOTE: displayName and username NEVER sent to server (privacy guarantee)
-      // Client maintains labels in IndexedDB only
-
-      // Optional, if privacy model allows
-      followerCount?: number;
-      followingCount?: number;
-
-      // Computed (optional)
-      degree?: number;
-      pageRank?: number;
-      betweenness?: number;
-      communityId?: number;
-
-      addedAt?: string; // ISO 8601 date (day-level granularity: YYYY-MM-DD)
-      lastInteraction?: string; // ISO 8601 date (day-level granularity: YYYY-MM-DD)
-    }>;
-
-    edges: Array<{
-      source: string;        // Original platform user ID (refers to node's externalId)
-      target: string;        // Original platform user ID (refers to node's externalId)
-      type: 'follows' | 'followed_by' | 'mutual' | 'engages_with';
-      weight: number; // 0..1
-      interactions?: {
-        likes?: number;
-        comments?: number;
-        shares?: number;
-        messages?: number;
-      };
-      createdAt?: string; // ISO 8601 UTC
-    }>;
-
-    metadata: {
-      statistics: {
-        nodeCount: number;
-        edgeCount: number;
-        density?: number;
-        averageDegree?: number;
-      };
-      timePeriod?: { start?: string; end?: string };
-      parsingErrors?: Array<{ code: string; message: string }>;
-    };
-  };
-}
-
-interface GraphCreateResponse {
-  id: string; // graph_id
-  uploadId?: string; // present if created from server-side fallback pipeline
-  platform: Platform;
-  nodeCount: number;
-  edgeCount: number;
-  isLatest: boolean;
-  createdAt: string;
-  pseudonymMapping: Record<string, string>; // { "originalId": "pseudonymId" }
-                                              // Map returned for client-only label storage
-                                              // Example: { "123456789": "node_a3f2b8c..." }
-  warnings?: Array<{ code: string; message: string; count?: number }>;
-}
-```
-
----
-
-## **Pseudonymization & Identity Handling (Standard/Cloud Mode)**
-
-### **Standard/Cloud Mode (Authoritative - Option B)**
-
-To ensure privacy-first data storage, all personally identifiable information (PII) in the graph payload is pseudonymized using the following approach:
-
-**Hashing Algorithm:**
-- **Method**: HMAC-SHA256 (Hash-based Message Authentication Code with SHA-256)
-- **Keying**: Per-user secret key generated at account creation and stored securely in database
-- **Format**: `pseudonymId = HMAC-SHA256(userSecretKey, originalValue)`
-
-**Why HMAC-SHA256 (vs plain SHA-256 + salt):**
-- **Keyed pseudonymization**: Requires server-held secret key, resistant to offline dictionary attacks
-- **One-way transformation**: Cannot reverse-engineer original values from pseudonyms
-- **Deterministic**: Same input always produces same output (enables consistent pseudonym mapping)
-- **Collision-resistant**: Extremely low probability of different users producing identical pseudonyms
-- **No client-side key exposure**: Server never distributes keys to clients
-
-**Pseudonymization Rules:**
-1. **Node IDs**: Original platform user IDs (e.g., Twitter user ID `123456789`) transformed to produce deterministic pseudonym IDs (e.g., `node_a3f2b8c...`).
-2. **Display Names**: NOT pseudonymized or persisted server-side. Client-only friendly labels stay in browser storage.
-3. **Usernames**: NOT pseudonymized or persisted server-side. Client-only friendly labels stay in browser storage.
-
-**Stability Across Uploads:**
-- The same secret key is reused for the same user across multiple graph uploads.
-- This ensures that the same original user ID consistently maps to the same pseudonym ID, preserving graph structure across snapshots.
-- Example: If "User A" (ID `12345`) appears in both January and March uploads, they receive the same pseudonym ID in both graphs.
-
-**Key Management:**
-- Secret key stored in `users.pseudonym_key` column (256-bit random value, Base64-encoded).
-- Key generated once at user registration using cryptographically secure random number generator (CSPRNG).
-- **Key NEVER exposed via API**; used exclusively server-side during graph processing.
-- Keys encrypted at rest using application-level encryption (AES-256-GCM) with master key in KMS.
-
-**Pseudonymization Architecture (Server-Side Only - Option B):**
-
-**Flow Summary:**
-- **Client sends original platform IDs** (e.g., numeric platform IDs) **without any display names/usernames**.
-- Server performs **HMAC-SHA256 pseudonymization at ingestion** using the user's per-account secret key.
-- Server persists **only pseudonymized node IDs** and graph structure.
-- Server response **ALWAYS includes** `pseudonymMapping` (`originalId → pseudonymId`) so the client can store:
-  - `{ pseudonymId → displayName/username }` **locally only** (IndexedDB).
-
-> **CRITICAL:** The server MUST NOT accept or persist human-readable labels (display names/usernames). Labels remain client-only.
-
-**Detailed Flow:**
-1. Client sends graph with **original platform IDs** (externalId field in nodes/edges)
-2. Server pseudonymizes IDs using HMAC-SHA256 at ingestion boundary
-3. Server persists only pseudonymized graph (original IDs **transiently processed**, NEVER stored)
-4. Server **ALWAYS returns** pseudonymMapping (original ID → pseudonymized ID)
-5. Client stores label mapping locally in IndexedDB (pseudonymized ID → display name/username)
-
-**Server Fallback Mode:**
-- Raw ZIP uploaded to server contains original PII
-- Server pseudonymizes during processing and returns pseudonymMapping
-- Original IDs are **transiently processed** (held in memory only) and NEVER persisted
-- Raw data deleted immediately after pseudonymization (see Section 6)
-
-**Client-Side Display Labels (Local Storage Only):**
-- Client maintains **local-only mapping** in browser IndexedDB:
-  - Pseudonymized ID (from server) → friendly labels (display names, usernames)
-- This mapping is NEVER sent to server and is used purely for UI rendering
-- Server NEVER sees or stores display names/usernames
-
-**CRITICAL PRIVACY GUARANTEE:**
-- Server NEVER persists human-readable display names or usernames in database.
-- Persisted graph contains only: pseudonymized IDs, edge relationships, and aggregate metrics (degree, centrality scores).
-- This prevents server-side data from being used to identify individuals without client-side label mapping.
-
-**Timestamp Privacy Policy:**
-
-To prevent temporal correlation attacks and comply with data minimization principles:
-
-- **User-Facing Timestamps** (persisted in database, returned via API):
-  - **Granularity**: Day-level only (`YYYY-MM-DD`)
-  - **Fields**: `graph.uploadedOn`, `edge.interactionDate`, `node.firstSeenDate`
-  - **Rationale**: Prevents precise temporal tracking; sufficient for longitudinal analysis
-
-- **Server-Internal Timestamps** (audit logs, operational metadata only):
-  - **Granularity**: Full ISO 8601 (`YYYY-MM-DDTHH:mm:ssZ`)
-  - **Fields**: `audit_log.timestamp`, `rate_limit.resetAt`, `session.expiresAt`
-  - **Rationale**: Required for security monitoring, session management, and compliance auditing
-  - **Retention**: 90 days maximum (see Section 8.6)
-
-**Example API Response (Day-Level Timestamps):**
-```json
-{
-  "id": "graph_01J...",
-  "platform": "twitter",
-  "uploadedOn": "2025-12-27",
-  "nodeCount": 1234,
-  "edgeCount": 5678,
-  "createdAt": "2025-12-27"
-}
-```
-
-**Rationale:**
-- Day-level timestamps prevent cross-referencing with real-time social media activity logs.
-- Users can still track graph evolution over weeks/months without exposing hour-level behavior patterns.
-
-### **4.3 Insight Payload**
-
-```ts
-type Confidence = 'high' | 'medium' | 'low';
-
-interface Insight {
-  id: string;
-  graphId: string;
-  templateId: string;
-  category:
-    | 'bridge_accounts'
-    | 'echo_chamber'
-    | 'engagement'
-    | 'community'
-    | 'growth'
-    | 'influencers'
-    | 'diversity'
-    | 'anomalies';
-
-  narrative: string;
-  actions: Array<{ text: string; priority: 'high' | 'medium' | 'low'; estimatedImpact?: string; url?: string }>;
-
-  confidence: Confidence;
-  priority: number;
-  explanation: {
-    triggeredConditions: string[];
-    metrics: Array<{ key: string; value: number | null }>;
-    templateVersion: number;
-  };
-
-  createdAt: string;
-}
-```
-
----
-
-## **5. Endpoints**
-
-### **5.1 Auth**
-
-#### **POST /api/auth/magic-link**
-Send a magic-link login email.
-
-Request:
-```json
-{ "email": "user@example.com" }
-```
-
-Responses:
-- `200` `{ "ok": true }`
-- `429` rate limited (TRANSIENT)
-
-#### **POST /api/auth/verify**
-Verify a magic link token and create a session cookie.
-
-**SECURITY NOTE:** Token submitted via POST body (NOT URL path) to prevent token leakage in server logs, proxies, and referrer headers.
-
-Request:
-```json
-{ "token": "mlt_abc123..." }
-```
-
-Responses:
-- `200` `{ "ok": true, "redirectUrl": "/dashboard" }` on success (sets `vsg_session` and `vsg_csrf` cookies)
-- `400` invalid/expired token (INTEGRITY)
-- `429` rate limited (TRANSIENT)
-
-**Flow:**
-1. User clicks magic link: `https://visualsocialgraph.com/auth/verify?token=mlt_abc123...`
-2. Frontend extracts token from query param
-3. Frontend POSTs token to `/api/auth/verify` in request body
-4. Server validates token, creates session, sets cookies
-5. Frontend redirects to dashboard
-
-#### **GET /api/auth/google/callback**
-OAuth callback; establishes session cookie.
-
-Responses:
-- `302` redirect to dashboard on success
-
-#### **POST /api/auth/logout**
-Invalidate session.
-
-Responses:
-- `200` `{ "ok": true }`
-
-#### **GET /api/auth/session**
-Return current session state.
-
-Responses:
-- `200` `{ "authenticated": true, "user": { "id": "...", "email": "...", "tier": "free|pro|creator" } }`
-- `200` `{ "authenticated": false }`
-
----
-
-### **5.2 Graphs (Standard Mode)**
-
-#### **POST /api/graphs**
-Create a graph snapshot with server-side pseudonymization at ingestion boundary.
-
-**Request:** Graph input with `externalId` fields (original platform IDs, no labels)
-**Response:** `{ graphId, graph (pseudonymized), pseudonymMapping (ALWAYS) }`
-
-**Flow:**
-1. Client sends original platform IDs (externalId field) with graph structure (no display names/usernames)
-2. Server pseudonymizes IDs using HMAC-SHA256 with per-user secret key at ingestion boundary
-3. Server persists ONLY pseudonymized graph (original IDs transiently processed, never stored)
-4. Server **ALWAYS returns** pseudonymMapping to client for local label storage
-5. Client stores display name/username labels locally in IndexedDB
-
-Request: `GraphCreateRequest` (contains nodes with externalId field)
-
-Responses:
-- `201` `GraphCreateResponse` (pseudonymMapping field ALWAYS included)
-- `400` invalid schema (RECOVERABLE)
-- `413` graph too large (>10MB serialized for Free/Pro, >50MB for Creator) (RECOVERABLE)
-- `403` tier limit exceeded (TRANSIENT) - see Appendix B for per-tier quotas
-
-**Feature Gating by Tier:**
-- **Free tier:** Max 5 graphs/day, 10 MB graph size limit, 5 total graphs stored
-- **Pro tier:** Max 100 graphs/day, 10 MB graph size limit, 100 total graphs stored
-- **Creator tier:** Max 500 graphs/day, 50 MB graph size limit, 500 total graphs stored
-
-**Example Response (Free tier quota exceeded):**
+**Standard Error Response:**
 ```json
 {
   "error": {
-    "id": "err_01J...",
-    "level": "TRANSIENT",
-    "code": "QUOTA_EXCEEDED",
-    "message": "Daily graph creation quota exceeded for Free tier (5/day).",
-    "details": { "tier": "free", "limit": 5, "used": 5, "resetAt": "2025-12-28T00:00:00Z" },
-    "retryable": true,
-    "suggestedAction": "Upgrade to Pro tier for 100 graphs/day or wait until quota resets."
+    "code": "VALIDATION_ERROR",
+    "message": "Graph data validation failed",
+    "details": [
+      {
+        "field": "nodes",
+        "issue": "Array must contain at least 2 nodes"
+      }
+    ],
+    "timestamp": "2025-12-27T12:00:00Z",
+    "requestId": "req_abc123xyz",
+    "documentation": "https://docs.visualsocialgraph.com/errors/VALIDATION_ERROR"
   }
 }
 ```
 
-#### **GET /api/graphs**
-List graphs for the authenticated user.
-
-Query params:
-- `platform` (optional)
-- `limit` (default 20)
-- `cursor` (optional)
-
-Response `200`:
+**Pagination (for list endpoints):**
 ```json
 {
   "data": [
-    { "id": "...", "platform": "twitter", "nodeCount": 1234, "edgeCount": 2345, "isLatest": true, "createdAt": "..." }
+    // Array of resources
   ],
-  "nextCursor": "..."
-}
-```
-
-#### **GET /api/graphs/{id}**
-Fetch a single graph (pseudonymized payload).
-
-Response `200`:
-```json
-{ "id": "...", "platform": "twitter", "graph": { "nodes": [], "edges": [], "metadata": {} }, "createdAt": "..." }
-```
-
-#### **DELETE /api/graphs/{id}**
-Soft delete a graph (recoverable for retention window, per policy).
-
-Query params:
-- `permanent` (optional, boolean): If `true`, performs hard delete (immediate, irreversible, GDPR-compliant). Default: `false` (soft delete with 30-day grace period).
-
-Response `200`:
-```json
-{ "ok": true, "deletionType": "soft", "recoverableUntil": "2025-01-26" }
-```
-
-Response `200` (permanent delete):
-```json
-{ "ok": true, "deletionType": "hard", "message": "Graph permanently deleted. This action cannot be undone." }
-```
-
-#### **POST /api/graphs/{id}/restore**
-Restore a soft-deleted graph within the 30-day grace period.
-
-**Availability:** Phase 2+ (currently requires support request)
-
-Response `200`:
-```json
-{ "ok": true, "graphId": "graph_01J...", "restoredAt": "2025-12-27" }
-```
-
-Responses:
-- `200` Graph restored successfully
-- `404` Graph not found or hard-deleted (CRITICAL)
-- `410` Grace period expired, graph permanently deleted (CRITICAL)
-
----
-
-### **5.3 Uploads (Opt-In Server-Side Fallback via Tus)**
-
-> Used only for server-side fallback processing. Default Standard flow does **not** upload raw ZIP.
-
-#### **Tus endpoint: /api/uploads**
-
-- Protocol: Tus (resumable upload)
-- Client: `tus-js-client`
-- Server: `tus-node-server`
-
-Lifecycle:
-1. Client creates Tus upload.
-2. Client uploads ZIP in chunks.
-3. Server processes ZIP (parse → build graph → store graph).
-4. Raw ZIP is deleted after processing (short retention).
-
-Recommended companion endpoints:
-
-#### **GET /api/uploads/{id}**
-Return upload status.
-
-Response `200`:
-```json
-{
-  "id": "...",
-  "platform": "twitter",
-  "status": "queued|processing|complete|failed",
-  "stage": "upload|parse|build_graph|persist_graph|generate_insights",
-  "progress": { "percent": 42, "message": "Parsing archive" },
-  "graphId": "...",
-  "errorMessage": null
-}
-```
-
-#### **GET /api/uploads/{id}/events**
-Real-time progress stream for server-side fallback processing.
-
-Implementation options:
-- **WebSocket** (preferred for richer progress updates)
-- **SSE** (acceptable fallback)
-
-Event payload (conceptual):
-```json
-{
-  "type": "progress",
-  "uploadId": "...",
-  "status": "processing",
-  "stage": "build_graph",
-  "progress": { "percent": 67, "message": "Building pseudonymized graph" }
-}
-```
-
-#### **DELETE /api/uploads/{id}**
-Cancel and delete a failed or in-progress upload.
-
-**Use Cases:**
-- User cancels upload midway
-- User deletes failed upload to retry
-- Automatic cleanup after 7-day retention for failed uploads
-
-Response `200`:
-```json
-{ "ok": true, "deletedAt": "2025-12-27" }
-```
-
-Responses:
-- `200` Upload deleted successfully
-- `404` Upload not found (CRITICAL)
-- `409` Upload already completed and converted to graph (use `DELETE /api/graphs/{id}` instead) (CONFLICT)
-
----
-
-### **5.4 Insights (Algorithm-First)**
-
-#### **POST /api/insights**
-Generate or retrieve cached insights for a graph.
-
-Request:
-```json
-{ "graphId": "...", "types": ["community", "bridge_accounts", "engagement"] }
-```
-
-Response `200`:
-```json
-{ "data": { "graphId": "...", "insights": [] }, "warnings": [] }
-```
-
-Responses:
-- `200` Success with insights array
-- `403` tier limit exceeded or unsupported insight types (RECOVERABLE)
-- `429` rate limited (TRANSIENT)
-
-**Feature Gating by Tier:**
-- **Free tier:** 10 requests/day, 3 basic insight types only (`community`, `engagement`, `influencers`)
-- **Pro tier:** Unlimited requests, 8 advanced insight types (all except proprietary Creator-only types)
-- **Creator tier:** Unlimited requests, all 8+ insight types including advanced analytics
-
-**Insight Types by Tier:**
-
-| Insight Type | Free | Pro | Creator |
-|--------------|------|-----|---------|
-| `community` | ✅ | ✅ | ✅ |
-| `engagement` | ✅ | ✅ | ✅ |
-| `influencers` | ✅ | ✅ | ✅ |
-| `bridge_accounts` | ❌ | ✅ | ✅ |
-| `echo_chamber` | ❌ | ✅ | ✅ |
-| `growth` | ❌ | ✅ | ✅ |
-| `diversity` | ❌ | ✅ | ✅ |
-| `anomalies` | ❌ | ✅ | ✅ |
-
-**Example Response (Free tier requesting restricted insight type):**
-```json
-{
-  "error": {
-    "id": "err_01J...",
-    "level": "RECOVERABLE",
-    "code": "TIER_FEATURE_RESTRICTED",
-    "message": "Insight type 'bridge_accounts' not available in Free tier.",
-    "details": {
-      "tier": "free",
-      "requestedTypes": ["community", "bridge_accounts"],
-      "allowedTypes": ["community", "engagement", "influencers"],
-      "blockedTypes": ["bridge_accounts"]
-    },
-    "retryable": false,
-    "suggestedAction": "Upgrade to Pro tier for access to all 8 insight types."
-  }
-}
-```
-
-Notes:
-- Deterministic outputs allow caching (e.g., Redis TTL).
-- May return partial results (PARTIAL) if some insight types time out.
-
----
-
-### **5.5 Exports**
-
-#### **POST /api/exports/pdf**
-Generate a PDF report for a graph.
-
-Request:
-```json
-{ "graphId": "..." }
-```
-
-Response `201` (synchronous, <3s generation):
-```json
-{ "exportId": "...", "format": "pdf", "downloadUrl": "https://...signed...", "expiresAt": "2026-01-03" }
-```
-
-Response `202` (asynchronous, >3s generation):
-```json
-{ "exportId": "...", "format": "pdf", "status": "processing", "statusUrl": "/api/exports/pdf/export_01J..." }
-```
-
-Responses:
-- `201` Export created successfully (synchronous, download URL ready)
-- `202` Export accepted, processing asynchronously (poll `statusUrl`)
-- `403` tier limit exceeded (TRANSIENT)
-- `429` rate limited (TRANSIENT)
-
-**Feature Gating by Tier:**
-- **Free tier:** 1 PDF export/day
-- **Pro tier:** 50 PDF exports/day
-- **Creator tier:** 200 PDF exports/day
-
-**Example Response (Free tier quota exceeded):**
-```json
-{
-  "error": {
-    "id": "err_01J...",
-    "level": "TRANSIENT",
-    "code": "QUOTA_EXCEEDED",
-    "message": "Daily PDF export quota exceeded for Free tier (1/day).",
-    "details": { "tier": "free", "limit": 1, "used": 1, "resetAt": "2025-12-28T00:00:00Z" },
-    "retryable": true,
-    "suggestedAction": "Upgrade to Pro tier for 50 exports/day or wait until quota resets."
-  }
-}
-```
-
-#### **GET /api/exports/pdf/{exportId}**
-Check status of an asynchronous PDF export job.
-
-Response `200` (processing):
-```json
-{ "exportId": "...", "format": "pdf", "status": "processing", "progress": 67 }
-```
-
-Response `200` (complete):
-```json
-{ "exportId": "...", "format": "pdf", "status": "complete", "downloadUrl": "https://...signed...", "expiresAt": "2026-01-03" }
-```
-
-Response `200` (failed):
-```json
-{ "exportId": "...", "format": "pdf", "status": "failed", "errorMessage": "Graph too large for PDF rendering" }
-```
-
-Responses:
-- `200` Export status retrieved
-- `404` Export not found (CRITICAL)
-
-#### **POST /api/exports/social-card**
-Server-side social card generation for sharing on social media (Phase 2+). If client-side generation is used, this endpoint can be omitted.
-
-Request:
-```json
-{ "graphId": "...", "template": "my-social-dna" }
-```
-
-Responses:
-- `201` Social card created successfully
-- `403` feature not available in Free tier (RECOVERABLE)
-- `429` rate limited (TRANSIENT)
-
-**Feature Gating by Tier:**
-- **Free tier:** ❌ Not available
-- **Pro tier:** ✅ Available (50/day limit)
-- **Creator tier:** ✅ Available (200/day limit)
-
-**Example Response (Free tier attempting social card export):**
-```json
-{
-  "error": {
-    "id": "err_01J...",
-    "level": "RECOVERABLE",
-    "code": "TIER_FEATURE_RESTRICTED",
-    "message": "Social card exports not available in Free tier.",
-    "details": { "tier": "free", "feature": "social_card_export" },
-    "retryable": false,
-    "suggestedAction": "Upgrade to Pro tier to unlock social card exports."
+  "pagination": {
+    "total": 150,
+    "count": 20,
+    "page": 1,
+    "pageSize": 20,
+    "totalPages": 8,
+    "hasNext": true,
+    "hasPrev": false,
+    "links": {
+      "first": "/v1/graphs?page=1&pageSize=20",
+      "last": "/v1/graphs?page=8&pageSize=20",
+      "next": "/v1/graphs?page=2&pageSize=20",
+      "prev": null
+    }
+  },
+  "meta": {
+    "timestamp": "2025-12-27T12:00:00Z"
   }
 }
 ```
 
 ---
 
-### **5.6 Account & Data Management**
+## **3. Authentication & Authorization**
 
-#### **GET /api/account/data-export**
-Portability export for user-owned data (pseudonymized by default).
+### **3.1 Authentication Methods**
 
-Response `200`:
-```json
-{ "user": { "id": "..." }, "graphs": [], "insights": [] }
+**1. Magic Link (Email-based, passwordless)**
+```
+Flow:
+1. POST /auth/magic-link/request { email }
+2. User receives email with time-limited link
+3. User clicks link → redirected to /auth/magic-link/verify?token=xxx
+4. Frontend calls POST /auth/magic-link/verify { token }
+5. API returns JWT access token + refresh token
 ```
 
-#### **DELETE /api/account**
-Delete user account (soft delete + grace period per policy; cascades graphs/insights).
-
-Response `200`:
-```json
-{ "ok": true }
+**2. Google OAuth (for VSG access only, NOT social platforms)**
+```
+Flow:
+1. Frontend redirects to Google OAuth consent screen
+2. User approves → Google redirects back with authorization code
+3. Frontend calls POST /auth/google/callback { code }
+4. API exchanges code for Google user info
+5. API creates/updates user, returns JWT tokens
 ```
 
----
+**3. JWT Token-Based Authentication**
+```
+Access Token:
+├─ Short-lived: 15 minutes
+├─ Payload: { userId, email, tier, iat, exp }
+├─ Signed: HS256 (secret key)
+└─ Delivered: HTTP-only cookie OR Authorization header
 
-### **5.7 Webhooks (Stripe Integration)**
+Refresh Token:
+├─ Long-lived: 30 days
+├─ Stored: Redis (revocable)
+├─ Single-use: Invalidated after refresh
+└─ Delivered: HTTP-only cookie (secure, sameSite)
+```
 
-#### **POST /api/webhooks/stripe**
-Receive and process Stripe webhook events for subscription management.
+### **3.2 Authorization (Tier-Based)**
 
-**Authentication:**
-- Webhook signature verification using `Stripe-Signature` header.
-- HMAC-SHA256 signature computed with `STRIPE_WEBHOOK_SECRET`.
-- Reject requests with invalid or missing signatures (401).
+**User Tiers:**
+```typescript
+enum UserTier {
+  FREE = 'free',
+  PRO = 'pro',
+  CREATOR = 'creator'
+}
+```
 
-**Event Types:**
-- `customer.subscription.created`: New subscription activated.
-- `customer.subscription.updated`: Subscription tier changed or renewed.
-- `customer.subscription.deleted`: Subscription canceled or expired.
-- `invoice.payment_succeeded`: Payment processed successfully.
-- `invoice.payment_failed`: Payment failed (trigger retry logic or downgrade).
+**Feature Gating:**
+```typescript
+const featureAccess = {
+  // Upload limits
+  'upload.platforms': {
+    free: 1,      // 1 platform
+    pro: 5,       // All platforms
+    creator: 5    // All platforms
+  },
+  'upload.refreshRate': {
+    free: 'manual',          // Manual only
+    pro: '30 days',          // Monthly refresh
+    creator: '7 days'        // Weekly refresh
+  },
 
-**Request Format (from Stripe):**
-```json
+  // Insight views
+  'insights.views': {
+    free: ['network_graph', 'basic_metrics'],
+    pro: ['network_graph', 'positioning_map', 'engagement_circles',
+          'content_resonance', 'growth_opportunities'],
+    creator: ['*']  // All views
+  },
+
+  // Export capabilities
+  'export.pdf': {
+    free: false,
+    pro: true,
+    creator: true
+  },
+  'export.socialCards': {
+    free: true,   // Viral loop
+    pro: true,
+    creator: true
+  },
+  'export.whiteLabel': {
+    free: false,
+    pro: false,
+    creator: true  // Creator tier only
+  },
+
+  // API rate limits (requests per minute)
+  'rateLimit.rpm': {
+    free: 30,
+    pro: 120,
+    creator: 300
+  }
+};
+```
+
+### **3.3 Request Authentication**
+
+**Authorization Header:**
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Example Authenticated Request:**
+```bash
+curl -X GET https://api.visualsocialgraph.com/v1/graphs \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json"
+```
+
+**Token Refresh Flow:**
+```http
+POST /v1/auth/refresh
+Content-Type: application/json
+
 {
-  "id": "evt_...",
-  "type": "customer.subscription.updated",
+  "refreshToken": "refresh_abc123xyz"
+}
+
+Response:
+{
   "data": {
-    "object": {
-      "id": "sub_...",
-      "customer": "cus_...",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "refresh_xyz789abc",
+    "expiresIn": 900
+  }
+}
+```
+
+---
+
+## **4. Core API Endpoints**
+
+### **4.1 Authentication Endpoints**
+
+#### **POST /auth/magic-link/request**
+
+Request a magic link for passwordless login.
+
+**Request:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "message": "Magic link sent to user@example.com. Link expires in 15 minutes.",
+    "expiresAt": "2025-12-27T12:15:00Z"
+  }
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Invalid email format
+- `429 Too Many Requests` - Rate limit exceeded (max 3 requests per hour per email)
+
+---
+
+#### **POST /auth/magic-link/verify**
+
+Verify magic link token and obtain JWT tokens.
+
+**Request:**
+```json
+{
+  "token": "ml_abc123xyz789"
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "user": {
+      "id": "usr_abc123",
+      "email": "user@example.com",
+      "name": "Jane Doe",
+      "tier": "free",
+      "createdAt": "2025-12-27T10:00:00Z"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "refresh_xyz789abc",
+    "expiresIn": 900
+  }
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Invalid or expired token
+- `404 Not Found` - Token not found
+
+---
+
+#### **POST /auth/google/callback**
+
+Exchange Google OAuth authorization code for JWT tokens.
+
+**Request:**
+```json
+{
+  "code": "4/0AY0e-g7...",
+  "redirectUri": "https://app.visualsocialgraph.com/auth/callback"
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "user": {
+      "id": "usr_abc123",
+      "email": "user@gmail.com",
+      "name": "Jane Doe",
+      "tier": "free",
+      "createdAt": "2025-12-27T10:00:00Z",
+      "googleId": "117234567890123456789"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "refresh_xyz789abc",
+    "expiresIn": 900,
+    "isNewUser": true
+  }
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Invalid authorization code
+- `502 Bad Gateway` - Google OAuth service unavailable
+
+---
+
+#### **POST /auth/refresh**
+
+Refresh access token using refresh token.
+
+**Request:**
+```json
+{
+  "refreshToken": "refresh_abc123xyz"
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "refresh_new789xyz",
+    "expiresIn": 900
+  }
+}
+```
+
+**Errors:**
+- `401 Unauthorized` - Invalid or expired refresh token
+- `403 Forbidden` - Refresh token revoked
+
+---
+
+#### **POST /auth/logout**
+
+Revoke refresh token and invalidate session.
+
+**Request:**
+```json
+{
+  "refreshToken": "refresh_abc123xyz"
+}
+```
+
+**Response: 204 No Content**
+
+---
+
+### **4.2 User Management Endpoints**
+
+#### **GET /users/me**
+
+Retrieve authenticated user's profile.
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "usr_abc123",
+    "email": "user@example.com",
+    "name": "Jane Doe",
+    "tier": "pro",
+    "createdAt": "2025-12-27T10:00:00Z",
+    "updatedAt": "2025-12-27T11:30:00Z",
+    "subscription": {
       "status": "active",
-      "items": {
-        "data": [
-          {
-            "price": {
-              "id": "price_pro_monthly",
-              "product": "prod_pro"
-            }
-          }
-        ]
+      "currentPeriodEnd": "2026-01-27T10:00:00Z",
+      "cancelAtPeriodEnd": false
+    },
+    "usage": {
+      "graphsUploaded": 3,
+      "platformsConnected": ["twitter", "linkedin"],
+      "lastUpload": "2025-12-26T14:20:00Z"
+    }
+  }
+}
+```
+
+---
+
+#### **PATCH /users/me**
+
+Update authenticated user's profile.
+
+**Request:**
+```json
+{
+  "name": "Jane Smith"
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "usr_abc123",
+    "email": "user@example.com",
+    "name": "Jane Smith",
+    "tier": "pro",
+    "updatedAt": "2025-12-27T12:00:00Z"
+  }
+}
+```
+
+---
+
+#### **DELETE /users/me**
+
+Delete user account and all associated data (GDPR compliance).
+
+**Response: 204 No Content**
+
+**Side Effects:**
+- Cascade delete: graphs, insights, exports
+- Stripe subscription canceled
+- Refresh tokens revoked
+- Data purged from backups within 90 days
+- Confirmation email sent
+
+---
+
+### **4.3 Graph Upload & Processing**
+
+#### **POST /graphs/upload/initiate**
+
+Initiate resumable file upload (Tus protocol).
+
+**Request:**
+```json
+{
+  "platform": "twitter",
+  "fileName": "twitter-archive.zip",
+  "fileSize": 15728640,
+  "checksum": "sha256:abc123..."
+}
+```
+
+**Response: 201 Created**
+```json
+{
+  "data": {
+    "uploadId": "upl_abc123",
+    "uploadUrl": "https://api.visualsocialgraph.com/v1/uploads/upl_abc123",
+    "expiresAt": "2025-12-27T13:00:00Z",
+    "resumable": true,
+    "maxChunkSize": 5242880
+  }
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Invalid platform or file size exceeds limit
+- `403 Forbidden` - Tier limit reached (free tier: 1 platform)
+
+---
+
+#### **POST /graphs**
+
+Create graph from client-processed data (after client-side parsing).
+
+**Request:**
+```json
+{
+  "platform": "twitter",
+  "uploadId": "upl_abc123",
+  "data": {
+    "nodes": [
+      {
+        "id": "hash_user1",
+        "type": "self",
+        "displayName": "hash_jane",
+        "username": "hash_janedoe",
+        "followerCount": 1250,
+        "followingCount": 340
+      },
+      {
+        "id": "hash_user2",
+        "type": "user",
+        "displayName": "hash_john",
+        "username": "hash_johndoe",
+        "followerCount": 890
+      }
+    ],
+    "edges": [
+      {
+        "source": "hash_user1",
+        "target": "hash_user2",
+        "type": "follows",
+        "weight": 0.75,
+        "interactions": {
+          "likes": 45,
+          "comments": 12,
+          "shares": 3
+        },
+        "createdAt": "2024-06-15T00:00:00Z"
+      }
+    ],
+    "metadata": {
+      "uploadId": "upl_abc123",
+      "parseVersion": "twitter_v2.1",
+      "parsingErrors": [],
+      "statistics": {
+        "nodeCount": 342,
+        "edgeCount": 589,
+        "density": 0.0051,
+        "averageDegree": 3.45
+      },
+      "timePeriod": {
+        "start": "2020-01-15T00:00:00Z",
+        "end": "2025-12-27T00:00:00Z"
       }
     }
   }
 }
 ```
 
-**Response:**
-- `200` `{ "received": true }` (acknowledge receipt)
-- `401` Invalid signature (INTEGRITY)
-- `400` Unrecognized event type (RECOVERABLE, logged for investigation)
-
-**Processing Logic:**
-1. Verify webhook signature.
-2. Check event idempotency (track `event.id` in database for 24 hours to prevent duplicate processing).
-3. Update user's subscription tier in database:
-   - Map Stripe `price.id` to VSG tier (`free`, `pro`, `creator`).
-   - Update `users.tier` and `users.subscription_status`.
-4. Emit internal event for feature gating updates (invalidate cache).
-5. Log event to audit log.
-
-**Idempotency:**
-- Store processed event IDs in `webhook_events` table with 24-hour TTL.
-- If `event.id` already exists, return `200` without reprocessing.
-
-**Retry Policy (Stripe-side):**
-- Stripe retries failed webhooks with exponential backoff for up to 3 days.
-- VSG must respond with `200` within 5 seconds to avoid retry.
-
-**Error Handling:**
-- Transient errors (database timeout): Return `500` to trigger Stripe retry.
-- Permanent errors (invalid customer ID): Return `200` after logging error (prevents infinite retries).
-
-**Security:**
-- Webhook endpoint accepts requests only from Stripe IP ranges (optional additional layer).
-- Signature verification is mandatory (primary security control).
-
----
-
-## **6. Retention & Deletion Semantics (API-Visible)**
-
-### **6.1 Graph Deletion**
-
-`DELETE /api/graphs/{id}` supports two deletion modes to balance user convenience with GDPR compliance:
-
-**Soft Delete (Default):**
-- Graph removed from active views immediately (no longer appears in `GET /api/graphs` results).
-- Record marked with `deleted_at` timestamp and retained for **30-day grace period**.
-- User can restore graph within 30 days via support request or future `/api/graphs/{id}/restore` endpoint (Phase 2+).
-- After 30 days, soft-deleted graphs are **permanently hard-deleted**.
-
-**Hard Delete (Immediate, GDPR-compliant):**
-- Optional query parameter: `DELETE /api/graphs/{id}?permanent=true`
-- Graph and all associated data (insights, exports) **immediately and irreversibly deleted** from active systems.
-- No grace period; cannot be restored.
-- Backups purged within 90 days (compliance requirement; see 6.5).
-
-**Request Example (Hard Delete):**
-```http
-DELETE /api/graphs/{id}?permanent=true
-```
-
-**Response:**
-```json
-{
-  "ok": true,
-  "deletionType": "hard",
-  "message": "Graph permanently deleted. This action cannot be undone."
-}
-```
-
-### **6.2 Server Fallback Raw Uploads (Tus ZIP)**
-
-- Raw archives exist **only in the server fallback path** (when user opts in for server-side processing).
-- Deleted **immediately after successful graph processing** (target retention: minutes to hours).
-- If processing fails, raw ZIP retained for **7 days** to allow retry, then auto-deleted.
-- Users can manually delete failed uploads via `DELETE /api/uploads/{id}`.
-
-### **6.3 Exports (PDF, Social Cards)**
-
-- Signed `downloadUrl` expires after **7 days**.
-- Export files auto-delete from storage **7 days after creation** (regardless of download status).
-- No user action required; automatic cleanup.
-
-### **6.4 Account Deletion**
-
-`DELETE /api/account` supports two modes:
-
-**Soft Delete (Default, 30-day grace period):**
-- Account marked as deleted; user cannot log in.
-- All graphs, insights, and subscription data retained for **30 days**.
-- User can contact support within 30 days to restore account.
-- After 30 days, account and all associated data **permanently deleted**.
-
-**Hard Delete (Immediate, GDPR right-to-erasure):**
-- Optional query parameter: `DELETE /api/account?permanent=true`
-- Account and all associated data (graphs, insights, uploads, exports, subscription metadata) **immediately deleted** from active systems.
-- Cascades to all related resources (no orphaned data).
-- Backups purged within 90 days (see 6.5).
-
-**Request Example (Hard Delete):**
-```http
-DELETE /api/account?permanent=true
-```
-
-**Response:**
-```json
-{
-  "ok": true,
-  "deletionType": "hard",
-  "message": "Account and all associated data permanently deleted. This action cannot be undone."
-}
-```
-
-### **6.5 Backup Retention**
-
-- **Database backups:** Retained for **90 days** for disaster recovery.
-- Deleted data in backups is **not accessible** to users or application (logical deletion enforced).
-- After 90 days, deleted data is **purged from all backups** (hard-delete completion).
-- Backup purge policy disclosed in Privacy Policy and Terms of Service.
-
-### **6.6 GDPR Compliance**
-
-- **Right to erasure (Article 17):** Hard-delete option (`?permanent=true`) ensures immediate deletion from active systems, with backup purge within 90 days.
-- **Data minimization (Article 5):** Raw uploads deleted immediately after processing; pseudonymized graphs stored with minimal PII.
-- **Data portability (Article 20):** `GET /api/account/data-export` provides JSON export of all user data before deletion.
-
-**Deletion Timeline Summary:**
-
-| Action | Soft Delete (Default) | Hard Delete (GDPR) |
-|--------|----------------------|-------------------|
-| **Graph deletion** | 30-day grace period → hard-delete | Immediate |
-| **Account deletion** | 30-day grace period → hard-delete | Immediate |
-| **Backup purge** | 90 days after hard-delete | 90 days after deletion |
-| **Raw uploads** | N/A (auto-deleted after processing) | N/A |
-| **Exports** | 7 days (auto-delete) | 7 days (auto-delete) |
-
----
-
-## **7. OpenAPI (Implementation Target)**
-
-**CRITICAL NEXT STEP:** This narrative specification must be converted to an **OpenAPI 3.1 YAML/JSON schema** before backend implementation begins.
-
-**Why OpenAPI is Required:**
-- **Source of Truth**: The OpenAPI schema becomes the normative contract (this narrative becomes supporting documentation).
-- **Code Generation**: Enables automatic generation of TypeScript/JavaScript client SDKs, server stubs, and validation middleware.
-- **Testing**: Supports contract testing tools (Dredd, Postman, Pact) to validate implementation compliance.
-- **Documentation**: Powers interactive API documentation portals (Swagger UI, Redoc, Stoplight).
-
-**OpenAPI Generation Workflow:**
-1. **Convert this narrative** to `openapi.yaml` (v3.1) with all endpoints, schemas, and error codes.
-2. **Validate schema** using `openapi-generator-cli validate`.
-3. **Generate TypeScript client SDK** using `openapi-generator-cli generate -i openapi.yaml -g typescript-fetch`.
-4. **Commit to repository** at `/api-specs/openapi.yaml` as the normative specification.
-5. **Mark this document as "Production-Ready"** only after OpenAPI artifact exists and passes validation.
-
-**This document is the narrative contract.** The OpenAPI 3.1 schema should include:
-
-- Paths:
-  - `/api/auth/magic-link`, `/api/auth/verify`, `/api/auth/google/callback`, `/api/auth/logout`, `/api/auth/session`
-  - `/api/graphs`, `/api/graphs/{id}`, `/api/graphs/{id}/restore`
-  - `/api/uploads` (Tus), `/api/uploads/{id}`, `/api/uploads/{id}/events`
-  - `/api/insights`
-  - `/api/exports/pdf`, `/api/exports/pdf/{exportId}`, `/api/exports/social-card`
-  - `/api/account`, `/api/account/data-export`
-  - `/api/webhooks/stripe`
-
-- Components:
-  - `ErrorEnvelope`, `Warning`, `GraphCreateRequest`, `GraphCreateResponse`, `Insight`, `ExportResponse`
-
----
-
-## **8. Security Architecture**
-
-### **8.1 Transport Security**
-
-**Requirements:**
-- **HTTPS only**: All API endpoints MUST be served over HTTPS. HTTP requests automatically redirect to HTTPS (301).
-- **TLS version**: Minimum TLS 1.3 (TLS 1.2 acceptable for legacy client support during transition).
-- **HSTS**: Strict-Transport-Security header enforced with `max-age=31536000; includeSubDomains; preload`.
-- **Certificate**: Valid SSL/TLS certificate from a trusted Certificate Authority (Let's Encrypt, DigiCert, etc.).
-
-### **8.2 Authentication Security**
-
-**JWT Specification:**
-- **Algorithm**: HS256 (HMAC-SHA256) for session tokens.
-- **Storage**: httpOnly, Secure, SameSite=Lax cookies (prevents XSS and CSRF).
-- **Token payload** (example):
-  ```json
-  {
-    "sub": "user_01J...",
-    "email": "user@example.com",
-    "tier": "pro",
-    "iat": 1735008000,
-    "exp": 1735094400
-  }
-  ```
-- **Expiry**: 24-hour session lifetime (refresh via `/api/auth/refresh` endpoint or re-authentication).
-- **Secret management**: JWT signing secret stored as environment variable, rotated every 90 days.
-
-**Magic Link Security:**
-- One-time use tokens (invalidated after verification).
-- 15-minute expiration window.
-- Rate limiting: 5 requests per email per hour.
-
-**Google OAuth:**
-- Only for VSG authentication (NOT for platform data access).
-- State parameter validated to prevent CSRF.
-- ID token verified using Google's public keys.
-
-### **8.3 Input Validation**
-
-**String Length Limits:**
-- Email: 255 characters
-- Display names: 100 characters
-- Usernames: 50 characters
-- Insight narratives: 1000 characters
-- Error messages: 500 characters
-
-**File Size Limits:**
-- Graph JSON payload: 10 MB (serialized)
-- Server-side fallback ZIP upload: 500 MB (via Tus)
-- PDF exports: 20 MB
-
-**Validation Rules:**
-- Email format: RFC 5322 compliant
-- Platform enum: Must match allowed values (`twitter`, `instagram`, `linkedin`, `facebook`, `tiktok`)
-- Graph IDs: UUIDv7 format (sortable, time-ordered)
-- Date strings: **Day-level granularity** (`YYYY-MM-DD`) for privacy compliance. Full ISO 8601 timestamps (`YYYY-MM-DDTHH:mm:ssZ`) ONLY for server-internal audit logs and operational metadata (NOT user-facing data).
-
-**Sanitization:**
-- All user-provided strings HTML-escaped before rendering (prevent XSS).
-- SQL injection prevention: Parameterized queries only (ORM: Prisma recommended).
-- Command injection prevention: No shell execution of user input.
-
-### **8.4 Data Encryption**
-
-**At Rest:**
-- Database: AES-256-GCM encryption for sensitive columns (email, hashed IDs).
-- Backups: Encrypted using cloud provider's managed keys (AWS KMS, GCP Cloud KMS).
-- File storage: S3/GCS buckets with server-side encryption enabled (SSE-S3 or SSE-KMS).
-
-**In Transit:**
-- TLS 1.3 for all API communication (see 8.1).
-- Database connections: TLS-encrypted (SSL mode: require).
-
-**Key Management:**
-- Application secrets: Environment variables (never hardcoded).
-- Encryption keys: Managed by cloud provider KMS (automatic rotation).
-- JWT secrets: Rotated every 90 days (graceful transition: dual-key validation for 24 hours).
-
-### **8.5 CORS Policy**
-
-**Allowed Origins:**
-- Production: `https://visualsocialgraph.com`, `https://www.visualsocialgraph.com`
-- Staging: `https://staging.visualsocialgraph.com`
-- Development: `http://localhost:3000`, `http://localhost:5173` (Vite default)
-
-**CORS Headers:**
-```http
-Access-Control-Allow-Origin: https://visualsocialgraph.com
-Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
-Access-Control-Allow-Headers: Content-Type, Authorization, Idempotency-Key, X-CSRF-Token
-Access-Control-Allow-Credentials: true
-Access-Control-Max-Age: 86400
-```
-
-**Preflight Handling:**
-- `OPTIONS` requests return `204 No Content` with CORS headers.
-- No authentication required for `OPTIONS` requests.
-
-### **8.6 Audit Logging**
-
-**Events Logged:**
-- Authentication events: login, logout, failed login attempts, magic link generation, OAuth callbacks.
-- Graph operations: creation (`POST /api/graphs`), deletion (`DELETE /api/graphs/{id}`), retrieval (`GET /api/graphs/{id}`).
-- Account operations: data export, account deletion.
-- Error events: CRITICAL and INTEGRITY level errors (see Appendix A).
-- Rate limit violations.
-
-**Log Format:**
-```json
-{
-  "timestamp": "2025-12-26T14:32:10.123Z",
-  "event": "graph.created",
-  "userId": "user_01J...",
-  "graphId": "graph_01J...",
-  "platform": "twitter",
-  "nodeCount": 1234,
-  "ip": "203.0.113.42",
-  "userAgent": "Mozilla/5.0...",
-  "requestId": "req_01J..."
-}
-```
-
-**Retention:**
-- Audit logs retained for **90 days** in active storage.
-- Archived to cold storage for 1 year (compliance requirement).
-- No personally identifiable information (PII) in logs beyond pseudonymized user IDs.
-
-**Access Control:**
-- Audit logs accessible only to authorized engineering/security personnel.
-- Read-only access via internal admin dashboard (not exposed via public API).
-
-### **8.7 Secrets Management**
-
-**Environment Variables:**
-- `JWT_SECRET`: HS256 signing key (256-bit random string).
-- `DATABASE_URL`: PostgreSQL connection string (includes credentials).
-- `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`.
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`.
-- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (for S3/KMS).
-
-**Storage:**
-- Development: `.env` file (never committed to version control; `.gitignore` enforced).
-- Production: Cloud provider secret manager (AWS Secrets Manager, GCP Secret Manager, Azure Key Vault).
-
-**Rotation Policy:**
-- JWT secrets: Every 90 days (automated via cron job).
-- Database passwords: Every 180 days (manual rotation with zero-downtime migration).
-- OAuth secrets: On-demand if compromised (Google provides rotation mechanism).
-- Stripe keys: Annual rotation (Stripe supports rolling keys).
-
-**Access Control:**
-- Secrets accessible only to production environment (not staging/dev).
-- Principle of least privilege: Each service accesses only required secrets.
-
----
-
-## **9. Out of Scope (For This Spec)**
-
-- Social platform API integrations (OAuth to platforms)
-- Team/organization features
-- Public API access (Creator tier) beyond the internal webapp API
-
----
-
-## **Appendix A: Error Code Taxonomy**
-
-This appendix provides a complete enumeration of error codes used in the API, organized by severity level (as defined in Section 3.1).
-
-### **A.1 TRANSIENT (Temporary failures, retry expected to succeed)**
-
-| Code | HTTP Status | Description | User Action |
-|------|-------------|-------------|-------------|
-| `NETWORK_TIMEOUT` | 504 | Request to external service (Stripe, S3) timed out | Retry after a few seconds |
-| `RATE_LIMITED` | 429 | Too many requests from this user/IP (short time window) | Wait for rate limit window to reset (see `X-RateLimit-Reset` header) |
-| `QUOTA_EXCEEDED` | 429 | Daily/monthly quota exceeded for tier (resets at midnight/month-end) | Wait for quota reset or upgrade tier |
-| `SERVICE_UNAVAILABLE` | 503 | Backend service temporarily unavailable (maintenance, overload) | Retry after delay indicated in `Retry-After` header |
-| `DATABASE_TIMEOUT` | 504 | Database query exceeded timeout threshold | Retry request |
-
-### **A.2 RECOVERABLE (User can fix with corrected input)**
-
-| Code | HTTP Status | Description | User Action |
-|------|-------------|-------------|-------------|
-| `INVALID_SCHEMA` | 400 | Request body does not match required schema | Review API documentation and correct request format |
-| `MISSING_REQUIRED_FIELD` | 400 | Required field missing from request | Add missing field (e.g., `platform`, `graphId`) |
-| `INVALID_ENUM_VALUE` | 400 | Field contains invalid enum value | Use allowed value (e.g., `platform` must be `twitter`, `instagram`, etc.) |
-| `FILE_TOO_LARGE` | 413 | Uploaded file exceeds size limit | Reduce file size or contact support for limit increase |
-| `GRAPH_TOO_LARGE` | 413 | Graph JSON payload exceeds 10 MB limit | Simplify graph or use server-side fallback mode |
-| `INVALID_DATE_FORMAT` | 400 | Date string not in ISO 8601 format | Use format `YYYY-MM-DD` (day-level) |
-| `TIER_FEATURE_RESTRICTED` | 403 | Feature not available in current subscription tier | Upgrade to Pro or Creator tier to access this feature |
-| `UNSUPPORTED_PLATFORM` | 400 | Platform not supported in this version | Check supported platforms in documentation |
-
-### **A.3 PARTIAL (Operation partially succeeded)**
-
-| Code | HTTP Status | Description | User Action |
-|------|-------------|-------------|-------------|
-| `PARTIAL_IMPORT_SOME_RECORDS_SKIPPED` | 200 | Graph created but some nodes/edges skipped due to validation errors | Review `warnings` array in response; skipped records listed in details |
-| `PARTIAL_INSIGHT_GENERATION_TIMEOUT` | 200 | Some insight types completed, others timed out | Accept partial results or retry specific insight types |
-| `PARTIAL_EXPORT_MISSING_DATA` | 200 | Export generated but some data unavailable | Review warnings; re-upload missing data if needed |
-
-### **A.4 CRITICAL (Severe errors requiring investigation)**
-
-| Code | HTTP Status | Description | User Action |
-|------|-------------|-------------|-------------|
-| `INTERNAL_ERROR` | 500 | Unexpected server error | Contact support with `error.id` from response |
-| `AUTHENTICATION_FAILED` | 401 | Invalid or expired session token | Re-authenticate via magic link or Google OAuth |
-| `PERMISSION_DENIED` | 403 | User lacks permission to access resource | Ensure you own the resource or have required subscription tier |
-| `RESOURCE_NOT_FOUND` | 404 | Requested graph, upload, or export does not exist | Verify resource ID is correct |
-| `RESOURCE_DELETED` | 410 | Resource was permanently deleted | Cannot recover; create new resource |
-| `PROCESSING_FAILED` | 500 | Server-side graph processing encountered fatal error | Check upload file integrity; retry upload |
-
-### **A.5 INTEGRITY (Data consistency or security violations)**
-
-| Code | HTTP Status | Description | User Action |
-|------|-------------|-------------|-------------|
-| `INVALID_TOKEN` | 401 | Magic link token invalid, expired, or already used | Request new magic link |
-| `WEBHOOK_SIGNATURE_INVALID` | 401 | Stripe webhook signature verification failed | Internal error; contact support if recurring |
-| `DATA_CORRUPTION` | 500 | Stored data failed integrity check | Contact support immediately with `error.id` |
-| `DUPLICATE_IDEMPOTENCY_KEY` | 409 | Idempotency key already used for different request | Use unique `Idempotency-Key` for each distinct request |
-| `CONFLICT` | 409 | Resource state conflict (e.g., deleting already-deleted graph) | Refresh resource state and retry |
-
-### **A.6 Usage Examples**
-
-**Example 1: TRANSIENT error (rate limited)**
-```json
-{
-  "error": {
-    "id": "err_01JBCD...",
-    "level": "TRANSIENT",
-    "code": "RATE_LIMITED",
-    "message": "Too many graph creation requests. Please wait before retrying.",
-    "details": {
-      "limit": 5,
-      "windowSeconds": 86400,
-      "retryAfter": 43200
-    },
-    "retryable": true,
-    "suggestedAction": "Wait 12 hours or upgrade to Pro tier for higher limits."
-  }
-}
-```
-**Response Headers:**
-```http
-X-RateLimit-Limit: 5
-X-RateLimit-Remaining: 0
-X-RateLimit-Reset: 1735094400
-Retry-After: 43200
-```
-
-**Example 2: RECOVERABLE error (invalid schema)**
-```json
-{
-  "error": {
-    "id": "err_01JBCE...",
-    "level": "RECOVERABLE",
-    "code": "INVALID_SCHEMA",
-    "message": "Request body validation failed.",
-    "details": {
-      "field": "graph.nodes[0].id",
-      "issue": "Field is required but was missing."
-    },
-    "retryable": false,
-    "suggestedAction": "Ensure all nodes have an 'id' field."
-  }
-}
-```
-
-**Example 3: PARTIAL success (with warnings)**
+**Response: 201 Created**
 ```json
 {
   "data": {
-    "id": "graph_01JBCF...",
+    "id": "grp_abc123",
+    "userId": "usr_abc123",
     "platform": "twitter",
-    "nodeCount": 1200,
-    "edgeCount": 3400
+    "version": 1,
+    "isLatest": true,
+    "createdAt": "2025-12-27T12:00:00Z",
+    "status": "processing",
+    "statistics": {
+      "nodeCount": 342,
+      "edgeCount": 589,
+      "density": 0.0051
+    }
   },
-  "warnings": [
+  "meta": {
+    "estimatedProcessingTime": 15
+  }
+}
+```
+
+**Errors:**
+- `400 Bad Request` - Invalid graph structure
+- `422 Unprocessable Entity` - Graph validation failed (details in error.details)
+- `403 Forbidden` - Upload limit reached
+
+---
+
+#### **GET /graphs/{graphId}/status**
+
+Check graph processing status.
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "graphId": "grp_abc123",
+    "status": "completed",
+    "progress": 100,
+    "stages": [
+      {
+        "name": "validation",
+        "status": "completed",
+        "completedAt": "2025-12-27T12:00:05Z"
+      },
+      {
+        "name": "pseudonymization",
+        "status": "completed",
+        "completedAt": "2025-12-27T12:00:10Z"
+      },
+      {
+        "name": "metrics_computation",
+        "status": "completed",
+        "completedAt": "2025-12-27T12:00:25Z"
+      },
+      {
+        "name": "insight_generation",
+        "status": "completed",
+        "completedAt": "2025-12-27T12:00:30Z"
+      }
+    ],
+    "completedAt": "2025-12-27T12:00:30Z"
+  }
+}
+```
+
+**Possible Status Values:**
+- `pending` - Queued for processing
+- `processing` - Currently being processed
+- `completed` - Successfully processed
+- `failed` - Processing failed (see error details)
+
+---
+
+### **4.4 Graph Retrieval & Management**
+
+#### **GET /graphs**
+
+List user's graphs (paginated).
+
+**Query Parameters:**
+- `platform` (optional): Filter by platform (twitter, instagram, linkedin, facebook, tiktok)
+- `page` (optional, default: 1): Page number
+- `pageSize` (optional, default: 20, max: 100): Items per page
+- `latestOnly` (optional, default: false): Only return latest version per platform
+
+**Response: 200 OK**
+```json
+{
+  "data": [
     {
-      "code": "PARTIAL_IMPORT_SOME_RECORDS_SKIPPED",
-      "message": "45 nodes skipped due to missing required fields.",
-      "count": 45
+      "id": "grp_abc123",
+      "platform": "twitter",
+      "version": 2,
+      "isLatest": true,
+      "createdAt": "2025-12-27T12:00:00Z",
+      "statistics": {
+        "nodeCount": 342,
+        "edgeCount": 589
+      },
+      "hasInsights": true,
+      "hasMetrics": true
+    },
+    {
+      "id": "grp_xyz789",
+      "platform": "linkedin",
+      "version": 1,
+      "isLatest": true,
+      "createdAt": "2025-12-20T10:30:00Z",
+      "statistics": {
+        "nodeCount": 521,
+        "edgeCount": 892
+      },
+      "hasInsights": true,
+      "hasMetrics": true
+    }
+  ],
+  "pagination": {
+    "total": 5,
+    "count": 2,
+    "page": 1,
+    "pageSize": 20,
+    "totalPages": 1,
+    "hasNext": false,
+    "hasPrev": false
+  }
+}
+```
+
+---
+
+#### **GET /graphs/{graphId}**
+
+Retrieve specific graph with full data.
+
+**Query Parameters:**
+- `includeMetrics` (optional, default: true): Include computed metrics
+- `includeNodes` (optional, default: true): Include node data
+- `includeEdges` (optional, default: true): Include edge data
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "grp_abc123",
+    "userId": "usr_abc123",
+    "platform": "twitter",
+    "version": 2,
+    "isLatest": true,
+    "createdAt": "2025-12-27T12:00:00Z",
+    "updatedAt": "2025-12-27T12:00:30Z",
+    "data": {
+      "nodes": [
+        // Full node array (pseudonymized)
+      ],
+      "edges": [
+        // Full edge array
+      ],
+      "metadata": {
+        "uploadId": "upl_abc123",
+        "parseVersion": "twitter_v2.1",
+        "statistics": {
+          "nodeCount": 342,
+          "edgeCount": 589,
+          "density": 0.0051,
+          "averageDegree": 3.45
+        },
+        "timePeriod": {
+          "start": "2020-01-15T00:00:00Z",
+          "end": "2025-12-27T00:00:00Z"
+        }
+      }
+    },
+    "metrics": {
+      // Full metrics object (see Section 5.3)
+    }
+  }
+}
+```
+
+**Errors:**
+- `404 Not Found` - Graph doesn't exist
+- `403 Forbidden` - User doesn't own this graph
+
+---
+
+#### **DELETE /graphs/{graphId}**
+
+Delete specific graph.
+
+**Response: 204 No Content**
+
+**Side Effects:**
+- Associated insights deleted
+- Cached exports invalidated
+- Metrics removed
+
+---
+
+### **4.5 Insights & Analysis**
+
+#### **GET /graphs/{graphId}/metrics**
+
+Retrieve computed graph metrics.
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "graphId": "grp_abc123",
+    "version": 1,
+    "computedAt": "2025-12-27T12:00:25Z",
+    "computationTime": 2340,
+
+    "structure": {
+      "nodeCount": 342,
+      "edgeCount": 589,
+      "density": 0.0051,
+      "avgDegree": 3.45,
+      "avgPathLength": 4.23,
+      "diameter": 8,
+      "clusteringCoefficient": 0.42
+    },
+
+    "communities": {
+      "count": 8,
+      "modularity": 0.76,
+      "sizes": [89, 67, 52, 41, 35, 28, 19, 11],
+      "distribution": {
+        "largest": 26.0,
+        "top3": 60.8,
+        "top5": 82.2
+      },
+      "isolation": {
+        "isolated": [4, 7],
+        "echoScore": 0.34
+      }
+    },
+
+    "centrality": {
+      "pageRank": {
+        "top10": [
+          { "nodeId": "hash_user42", "score": 0.0234 },
+          { "nodeId": "hash_user17", "score": 0.0198 }
+        ],
+        "selfRank": 23,
+        "selfPercentile": 93.3
+      },
+      "betweenness": {
+        "top10": [
+          { "nodeId": "hash_user15", "score": 0.145 }
+        ],
+        "bridgeNodes": ["hash_user15", "hash_user28", "hash_user91"],
+        "bridgePercentage": 12.5
+      },
+      "degree": {
+        "max": 45,
+        "min": 1,
+        "median": 3,
+        "distribution": {
+          "p25": 2,
+          "p50": 3,
+          "p75": 6,
+          "p90": 12,
+          "p99": 28
+        }
+      }
+    },
+
+    "engagement": {
+      "avgWeight": 0.42,
+      "weightDistribution": {
+        "p25": 0.15,
+        "p50": 0.35,
+        "p75": 0.68,
+        "p90": 0.89
+      },
+      "activeConnections": 127,
+      "passiveConnections": 215,
+      "activePercentage": 37.1,
+      "reciprocal": 89,
+      "oneWay": 253,
+      "reciprocityScore": 0.26
+    },
+
+    "patterns": {
+      "homophily": {
+        "intraCommunityEdges": 512,
+        "interCommunityEdges": 77,
+        "homophilyIndex": 0.87
+      }
+    }
+  }
+}
+```
+
+---
+
+#### **GET /graphs/{graphId}/insights**
+
+Retrieve algorithm-generated, template-based insights.
+
+**Query Parameters:**
+- `categories` (optional): Comma-separated categories (positioning, engagement, growth, community)
+- `confidenceMin` (optional, default: 0.5): Minimum confidence level (0-1)
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "graphId": "grp_abc123",
+    "generatedAt": "2025-12-27T12:00:30Z",
+    "insights": [
+      {
+        "id": "ins_abc001",
+        "category": "positioning",
+        "type": "bridge_position",
+        "title": "You're a Bridge Between 3 Communities",
+        "summary": "Your network spans multiple distinct groups, positioning you as a connector.",
+        "narrative": "Your network analysis reveals a strategic positioning advantage: **you connect 3 separate communities** that rarely interact with each other. This \"bridge\" position gives you unique value as an information broker and collaboration facilitator.\n\n**What this means:**\n- You're exposed to diverse perspectives and opportunities\n- You can introduce valuable connections between groups\n- Your content can reach audiences that don't overlap\n\n**Communities you bridge:**\n1. **Tech Entrepreneurs** (89 connections, 26% of network)\n2. **Design Professionals** (67 connections, 20% of network)\n3. **Marketing Specialists** (52 connections, 15% of network)",
+        "confidence": 0.92,
+        "metrics": {
+          "betweennessScore": 0.145,
+          "betweennessPercentile": 96.5,
+          "communityCount": 8,
+          "bridgedCommunities": [0, 1, 2]
+        },
+        "actions": [
+          {
+            "title": "Facilitate Cross-Community Connections",
+            "description": "Introduce tech entrepreneurs to designers, or marketers to developers. Your unique position makes these introductions valuable.",
+            "effort": "low",
+            "impact": "high"
+          },
+          {
+            "title": "Create Content That Bridges Topics",
+            "description": "Write about the intersection of tech, design, and marketing. Your audience spans these areas.",
+            "effort": "medium",
+            "impact": "high"
+          }
+        ],
+        "visualAnnotations": {
+          "highlightNodes": ["hash_user1"],
+          "highlightEdges": [],
+          "colorCommunities": [0, 1, 2]
+        }
+      },
+      {
+        "id": "ins_abc002",
+        "category": "engagement",
+        "type": "super_fans",
+        "title": "You Have 23 Super Fans (High Engagement)",
+        "summary": "23 connections consistently engage with you. These are your core supporters.",
+        "narrative": "Within your 342 connections, **23 people (6.7%) are \"super fans\"** who engage with your content significantly more than average. These aren't just followers—they're active supporters who amplify your message.\n\n**Engagement patterns:**\n- Average engagement weight: **0.82** (vs. 0.42 network average)\n- Consistent interaction over time\n- High reciprocity: You engage back with 87% of them\n\n**Why this matters:**\n- Super fans are your viral loop—they share, comment, tag others\n- They provide social proof that attracts new followers\n- They're candidates for deeper collaboration or testimonials",
+        "confidence": 0.88,
+        "metrics": {
+          "superFanCount": 23,
+          "superFanPercentage": 6.7,
+          "avgSuperFanWeight": 0.82,
+          "networkAvgWeight": 0.42
+        },
+        "actions": [
+          {
+            "title": "Acknowledge Your Super Fans",
+            "description": "Shout out, thank, or feature your top supporters. Recognition strengthens loyalty.",
+            "effort": "low",
+            "impact": "medium"
+          },
+          {
+            "title": "Create Exclusive Content for Engaged Users",
+            "description": "Consider a newsletter, Discord, or early access for your most engaged connections.",
+            "effort": "high",
+            "impact": "high"
+          }
+        ],
+        "visualAnnotations": {
+          "highlightNodes": ["hash_user12", "hash_user34", "hash_user56"],
+          "highlightEdges": [],
+          "colorBy": "engagementWeight"
+        }
+      }
+    ],
+    "summary": {
+      "totalInsights": 12,
+      "byCategory": {
+        "positioning": 3,
+        "engagement": 4,
+        "growth": 3,
+        "community": 2
+      },
+      "byConfidence": {
+        "high": 8,
+        "medium": 3,
+        "low": 1
+      }
+    }
+  }
+}
+```
+
+**Insight Categories:**
+- `positioning` - Network position, influence, bridge roles
+- `engagement` - Interaction patterns, super fans, reciprocity
+- `growth` - Opportunities, trending connections, gaps
+- `community` - Echo chambers, diversity, homophily
+
+**Confidence Levels:**
+- `high` (0.8-1.0): Strong evidence, clear pattern
+- `medium` (0.5-0.8): Moderate evidence, likely accurate
+- `low` (0-0.5): Weak evidence, exploratory
+
+---
+
+#### **POST /graphs/{graphId}/insights/regenerate**
+
+Regenerate insights (e.g., after template updates, A/B test variant change).
+
+**Request:**
+```json
+{
+  "categories": ["positioning", "engagement"],
+  "forceRefresh": true
+}
+```
+
+**Response: 202 Accepted**
+```json
+{
+  "data": {
+    "jobId": "job_abc123",
+    "status": "queued",
+    "estimatedTime": 5
+  }
+}
+```
+
+---
+
+### **4.6 Export Services**
+
+#### **POST /exports/pdf**
+
+Generate PDF report.
+
+**Request:**
+```json
+{
+  "graphId": "grp_abc123",
+  "options": {
+    "includeVisualization": true,
+    "includeInsights": true,
+    "includeMetrics": true,
+    "template": "professional",
+    "branding": {
+      "logo": "https://cdn.example.com/logo.png",
+      "companyName": "Jane Doe Consulting"
+    }
+  }
+}
+```
+
+**Response: 202 Accepted**
+```json
+{
+  "data": {
+    "exportId": "exp_abc123",
+    "status": "processing",
+    "estimatedTime": 15
+  }
+}
+```
+
+**Errors:**
+- `403 Forbidden` - PDF export requires Pro tier
+- `403 Forbidden` - White-label branding requires Creator tier
+
+---
+
+#### **GET /exports/{exportId}**
+
+Check export status and retrieve download URL.
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "exp_abc123",
+    "type": "pdf",
+    "status": "completed",
+    "createdAt": "2025-12-27T12:05:00Z",
+    "completedAt": "2025-12-27T12:05:12Z",
+    "downloadUrl": "https://cdn.visualsocialgraph.com/exports/exp_abc123.pdf?signature=xyz",
+    "expiresAt": "2025-12-28T12:05:12Z",
+    "fileSize": 2457600,
+    "fileName": "visual-social-graph-twitter-2025-12-27.pdf"
+  }
+}
+```
+
+**Possible Status Values:**
+- `queued` - Waiting for processing
+- `processing` - Generating export
+- `completed` - Ready for download
+- `failed` - Generation failed
+
+---
+
+#### **POST /exports/social-card**
+
+Generate shareable social media card (PNG image).
+
+**Request:**
+```json
+{
+  "graphId": "grp_abc123",
+  "insightId": "ins_abc001",
+  "template": "default",
+  "customization": {
+    "backgroundColor": "#F97316",
+    "textColor": "#FFFFFF"
+  }
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "imageUrl": "https://cdn.visualsocialgraph.com/cards/card_abc123.png",
+    "width": 1200,
+    "height": 630,
+    "format": "png",
+    "expiresAt": "2025-12-28T12:00:00Z"
+  }
+}
+```
+
+---
+
+#### **POST /exports/data**
+
+Export raw graph data (CSV or JSON).
+
+**Request:**
+```json
+{
+  "graphId": "grp_abc123",
+  "format": "json",
+  "includeMetrics": true,
+  "includePseudonymized": false
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "downloadUrl": "https://cdn.visualsocialgraph.com/exports/graph_abc123.json?signature=xyz",
+    "expiresAt": "2025-12-28T12:00:00Z",
+    "fileSize": 524288,
+    "format": "json"
+  }
+}
+```
+
+**Supported Formats:**
+- `json` - Full graph structure (nodes, edges, metadata, metrics)
+- `csv_nodes` - Node list with attributes
+- `csv_edges` - Edge list with weights
+- `gexf` - Graph Exchange XML Format (for Gephi)
+
+---
+
+### **4.7 Subscription & Billing**
+
+#### **GET /subscriptions/plans**
+
+List available subscription plans.
+
+**Response: 200 OK**
+```json
+{
+  "data": [
+    {
+      "id": "plan_free",
+      "name": "Free",
+      "price": 0,
+      "currency": "USD",
+      "interval": null,
+      "features": {
+        "platforms": 1,
+        "insights": ["network_graph", "basic_metrics"],
+        "exports": ["social_cards"],
+        "refreshRate": "manual"
+      }
+    },
+    {
+      "id": "plan_pro",
+      "name": "Pro",
+      "price": 12.00,
+      "currency": "USD",
+      "interval": "month",
+      "stripeProductId": "prod_abc123",
+      "stripePriceId": "price_abc123",
+      "features": {
+        "platforms": 5,
+        "insights": ["*"],
+        "exports": ["pdf", "social_cards", "csv", "json"],
+        "refreshRate": "30 days"
+      }
+    },
+    {
+      "id": "plan_creator",
+      "name": "Creator",
+      "price": 29.00,
+      "currency": "USD",
+      "interval": "month",
+      "stripeProductId": "prod_xyz789",
+      "stripePriceId": "price_xyz789",
+      "features": {
+        "platforms": 5,
+        "insights": ["*"],
+        "exports": ["pdf", "social_cards", "csv", "json", "white_label"],
+        "refreshRate": "7 days",
+        "customBranding": true
+      }
     }
   ]
 }
@@ -1434,318 +1418,868 @@ Retry-After: 43200
 
 ---
 
-## **Appendix B: Rate Limits & Quotas**
+#### **POST /subscriptions/checkout**
 
-This appendix defines per-tier rate limits and quotas to prevent abuse and ensure fair resource allocation.
-
-### **B.1 Rate Limit Headers**
-
-All API responses include rate limit information in response headers:
-
-```http
-X-RateLimit-Limit: 100          # Total requests allowed in window
-X-RateLimit-Remaining: 73       # Requests remaining in current window
-X-RateLimit-Reset: 1735094400   # Unix timestamp when limit resets
-```
-
-When rate limit is exceeded, the API returns `429 Too Many Requests` with `Retry-After` header (seconds until reset).
-
-### **B.2 Per-Tier Quotas**
-
-| Endpoint | Free Tier | Pro Tier | Creator Tier | Window |
-|----------|-----------|----------|--------------|--------|
-| **POST /api/graphs** | 5 graphs/day | 100 graphs/day | 500 graphs/day | 24 hours |
-| **POST /api/insights** | 10 requests/day | Unlimited | Unlimited | 24 hours |
-| **POST /api/exports/pdf** | 1 export/day | 50 exports/day | 200 exports/day | 24 hours |
-| **POST /api/auth/magic-link** | 5 requests/hour | 5 requests/hour | 5 requests/hour | 1 hour |
-| **GET /api/graphs** | 100 requests/hour | 500 requests/hour | 1000 requests/hour | 1 hour |
-| **GET /api/graphs/{id}** | 100 requests/hour | 500 requests/hour | 1000 requests/hour | 1 hour |
-| **POST /api/uploads** (Tus) | 5 uploads/day | 100 uploads/day | 500 uploads/day | 24 hours |
-
-### **B.3 Storage Limits**
-
-| Resource | Free Tier | Pro Tier | Creator Tier |
-|----------|-----------|----------|--------------|
-| **Total graphs stored** | 5 graphs | 100 graphs | 500 graphs |
-| **Graph retention** | 30 days | 1 year | Unlimited |
-| **Max graph size** | 10 MB | 10 MB | 50 MB |
-| **Total storage** | 50 MB | 1 GB | 25 GB |
-
-### **B.4 Feature Access by Tier**
-
-| Feature | Free | Pro | Creator |
-|---------|------|-----|---------|
-| **Client-side processing (Standard Mode)** | ✅ | ✅ | ✅ |
-| **Server-side fallback processing** | ✅ (5 graphs/day) | ✅ (100 graphs/day) | ✅ (500 graphs/day) |
-| **Algorithm-based insights** | ✅ Basic (3 types) | ✅ Advanced (8 types) | ✅ All (8+ types) |
-| **PDF exports** | ✅ (1/day) | ✅ (50/day) | ✅ (200/day) |
-| **Social card exports** | ❌ | ✅ | ✅ |
-| **API access** | ❌ | ❌ | ✅ (with API key) |
-| **Historical graph comparisons** | ❌ | ✅ (up to 3 snapshots) | ✅ (unlimited) |
-| **Priority processing** | ❌ | ❌ | ✅ (dedicated queue) |
-
-### **B.5 Rate Limiting Implementation**
-
-**Algorithm:** Token bucket (allows burst traffic within limits)
-
-**Enforcement:**
-- Rate limits enforced at application layer (middleware).
-- Unique identifier: User ID (authenticated) or IP address (unauthenticated).
-- Storage: Redis with sliding window counters.
-
-**Grace Period:**
-- Tier downgrades (Pro → Free): User retains Pro limits for 7 days after subscription expires.
-- Exceeding storage limits: Soft enforcement with warning email; hard enforcement after 30 days (oldest graphs archived).
-
-**Exemptions:**
-- Webhook endpoints (`/api/webhooks/stripe`) not rate-limited (Stripe controls retry logic).
-- Health check endpoints (`/health`, `/status`) not rate-limited.
-
-### **B.6 Quota Exceeded Response Example**
+Create Stripe checkout session for subscription.
 
 **Request:**
-```http
-POST /api/graphs
-Authorization: Bearer eyJhbGc...
-Content-Type: application/json
-```
-
-**Response (429):**
 ```json
 {
-  "error": {
-    "id": "err_01JBCG...",
-    "level": "TRANSIENT",
-    "code": "QUOTA_EXCEEDED",
-    "message": "Daily graph creation quota exceeded for Free tier (5/day).",
-    "details": {
-      "tier": "free",
-      "limit": 5,
-      "used": 5,
-      "resetAt": "2025-12-28T00:00:00Z"
-    },
-    "retryable": true,
-    "suggestedAction": "Upgrade to Pro tier for 100 graphs/day or wait until quota resets."
+  "planId": "plan_pro",
+  "successUrl": "https://app.visualsocialgraph.com/dashboard?checkout=success",
+  "cancelUrl": "https://app.visualsocialgraph.com/pricing?checkout=canceled"
+}
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "sessionId": "cs_test_abc123",
+    "checkoutUrl": "https://checkout.stripe.com/c/pay/cs_test_abc123#fidkdWxOYHdg..."
   }
 }
 ```
 
-**Response Headers:**
-```http
-HTTP/1.1 429 Too Many Requests
-X-RateLimit-Limit: 5
-X-RateLimit-Remaining: 0
-X-RateLimit-Reset: 1735257600
-Retry-After: 43200
-Content-Type: application/json
+---
+
+#### **GET /subscriptions/me**
+
+Retrieve authenticated user's subscription.
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "sub_abc123",
+    "userId": "usr_abc123",
+    "planId": "plan_pro",
+    "status": "active",
+    "currentPeriodStart": "2025-12-27T10:00:00Z",
+    "currentPeriodEnd": "2026-01-27T10:00:00Z",
+    "cancelAtPeriodEnd": false,
+    "stripeSubscriptionId": "sub_abc123xyz",
+    "createdAt": "2025-12-27T10:00:00Z"
+  }
+}
 ```
 
-### **B.7 Monitoring & Alerts**
+---
 
-**User Notifications:**
-- Email warning when user reaches 80% of quota.
-- Dashboard banner when user reaches 90% of quota.
-- Suggested upgrade CTA when quota exceeded.
+#### **POST /subscriptions/me/cancel**
 
-**Internal Monitoring:**
-- Track rate limit violations per user/tier (identify abuse).
-- Alert engineering team if global rate limit violations spike (potential attack).
+Cancel subscription (at end of billing period).
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "sub_abc123",
+    "status": "active",
+    "cancelAtPeriodEnd": true,
+    "currentPeriodEnd": "2026-01-27T10:00:00Z",
+    "message": "Your subscription will remain active until 2026-01-27. You'll retain Pro features until then."
+  }
+}
+```
 
 ---
 
-## **Appendix C: Performance Targets & Caching Strategy**
+#### **POST /subscriptions/me/reactivate**
 
-This appendix defines performance SLAs (Service Level Agreements) and caching strategies to meet user experience requirements from the SRS and UX Specification.
+Reactivate canceled subscription.
 
-### **C.1 Endpoint Performance Targets (p95 Latency)**
-
-| Endpoint | Target Latency | Notes |
-|----------|----------------|-------|
-| **GET /api/graphs** | <200ms | List view, pagination enabled |
-| **GET /api/graphs/{id}** | <200ms | Single graph retrieval (cached after first fetch) |
-| **POST /api/graphs** | <1000ms | Includes validation + persistence (excludes metrics computation) |
-| **POST /api/insights** | <500ms | Per SRS requirement; uses caching for repeat requests |
-| **GET /api/insights/{id}** | <200ms | Cached insights retrieval |
-| **POST /api/exports/pdf** | <3000ms | Large file generation; async job option for >3s |
-| **POST /api/auth/magic-link** | <300ms | Email send via async queue (actual send happens out-of-band) |
-| **POST /api/auth/verify** | <200ms | Token validation + session creation |
-| **POST /api/webhooks/stripe** | <500ms | Must respond within 5s to avoid Stripe retry |
-| **GET /api/uploads/{id}** | <200ms | Upload status polling |
-
-**Performance Budget Alignment:**
-- **SRS Requirement:** <500ms API latency for read operations
-- **UX Spec Requirement:** <2.5s total page load time (includes API calls + rendering)
-- **Strategy:** Aggressive caching + Redis for hot data + database query optimization
-
-### **C.2 Caching Strategy**
-
-**Redis-Based Caching:**
-- **Tool:** Redis (in-memory key-value store)
-- **Eviction Policy:** LRU (Least Recently Used)
-- **Cluster:** Multi-node cluster for high availability
-
-**Cache Keys by Resource:**
-
-| Resource | Cache Key Pattern | TTL | Invalidation |
-|----------|-------------------|-----|--------------|
-| **Graph metadata** | `graph:{graphId}:meta` | 15 minutes | On `DELETE /api/graphs/{id}` |
-| **Graph payload** | `graph:{graphId}:full` | 15 minutes | On `DELETE /api/graphs/{id}` |
-| **Insights** | `insights:{graphId}:{types_hash}` | 1 hour | On graph deletion or new graph version |
-| **User session** | `session:{sessionId}` | 24 hours | On logout or expiry |
-| **Rate limit counters** | `ratelimit:{userId}:{endpoint}` | Per window (1h or 24h) | Automatic (TTL expiry) |
-| **Upload status** | `upload:{uploadId}:status` | 5 minutes | On status change (queued → processing → complete) |
-
-**Cache Warming:**
-- On graph creation (`POST /api/graphs`), immediately cache metadata to optimize subsequent `GET` requests.
-- On insight generation, cache results with 1-hour TTL (deterministic outputs allow long caching).
-
-**Cache Invalidation:**
-- **Immediate:** On `DELETE /api/graphs/{id}`, evict all related cache keys (`graph:{graphId}:*`, `insights:{graphId}:*`).
-- **Lazy:** On tier downgrade, cache retains old limits until TTL expires (acceptable delay).
-
-### **C.3 Database Query Optimization**
-
-**Indexes:**
-- `graphs.user_id` (B-tree index for user-specific queries)
-- `graphs.platform` (B-tree index for platform filtering)
-- `graphs.created_at` (B-tree index for sorting by recency)
-- `insights.graph_id` (B-tree index for insight lookups)
-- `users.email` (unique index for authentication)
-
-**Query Patterns:**
-- **Pagination:** Cursor-based pagination using `created_at` + `id` composite cursor (avoids offset performance degradation).
-- **Soft deletes:** `deleted_at IS NULL` filter on all queries (exclude soft-deleted records).
-- **Eager loading:** Fetch graphs with preloaded insights in single query (avoid N+1 queries).
-
-**Connection Pooling:**
-- PostgreSQL connection pool: 20 connections max (Prisma default).
-- Idle timeout: 10 seconds.
-- Query timeout: 5 seconds (prevent runaway queries).
-
-### **C.4 CDN & Static Asset Caching**
-
-**CDN Configuration:**
-- **Provider:** Cloudflare / AWS CloudFront
-- **Static assets:** JavaScript bundles, CSS, images, fonts
-- **TTL:** 1 hour (with versioned filenames for cache busting)
-- **Compression:** Brotli + Gzip enabled
-- **Cache-Control headers:** `public, max-age=3600, immutable` (for versioned assets)
-
-**API Response Caching (CDN):**
-- Public, cacheable endpoints (rare in this API due to authentication):
-  - None currently (all endpoints require authentication or are user-specific)
-- Future consideration: Public graph viewer (Phase 2+) could use CDN caching
-
-### **C.5 Monitoring & Alerting**
-
-**Metrics Tracked:**
-- Endpoint latency (p50, p95, p99) via OpenTelemetry + Datadog/New Relic.
-- Cache hit rate (target: >80% for frequently accessed graphs/insights).
-- Database query time (alert if p95 >100ms).
-- API error rate (alert if >1% of requests return 5xx errors).
-
-**Performance Alerts:**
-- Alert if `GET /api/graphs/{id}` p95 exceeds 300ms for 5 consecutive minutes.
-- Alert if `POST /api/insights` p95 exceeds 700ms (allows 200ms buffer above 500ms target).
-- Alert if cache hit rate drops below 70% (indicates cache invalidation issues or cold cache).
-
-**SLA Commitments:**
-- **Free tier:** Best-effort (no SLA guarantees).
-- **Pro tier:** 99% uptime, <500ms p95 latency for read operations.
-- **Creator tier:** 99.5% uptime, <500ms p95 latency, priority support.
-
-### **C.6 Scaling Strategy**
-
-**Horizontal Scaling:**
-- API servers: Auto-scale based on CPU (>70%) or request queue depth (>100 pending).
-- Redis: Cluster mode with 3 master nodes + 3 replicas.
-- PostgreSQL: Read replicas for read-heavy queries (e.g., `GET /api/graphs`).
-
-**Vertical Scaling:**
-- Database: Increase instance size if query latency consistently exceeds targets.
-
-**Load Balancing:**
-- Application Load Balancer (ALB) with health checks (`/health` endpoint).
-- Round-robin distribution with session affinity (sticky sessions not required due to stateless JWT).
-
-### **C.7 Caching Edge Cases**
-
-**Deterministic vs. Time-Sensitive Data:**
-- **Deterministic:** Insights (algorithm outputs) cached for 1 hour (safe because inputs don't change).
-- **Time-Sensitive:** Upload status cached for 5 minutes (balance between freshness and performance).
-
-**Cache Stampede Prevention:**
-- Use Redis `SETNX` (set-if-not-exists) for cache warming to prevent duplicate computations.
-- Example: If 100 users request the same insight simultaneously, only first request computes; others wait for cache.
-
-**Graceful Degradation:**
-- If Redis unavailable, fallback to database queries (slower but functional).
-- Log cache failures for investigation but don't fail requests.
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "id": "sub_abc123",
+    "status": "active",
+    "cancelAtPeriodEnd": false,
+    "currentPeriodEnd": "2026-01-27T10:00:00Z",
+    "message": "Your subscription has been reactivated. You will be billed at the end of the current period."
+  }
+}
+```
 
 ---
 
-## **Conclusion**
+## **5. Data Models & Schemas**
 
-This API specification represents a **production-ready, privacy-first, algorithm-driven** interface for the Visual Social Graph platform. Key achievements:
+### **5.1 User Model**
 
-**✅ Complete Implementation Blueprint:**
-- 9 core sections covering all API functionality
-- 3 comprehensive appendices (Error Codes, Rate Limits, Performance)
-- 27 error codes across 5 severity levels
-- Per-tier feature gating (Free/Pro/Creator)
+```typescript
+interface User {
+  id: string;                    // usr_abc123
+  email: string;                 // unique, indexed
+  name: string | null;
+  tier: 'free' | 'pro' | 'creator';
 
-**✅ Security & Compliance:**
-- TLS 1.3 transport security with HSTS
-- SHA-256 pseudonymization with per-user salts
-- GDPR-compliant dual deletion modes (soft/hard)
-- Complete audit logging (90-day retention)
+  // OAuth
+  googleId?: string;             // Google OAuth ID
 
-**✅ Performance & Scalability:**
-- <500ms p95 latency for read operations
-- Redis caching with 15-min TTL (graphs), 1-hour (insights)
-- Token bucket rate limiting with per-tier quotas
-- Auto-scaling strategy (horizontal + vertical)
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+  lastLoginAt: Date;
 
-**✅ Developer Experience:**
-- RESTful design with predictable URL patterns
-- Comprehensive error taxonomy with actionable guidance
-- OpenAPI 3.1 schema target for code generation
-- 12-month API deprecation policy
+  // Soft delete
+  deletedAt: Date | null;
+}
+```
 
-**Next Steps:**
-1. **OpenAPI Schema Generation:** Convert this narrative spec to OpenAPI 3.1 YAML/JSON
-2. **Backend Implementation:** Implement endpoints using this specification as contract
-3. **Client SDK Generation:** Generate TypeScript/JavaScript SDK from OpenAPI schema
-4. **Integration Testing:** Validate all endpoints against specification
-5. **Documentation Portal:** Publish interactive API docs (Swagger UI / Redoc)
+### **5.2 Graph Model**
 
-**Approval Status:** ✅ Production-Ready (OpenAPI 3.1 Generated at api-specs/openapi.yaml)
+```typescript
+interface Graph {
+  id: string;                    // grp_abc123
+  userId: string;                // Owner (foreign key)
+  platform: 'twitter' | 'instagram' | 'linkedin' | 'facebook' | 'tiktok';
+  version: number;               // Incremental per platform
+  isLatest: boolean;             // Quick query flag
 
-**Version Control:**
-- Current: v1.0 (Dec 27, 2025)
-- Next Review: Weekly during Phase 0-1, Bi-weekly thereafter
-- Deprecation Policy: 12-month notice for breaking changes
+  // Graph data (JSONB in PostgreSQL)
+  data: {
+    nodes: Node[];
+    edges: Edge[];
+    metadata: GraphMetadata;
+  };
+
+  // Cached metrics (denormalized)
+  metrics: GraphMetrics | null;
+
+  // Processing status
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  processingError: string | null;
+
+  // Timestamps
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Node {
+  id: string;                    // Pseudonymized hash
+  type: 'user' | 'self';
+  displayName: string;           // Pseudonymized
+  username: string;              // Pseudonymized
+  followerCount?: number;
+  followingCount?: number;
+  degree?: number;
+  pageRank?: number;
+  betweenness?: number;
+  communityId?: number;
+  addedAt: Date;
+  lastInteraction?: Date;
+}
+
+interface Edge {
+  source: string;                // Node ID
+  target: string;                // Node ID
+  type: 'follows' | 'followed_by' | 'mutual' | 'engages_with';
+  weight: number;                // 0-1
+  interactions: {
+    likes?: number;
+    comments?: number;
+    shares?: number;
+    messages?: number;
+  };
+  createdAt: Date;
+}
+
+interface GraphMetadata {
+  uploadId: string;
+  parseVersion: string;
+  parsingErrors: ParsingError[];
+  statistics: {
+    nodeCount: number;
+    edgeCount: number;
+    density: number;
+    averageDegree: number;
+  };
+  timePeriod: {
+    start: Date;
+    end: Date;
+  };
+}
+```
+
+### **5.3 Metrics Model**
+
+```typescript
+interface GraphMetrics {
+  graphId: string;
+  version: number;
+  computedAt: Date;
+  computationTime: number;       // Milliseconds
+
+  structure: {
+    nodeCount: number;
+    edgeCount: number;
+    density: number;
+    avgDegree: number;
+    avgPathLength: number;
+    diameter: number;
+    clusteringCoefficient: number;
+  };
+
+  communities: {
+    count: number;
+    modularity: number;
+    sizes: number[];
+    distribution: {
+      largest: number;
+      top3: number;
+      top5: number;
+    };
+    isolation: {
+      isolated: number[];
+      echoScore: number;
+    };
+  };
+
+  centrality: {
+    pageRank: {
+      top10: { nodeId: string; score: number }[];
+      selfRank: number | null;
+      selfPercentile: number | null;
+    };
+    betweenness: {
+      top10: { nodeId: string; score: number }[];
+      bridgeNodes: string[];
+      bridgePercentage: number;
+    };
+    degree: {
+      max: number;
+      min: number;
+      median: number;
+      distribution: {
+        p25: number;
+        p50: number;
+        p75: number;
+        p90: number;
+        p99: number;
+      };
+    };
+  };
+
+  engagement: {
+    avgWeight: number;
+    weightDistribution: {
+      p25: number;
+      p50: number;
+      p75: number;
+      p90: number;
+    };
+    activeConnections: number;
+    passiveConnections: number;
+    activePercentage: number;
+    reciprocal: number;
+    oneWay: number;
+    reciprocityScore: number;
+  };
+
+  patterns: {
+    homophily: {
+      intraCommunityEdges: number;
+      interCommunityEdges: number;
+      homophilyIndex: number;
+    };
+  };
+}
+```
+
+### **5.4 Insight Model**
+
+```typescript
+interface Insight {
+  id: string;                    // ins_abc123
+  graphId: string;
+  category: 'positioning' | 'engagement' | 'growth' | 'community';
+  type: string;                  // bridge_position, super_fans, etc.
+  title: string;
+  summary: string;
+  narrative: string;             // Markdown
+  confidence: number;            // 0-1
+
+  metrics: Record<string, any>;  // Relevant metrics
+
+  actions: Action[];
+  visualAnnotations: {
+    highlightNodes: string[];
+    highlightEdges: string[];
+    colorCommunities: number[];
+    colorBy?: string;
+  };
+
+  // Template tracking
+  templateId: string;
+  templateVersion: string;
+  variantId?: string;            // A/B test variant
+
+  createdAt: Date;
+}
+
+interface Action {
+  title: string;
+  description: string;
+  effort: 'low' | 'medium' | 'high';
+  impact: 'low' | 'medium' | 'high';
+}
+```
+
+### **5.5 Subscription Model**
+
+```typescript
+interface Subscription {
+  id: string;                    // sub_abc123
+  userId: string;
+  planId: string;
+  status: 'active' | 'canceled' | 'past_due' | 'trialing';
+
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
+
+  // Stripe integration
+  stripeSubscriptionId: string;
+  stripeCustomerId: string;
+
+  createdAt: Date;
+  updatedAt: Date;
+  canceledAt: Date | null;
+}
+```
 
 ---
 
-**Document Metadata:**
-- Total Sections: 9 core + 3 appendices
-- Total Lines: 1,400+
-- Endpoints Documented: 20+
-- Error Codes Defined: 27
-- Performance Targets: 10 endpoints
-- Rate Limits: 7 endpoint categories × 3 tiers
+## **6. Error Handling**
 
-**Maintenance:**
-- Owner: Engineering / API Team
-- Contributors: Product, Security, DevOps
-- Review Cycle: Weekly (Phase 0-1), Bi-weekly (Phase 2+)
-- Last Updated: December 27, 2025
+### **6.1 Error Response Format**
+
+All errors follow a consistent structure:
+
+```json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": [
+      {
+        "field": "fieldName",
+        "issue": "Specific validation issue"
+      }
+    ],
+    "timestamp": "2025-12-27T12:00:00Z",
+    "requestId": "req_abc123xyz",
+    "documentation": "https://docs.visualsocialgraph.com/errors/ERROR_CODE"
+  }
+}
+```
+
+### **6.2 Error Codes**
+
+#### **Authentication Errors (401, 403)**
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `AUTH_MISSING_TOKEN` | 401 | Authorization header missing |
+| `AUTH_INVALID_TOKEN` | 401 | JWT token invalid or expired |
+| `AUTH_EXPIRED_TOKEN` | 401 | JWT token expired (use refresh token) |
+| `AUTH_REFRESH_INVALID` | 401 | Refresh token invalid or revoked |
+| `AUTH_INSUFFICIENT_PERMISSIONS` | 403 | User lacks required permissions |
+| `AUTH_TIER_REQUIRED` | 403 | Feature requires higher tier (Pro/Creator) |
+
+#### **Validation Errors (400, 422)**
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `VALIDATION_ERROR` | 422 | Request validation failed |
+| `INVALID_PLATFORM` | 400 | Unsupported platform value |
+| `INVALID_GRAPH_STRUCTURE` | 422 | Graph data structure invalid |
+| `FILE_TOO_LARGE` | 400 | File exceeds size limit |
+| `INVALID_FORMAT` | 400 | File format not supported |
+
+#### **Resource Errors (404, 409)**
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `RESOURCE_NOT_FOUND` | 404 | Requested resource doesn't exist |
+| `GRAPH_NOT_FOUND` | 404 | Graph ID not found |
+| `USER_NOT_FOUND` | 404 | User ID not found |
+| `DUPLICATE_RESOURCE` | 409 | Resource already exists |
+
+#### **Rate Limiting (429)**
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests (see Retry-After header) |
+| `UPLOAD_LIMIT_REACHED` | 403 | Tier upload limit reached |
+| `EXPORT_LIMIT_REACHED` | 403 | Export quota exceeded |
+
+#### **Server Errors (500, 502, 503)**
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `INTERNAL_SERVER_ERROR` | 500 | Unhandled server error |
+| `PROCESSING_FAILED` | 500 | Graph processing failed |
+| `EXPORT_GENERATION_FAILED` | 500 | Export generation failed |
+| `UPSTREAM_SERVICE_ERROR` | 502 | External service (Stripe, Google) failed |
+| `SERVICE_UNAVAILABLE` | 503 | Temporary service unavailability |
+
+### **6.3 Error Handling Best Practices**
+
+**Client-Side Error Handling:**
+```typescript
+try {
+  const response = await fetch('/v1/graphs', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+
+    switch (error.error.code) {
+      case 'AUTH_EXPIRED_TOKEN':
+        // Refresh token and retry
+        await refreshToken();
+        return retry();
+
+      case 'AUTH_TIER_REQUIRED':
+        // Show upgrade modal
+        showUpgradeModal(error.error.message);
+        break;
+
+      case 'RATE_LIMIT_EXCEEDED':
+        // Wait and retry
+        const retryAfter = response.headers.get('Retry-After');
+        await sleep(parseInt(retryAfter) * 1000);
+        return retry();
+
+      default:
+        // Show generic error
+        showError(error.error.message);
+    }
+  }
+
+  return response.json();
+} catch (err) {
+  // Network error
+  showError('Network error. Please check your connection.');
+}
+```
 
 ---
 
-*"An API is not just a contract—it's a promise. This specification is our promise to build a platform that respects privacy, performs reliably, and guides developers with clarity."*
+## **7. Rate Limiting & Quotas**
+
+### **7.1 Rate Limits**
+
+Rate limits are enforced per user and per IP address.
+
+**Per-User Limits (Authenticated Requests):**
+
+| Tier | Requests per Minute | Requests per Hour | Requests per Day |
+|------|---------------------|-------------------|------------------|
+| Free | 30 | 500 | 5,000 |
+| Pro | 120 | 2,000 | 20,000 |
+| Creator | 300 | 5,000 | 50,000 |
+
+**Per-IP Limits (Unauthenticated Requests):**
+- 60 requests per minute
+- 1,000 requests per hour
+
+**Specific Endpoint Limits:**
+- `POST /auth/magic-link/request`: 3 per hour per email
+- `POST /graphs`: 10 per hour (Free), 50 per hour (Pro/Creator)
+- `POST /exports/pdf`: 5 per hour (Pro), 20 per hour (Creator)
+
+### **7.2 Rate Limit Headers**
+
+Every API response includes rate limit information:
+
+```http
+HTTP/1.1 200 OK
+X-RateLimit-Limit: 120
+X-RateLimit-Remaining: 87
+X-RateLimit-Reset: 1672154400
+X-RateLimit-Tier: pro
+```
+
+**When Rate Limit Exceeded:**
+```http
+HTTP/1.1 429 Too Many Requests
+Retry-After: 45
+X-RateLimit-Limit: 120
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1672154400
+
+{
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "Rate limit exceeded. Retry after 45 seconds.",
+    "retryAfter": 45,
+    "limit": 120,
+    "resetAt": "2025-12-27T12:00:00Z"
+  }
+}
+```
+
+### **7.3 Upload & Storage Quotas**
+
+| Tier | Graphs per Platform | Total Graphs | Max File Size | Storage Limit |
+|------|---------------------|--------------|---------------|---------------|
+| Free | 1 version | 1 platform | 50 MB | 100 MB |
+| Pro | 5 versions | 5 platforms | 200 MB | 1 GB |
+| Creator | Unlimited | 5 platforms | 500 MB | 5 GB |
 
 ---
 
-**END OF DOCUMENT**
+## **8. Webhooks**
+
+### **8.1 Stripe Webhooks**
+
+VSG receives webhook events from Stripe for subscription management.
+
+**Webhook Endpoint:**
+```
+POST /v1/webhooks/stripe
+```
+
+**Handled Events:**
+
+| Event | Description | Action |
+|-------|-------------|--------|
+| `customer.subscription.created` | New subscription created | Update user tier, send welcome email |
+| `customer.subscription.updated` | Subscription modified | Update tier, handle plan changes |
+| `customer.subscription.deleted` | Subscription canceled | Downgrade to free tier |
+| `invoice.paid` | Payment successful | Record payment, extend subscription |
+| `invoice.payment_failed` | Payment failed | Send notification, retry logic |
+| `checkout.session.completed` | Checkout completed | Create subscription, update user |
+
+**Webhook Signature Verification:**
+
+```typescript
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export async function handleStripeWebhook(req, res) {
+  const sig = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err) {
+    return res.status(400).json({
+      error: { code: 'WEBHOOK_SIGNATURE_INVALID', message: err.message }
+    });
+  }
+
+  switch (event.type) {
+    case 'customer.subscription.created':
+      await handleSubscriptionCreated(event.data.object);
+      break;
+
+    case 'customer.subscription.updated':
+      await handleSubscriptionUpdated(event.data.object);
+      break;
+
+    // ... handle other events
+  }
+
+  res.status(200).json({ received: true });
+}
+```
+
+---
+
+## **9. API Versioning Strategy**
+
+### **9.1 Versioning Approach**
+
+**URL Path Versioning:**
+```
+https://api.visualsocialgraph.com/v1/graphs
+https://api.visualsocialgraph.com/v2/graphs
+```
+
+**Version Lifecycle:**
+```
+v1 (Current):
+├─ Status: Stable
+├─ Released: Dec 2025
+├─ Support: Active
+└─ Deprecation: TBD (minimum 12 months notice)
+
+v2 (Future):
+├─ Status: Planning
+├─ Release: TBD (when breaking changes necessary)
+├─ Support: TBD
+└─ Migration: Parallel support for 12 months
+```
+
+### **9.2 Breaking vs. Non-Breaking Changes**
+
+**Non-Breaking Changes (No Version Bump):**
+- Adding new endpoints
+- Adding optional request parameters
+- Adding fields to responses
+- Adding new error codes
+- Performance improvements
+
+**Breaking Changes (Version Bump Required):**
+- Removing endpoints
+- Removing request parameters
+- Removing response fields
+- Changing field types or semantics
+- Changing authentication method
+
+### **9.3 Deprecation Policy**
+
+**Timeline:**
+```
+t=0:    Announce deprecation (email, docs, API headers)
+t+3mo:  Warning headers on deprecated endpoints
+t+6mo:  Sunset announced
+t+12mo: Deprecated version removed
+```
+
+**Deprecation Headers:**
+```http
+HTTP/1.1 200 OK
+Deprecation: true
+Sunset: Sat, 27 Dec 2026 00:00:00 GMT
+Link: <https://docs.visualsocialgraph.com/migration/v1-to-v2>; rel="deprecation"
+```
+
+---
+
+## **10. Security Considerations**
+
+### **10.1 Transport Security**
+
+- **HTTPS Only**: All API traffic over TLS 1.3
+- **Certificate Pinning**: Recommended for mobile apps
+- **HSTS**: Strict-Transport-Security header enforced
+
+### **10.2 Authentication Security**
+
+- **JWT Tokens**: Short-lived (15 min), signed with HS256
+- **Refresh Tokens**: Long-lived (30 days), single-use, revocable
+- **Token Storage**: HTTP-only cookies (recommended) or localStorage (client responsibility)
+
+### **10.3 Data Security**
+
+- **Pseudonymization**: All node identifiers hashed with user-specific key
+- **Encryption at Rest**: PostgreSQL encryption, Cloudflare R2 encryption
+- **Encryption in Transit**: TLS 1.3 for all data transfer
+- **Input Sanitization**: All inputs validated and sanitized
+
+### **10.4 Privacy Compliance**
+
+**GDPR Compliance:**
+- Data export: `GET /users/me/export`
+- Data deletion: `DELETE /users/me` (cascade delete)
+- Data processing transparency: Privacy policy, data usage docs
+
+**No Social Account Access:**
+- Architectural enforcement (Tier 1 constraint)
+- No OAuth implementation for social platforms
+- Manual upload only
+
+---
+
+## **11. Performance & Caching**
+
+### **11.1 Response Time Targets**
+
+| Endpoint Type | p50 | p95 | p99 |
+|---------------|-----|-----|-----|
+| Simple GET (cached) | <50ms | <100ms | <200ms |
+| Simple GET (uncached) | <200ms | <500ms | <1s |
+| Graph retrieval | <300ms | <800ms | <2s |
+| Metrics computation | <2s | <5s | <10s |
+| Insight generation | <3s | <8s | <15s |
+| PDF export | <10s | <20s | <30s |
+
+### **11.2 Caching Strategy**
+
+**Redis Caching:**
+```typescript
+// Cache keys
+const cacheKeys = {
+  user: (userId) => `user:${userId}`,
+  graph: (graphId) => `graph:${graphId}`,
+  metrics: (graphId) => `metrics:${graphId}`,
+  insights: (graphId) => `insights:${graphId}`,
+};
+
+// TTLs
+const cacheTTL = {
+  user: 3600,        // 1 hour
+  graph: 86400,      // 24 hours
+  metrics: 86400,    // 24 hours
+  insights: 86400,   // 24 hours
+};
+```
+
+**HTTP Caching Headers:**
+```http
+# Cacheable responses
+Cache-Control: public, max-age=3600, s-maxage=7200
+ETag: "abc123xyz"
+
+# Non-cacheable responses
+Cache-Control: private, no-cache, no-store, must-revalidate
+```
+
+**CDN Caching:**
+- Static assets (exports, social cards): 30 days
+- API responses: Varies by endpoint (1 hour - 24 hours)
+
+---
+
+## **12. Testing & Validation**
+
+### **12.1 API Testing Strategy**
+
+**Unit Tests:**
+- Request validation
+- Response serialization
+- Business logic (pure functions)
+- Algorithm correctness
+
+**Integration Tests:**
+- API endpoint contracts
+- Database interactions
+- External service mocking (Stripe)
+
+**End-to-End Tests:**
+- Full user flows (signup → upload → insights → export)
+- Authentication flows
+- Payment flows
+
+### **12.2 OpenAPI Specification**
+
+Full OpenAPI 3.0 specification available at:
+```
+https://api.visualsocialgraph.com/v1/openapi.json
+https://api.visualsocialgraph.com/v1/openapi.yaml
+```
+
+**Interactive Documentation:**
+```
+https://docs.visualsocialgraph.com/api
+```
+
+---
+
+## **13. Migration & Evolution**
+
+### **13.1 Future Enhancements (Phase 3+)**
+
+**Real-Time Updates (Phase 3):**
+```
+POST /graphs/{graphId}/sync
+WebSocket: wss://api.visualsocialgraph.com/v1/graphs/{graphId}/stream
+```
+
+**Collaborative Features (Phase 3):**
+```
+POST /graphs/{graphId}/share
+GET /shared-graphs/{shareId}
+```
+
+**API Access for Developers (Phase 4):**
+```
+POST /api-keys
+GET /api-keys
+DELETE /api-keys/{keyId}
+```
+
+**Webhooks for Clients (Phase 4):**
+```
+POST /webhooks
+GET /webhooks
+DELETE /webhooks/{webhookId}
+```
+
+---
+
+## **14. Appendices**
+
+### **14.1 HTTP Status Code Reference**
+
+| Status Code | Meaning | Usage |
+|-------------|---------|-------|
+| 200 OK | Success | GET, PUT, PATCH |
+| 201 Created | Resource created | POST |
+| 202 Accepted | Async processing started | POST (long-running) |
+| 204 No Content | Success, no body | DELETE |
+| 400 Bad Request | Invalid request | Validation errors |
+| 401 Unauthorized | Authentication required | Missing/invalid token |
+| 403 Forbidden | Insufficient permissions | Tier restrictions |
+| 404 Not Found | Resource not found | Unknown IDs |
+| 409 Conflict | Resource conflict | Duplicates |
+| 422 Unprocessable Entity | Validation failed | Schema errors |
+| 429 Too Many Requests | Rate limit exceeded | Too many requests |
+| 500 Internal Server Error | Server error | Unhandled exceptions |
+| 502 Bad Gateway | Upstream failure | External service error |
+| 503 Service Unavailable | Temporary unavailable | Maintenance |
+
+### **14.2 Date/Time Format**
+
+All timestamps use **ISO 8601 format** in **UTC timezone**:
+
+```
+2025-12-27T12:00:00Z
+```
+
+### **14.3 Pagination Best Practices**
+
+**Request:**
+```
+GET /v1/graphs?page=2&pageSize=50
+```
+
+**Response:**
+```json
+{
+  "data": [...],
+  "pagination": {
+    "total": 342,
+    "count": 50,
+    "page": 2,
+    "pageSize": 50,
+    "totalPages": 7,
+    "hasNext": true,
+    "hasPrev": true,
+    "links": {
+      "first": "/v1/graphs?page=1&pageSize=50",
+      "last": "/v1/graphs?page=7&pageSize=50",
+      "next": "/v1/graphs?page=3&pageSize=50",
+      "prev": "/v1/graphs?page=1&pageSize=50"
+    }
+  }
+}
+```
+
+---
+
+## **Document Status**
+
+- **Version:** 1.0 (Initial Release)
+- **Status:** Ready for Implementation
+- **Confidence:** 95%
+- **Next Review:** Post-Phase 0 implementation (February 2026)
+- **Alignment:** ✅ Architecture Document, ✅ SRS, ✅ Data Intelligence Framework, ✅ UX Specification
+
+---
+
+**End of API Specification v1.0**
+
+*"Every endpoint should sing. Every response should breathe. Every error should guide."*
+
+*December 27, 2025*
