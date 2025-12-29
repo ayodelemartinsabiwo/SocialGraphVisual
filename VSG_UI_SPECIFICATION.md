@@ -1010,6 +1010,67 @@ export const componentTokens = {
 } as const;
 ```
 
+#### **3.2.1 Dark Mode Color Tokens**
+
+**Token File Structure:**
+```
+src/styles/
+├── tokens.css           # Light mode tokens (:root)
+├── tokens-dark.css      # Dark mode tokens (.dark selector)
+└── globals.css          # Imports both, applies theme
+```
+
+**Dark Mode CSS (tokens-dark.css):**
+```css
+/* src/styles/tokens-dark.css - Dark mode overrides */
+.dark {
+  /* Primitive Overrides (Dark equivalents) */
+  --vsg-color-gray-50: #18181B;   /* Zinc-900 */
+  --vsg-color-gray-100: #27272A;  /* Zinc-800 */
+  --vsg-color-gray-200: #3F3F46;  /* Zinc-700 */
+  --vsg-color-gray-700: #E5E7EB;  /* Gray-200 */
+  --vsg-color-gray-900: #F9FAFB;  /* Gray-50 */
+
+  /* Semantic Overrides */
+  --vsg-bg-primary: var(--vsg-color-gray-50);
+  --vsg-bg-secondary: var(--vsg-color-gray-100);
+  --vsg-text-primary: var(--vsg-color-gray-900);
+  --vsg-text-secondary: var(--vsg-color-gray-400);
+
+  /* Surface tokens */
+  --vsg-surface-elevated: #27272A;
+  --vsg-surface-overlay: rgba(0, 0, 0, 0.6);
+  --vsg-border-subtle: #3F3F46;
+
+  /* Graph-specific dark tokens */
+  --vsg-graph-bg: #0F0F0F;
+  --vsg-graph-grid: rgba(255, 255, 255, 0.05);
+  --vsg-graph-node-default: #9CA3AF;
+  --vsg-graph-edge-default: rgba(156, 163, 175, 0.3);
+}
+```
+
+**Theme Application (globals.css):**
+```css
+/* src/styles/globals.css */
+@import './tokens.css';
+@import './tokens-dark.css';
+
+/* System preference detection (before JS loads) */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    /* Apply dark tokens when system prefers dark and no explicit light class */
+    @apply dark;
+  }
+}
+```
+
+**Implementation Notes:**
+- See [VSG_ARCHITECTURE_DOCUMENT.md](./VSG_ARCHITECTURE_DOCUMENT.md) Section 3.5 for ThemeProvider implementation
+- See [VSG_UX_INTERACTION_DESIGN_SPECIFICATION.md](./VSG_UX_INTERACTION_DESIGN_SPECIFICATION.md) Section 2.2.1 for complete dark mode token tables
+- Default theme: System preference (`prefers-color-scheme`)
+- Tailwind config: `darkMode: 'class'` (see Section 2.9)
+
 ### **3.3 Spacing Tokens (4px Grid)**
 
 ```typescript
@@ -2634,6 +2695,121 @@ const [open, setOpen] = useState(false);
 </Modal>
 ```
 
+### **4.7a ThemeToggle Component**
+
+**Purpose:** Allows users to switch between light, dark, and system theme preferences. Defaults to system preference detection.
+
+**TypeScript Interface:**
+```typescript
+interface ThemeToggleProps {
+  /**
+   * Default theme preference on initial load
+   * @default 'system'
+   */
+  defaultTheme?: 'light' | 'dark' | 'system';
+
+  /**
+   * Callback when theme changes
+   */
+  onThemeChange?: (theme: 'light' | 'dark' | 'system') => void;
+
+  /**
+   * Size variant
+   * @default 'medium'
+   */
+  size?: 'small' | 'medium' | 'large';
+
+  /**
+   * Accessible label
+   * @default 'Toggle theme'
+   */
+  'aria-label'?: string;
+}
+```
+
+**Implementation:**
+```tsx
+// components/ui/ThemeToggle.tsx
+'use client';
+
+import { useTheme } from 'next-themes';
+import { SunIcon, MoonIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
+
+const themes = [
+  { value: 'system', icon: ComputerDesktopIcon, label: 'System' },
+  { value: 'light', icon: SunIcon, label: 'Light' },
+  { value: 'dark', icon: MoonIcon, label: 'Dark' },
+] as const;
+
+export function ThemeToggle({
+  size = 'medium',
+  'aria-label': ariaLabel = 'Toggle theme'
+}: ThemeToggleProps) {
+  const { theme, setTheme } = useTheme();
+
+  const sizeClasses = {
+    small: 'h-8 w-24 text-xs',
+    medium: 'h-10 w-32 text-sm',
+    large: 'h-12 w-40 text-base'
+  };
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label={ariaLabel}
+      className={`
+        inline-flex rounded-lg bg-vsg-neutral-100 p-1
+        dark:bg-vsg-neutral-800 ${sizeClasses[size]}
+      `}
+    >
+      {themes.map(({ value, icon: Icon, label }) => (
+        <button
+          key={value}
+          type="button"
+          role="radio"
+          aria-checked={theme === value}
+          onClick={() => setTheme(value)}
+          className={`
+            flex-1 flex items-center justify-center gap-1 rounded-md
+            transition-colors duration-150
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-vsg-primary
+            ${theme === value
+              ? 'bg-white shadow-sm dark:bg-vsg-neutral-700 text-vsg-neutral-900 dark:text-vsg-neutral-50'
+              : 'text-vsg-neutral-500 hover:text-vsg-neutral-700 dark:hover:text-vsg-neutral-300'
+            }
+          `}
+        >
+          <Icon className="h-4 w-4" aria-hidden="true" />
+          <span className="sr-only sm:not-sr-only">{label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+**States:**
+| State | Description | Visual |
+|-------|-------------|--------|
+| `system` | Follows OS preference | Computer icon highlighted |
+| `light` | Force light mode | Sun icon highlighted |
+| `dark` | Force dark mode | Moon icon highlighted |
+
+**Accessibility:**
+- `role="radiogroup"` with `role="radio"` for each option
+- `aria-checked` indicates current selection
+- `focus-visible` ring for keyboard navigation
+- Screen reader announces current theme on focus
+
+**Persistence:**
+- Theme stored in `localStorage` key: `vsg-theme`
+- System preference: Uses `prefers-color-scheme` media query
+- No flash of wrong theme: See [VSG_ARCHITECTURE_DOCUMENT.md](./VSG_ARCHITECTURE_DOCUMENT.md) Section 3.5 for blocking script
+
+**Placement:**
+- Desktop: Header right side, next to user avatar
+- Mobile: Settings page under "Appearance" section
+
 ### **4.8 Component Contract Matrix**
 
 **Purpose**: This matrix defines the MINIMUM VIABLE contract for each component. Every component MUST implement all specified contracts before being considered production-ready.
@@ -2656,6 +2832,7 @@ const [open, setOpen] = useState(false);
 | **NodeInspector** | Node detail panel | `NodeInspectorProps` (TBD) | `closed`, `loading`, `ready`, `error` | `role="complementary"`, `aria-labelledby` (node name), Keyboard-accessible links/buttons | `Tab` (navigate within), `Esc` (close panel), Standard link/button navigation | Lazy load node details, Debounced fetch (500ms), Cache recent nodes |
 | **CommunityLegend** | Graph color key | `CommunityLegendProps` (TBD) | `visible`, `hidden` | `role="region"`, `aria-label="Community color legend"`, List of communities with colors | `Tab` (focus legend), `Enter`/`Space` (toggle community visibility) | Static rendering (no updates during interaction), <50ms render |
 | **Search** | Node/edge search input | `SearchProps` (TBD) | `idle`, `focused`, `searching`, `results`, `no-results`, `error` | `role="search"`, `aria-label`, `aria-autocomplete="list"`, `aria-activedescendant`, Live region for result count | `Tab` (focus), `↓` (first result), `↑`/`↓` (navigate), `Enter` (select), `Esc` (clear) | Debounce search (300ms), Fuzzy matching (Fuse.js), Virtual list for 100+ results, <100ms search time |
+| **ThemeToggle** | Light/dark/system theme switcher | `ThemeToggleProps` (Section 4.7a) | `system`, `light`, `dark` | `role="radiogroup"`, `role="radio"` per option, `aria-checked`, focus-visible ring | `Tab` (focus), `←`/`→` (navigate options), `Enter`/`Space` (select) | localStorage persistence, No FOWT (blocking script), <1KB bundle |
 
 **Notes:**
 

@@ -1,0 +1,63 @@
+:root {
+    /* Theme Colors - "Think Different" Palette */
+    --color-primary: #FF6600; /* High-Energy Orange */
+    --color-primary-hover: #e65c00;
+    --color-bg-dark: #0a0a0a; /* Deep Black */
+    --color-bg-panel: #1a1a1a; /* Surface Grey */
+    --color-text-main: #ffffff;
+    --color-text-muted: #a0a0a0;
+    --color-border: #333333;
+
+    /* Spacing & Layout */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 4rem;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* Utility Classes */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.text-center { text-align: center; }
+.font-bold { font-weight: 700; }
+.text-xl { font-size: 1.25rem; }
+.text-4xl { font-size: 2.5rem; }
+
+/* Component: Buttons (44px min height for touch) */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: none;
+    display: inline-block;
+}
+.btn-primary { background-color: var(--color-primary); color: white; }
+.btn-primary:hover { background-color: var(--color-primary-hover); }
+.btn-outline { background: transparent; border: 1px solid var(--color-border); color: white; }
+
+/* Mobile First Media Queries */
+@media (min-width: 768px) {
+    .md-flex-row { flex-direction: row; }
+    .md-text-6xl { font-size: 4rem; }
+}

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Visual Social Graph</title>
+  <link rel="stylesheet" href="css/components.css">
+
+  <script>
+    (function() {
+      const theme = localStorage.getItem('vsg-theme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    .settings-page {
+      min-height: 100vh;
+      background-color: var(--vsg-bg-secondary);
+    }
+
+    .settings-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--vsg-space-6) var(--vsg-space-4);
+    }
+
+    .page-title {
+      font-size: var(--vsg-text-3xl);
+      font-weight: var(--vsg-font-bold);
+      margin-bottom: var(--vsg-space-8);
+    }
+
+    /* Tabs */
+    .settings-tabs {
+      display: flex;
+      gap: var(--vsg-space-1);
+      background-color: var(--vsg-bg-tertiary);
+      border-radius: var(--vsg-radius-md);
+      padding: var(--vsg-space-1);
+      margin-bottom: var(--vsg-space-6);
+    }
+
+    .settings-tab {
+      flex: 1;
+      padding: var(--vsg-space-3) var(--vsg-space-4);
+      border: none;
+      background: none;
+      border-radius: var(--vsg-radius-sm);
+      font-size: var(--vsg-text-sm);
+      font-weight: var(--vsg-font-medium);
+      cursor: pointer;
+      transition: all var(--vsg-duration-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--vsg-space-2);
+    }
+
+    .settings-tab:hover {
+      background-color: var(--vsg-bg-primary);
+    }
+
+    .settings-tab.active {
+      background-color: var(--vsg-bg-primary);
+      box-shadow: var(--vsg-shadow-sm);
+    }
+
+    .settings-tab svg {
+      width: 18px;
+      height: 18px;
+      color: var(--vsg-text-tertiary);
+    }
+
+    .settings-tab.active svg {
+      color: var(--vsg-accent-primary);
+    }
+
+    /* Tab Panels */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn var(--vsg-duration-normal) var(--vsg-ease-out);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Settings Sections */
+    .settings-section {
+      background-color: var(--vsg-bg-primary);
+      border-radius: var(--vsg-radius-lg);
+      border: 1px solid var(--vsg-border-light);
+      margin-bottom: var(--vsg-space-6);
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: var(--vsg-space-5);
+      border-bottom: 1px solid var(--vsg-border-light);
+    }
+
+    .section-title {
+      font-size: var(--vsg-text-lg);
+      font-weight: var(--vsg-font-semibold);
+      margin-bottom: var(--vsg-space-1);
+    }
+
+    .section-description {
+      font-size: var(--vsg-text-sm);
+      color: var(--vsg-text-secondary);
+    }
+
+    .section-content {
+      padding: var(--vsg-space-5);
+    }
+
+    /* Setting Item */
+    .setting-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: var(--vsg-space-4) 0;
+      border-bottom: 1px solid var(--vsg-border-light);
+      gap: var(--vsg-space-4);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .setting-item:first-child {
+      padding-top: 0;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-label {
+      font-weight: var(--vsg-font-medium);
+      margin-bottom: var(--vsg-space-1);
+    }
+
+    .setting-description {
+      font-size: var(--vsg-text-sm);
+      color: var(--vsg-text-secondary);
+    }
+
+    .setting-control {
+      flex-shrink: 0;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 28px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--vsg-bg-tertiary);
+      border-radius: var(--vsg-radius-full);
+      transition: all var(--vsg-duration-fast);
+      border: 2px solid var(--vsg-border-medium);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--vsg-white);
+      border-radius: var(--vsg-radius-full);
+      transition: all var(--vsg-duration-fast);
+      box-shadow: var(--vsg-shadow-sm);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background-color: var(--vsg-accent-primary);
+      border-color: var(--vsg-accent-primary);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    .toggle-switch input:focus + .toggle-slider {
+      box-shadow: var(--vsg-shadow-focus);
+    }
+
+    /* Select Input */
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper select {
+      appearance: none;
+      background-color: var(--vsg-bg-primary);
+      border: 1px solid var(--vsg-border-light);
+      border-radius: var(--vsg-radius-sm);
+      padding: var(--vsg-space-2) var(--vsg-space-10) var(--vsg-space-2) var(--vsg-space-3);
+      font-size: var(--vsg-text-sm);
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    .select-wrapper select:focus {
+      outline: none;
+      border-color: var(--vsg-accent-primary);
+      box-shadow: var(--vsg-shadow-focus);
+    }
+
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--vsg-text-tertiary);
+      pointer-events: none;
+    }
+
+    /* Theme Selection */
+    .theme-options {
+      display: flex;
+      gap: var(--vsg-space-3);
+    }
+
+    .theme-option {
+      flex: 1;
+      padding: var(--vsg-space-4);
+      border: 2px solid var(--vsg-border-light);
+      border-radius: var(--vsg-radius-md);
+      cursor: pointer;
+      text-align: center;
+      transition: all var(--vsg-duration-fast);
+    }
+
+    .theme-option:hover {
+      border-color: var(--vsg-accent-primary);
+    }
+
+    .theme-option.active {
+      border-color: var(--vsg-accent-primary);
+      background-color: var(--vsg-orange-50);
+    }
+
+    .theme-preview {
+      width: 60px;
+      height: 40px;
+      border-radius: var(--vsg-radius-sm);
+      margin: 0 auto var(--vsg-space-2);
+      border: 1px solid var(--vsg-border-light);
+      overflow: hidden;
+    }
+
+    .theme-preview.light {
+      background: linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%);
+    }
+
+    .theme-preview.dark {
+      background: linear-gradient(180deg, #1F2937 0%, #111827 100%);
+    }
+
+    .theme-preview.system {
+      background: linear-gradient(90deg, #FFFFFF 50%, #1F2937 50%);
+    }
+
+    .theme-option-label {
+      font-size: var(--vsg-text-sm);
+      font-weight: var(--vsg-font-medium);
+    }
+
+    /* Accent Color Picker */
+    .accent-colors {
+      display: flex;
+      gap: var(--vsg-space-2);
+    }
+
+    .accent-color {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--vsg-radius-full);
+      cursor: pointer;
+      transition: transform var(--vsg-duration-fast);
+      border: 2px solid transparent;
+    }
+
+    .accent-color:hover {
+      transform: scale(1.1);
+    }
+
+    .accent-color.active {
+      border-color: var(--vsg-text-primary);
+      box-shadow: 0 0 0 2px var(--vsg-bg-primary);
+    }
+
+    .accent-orange { background-color: #F97316; }
+    .accent-blue { background-color: #3B82F6; }
+    .accent-green { background-color: #10B981; }
+    .accent-purple { background-color: #8B5CF6; }
+    .accent-pink { background-color: #EC4899; }
+    .accent-teal { background-color: #14B8A6; }
+
+    /* Danger Zone */
+    .danger-section {
+      border-color: var(--vsg-error-200);
+    }
+
+    .danger-section .section-header {
+      background-color: var(--vsg-error-50);
+      border-bottom-color: var(--vsg-error-200);
+    }
+
+    .danger-section .section-title {
+      color: var(--vsg-error-600);
+    }
+
+    /* Data Storage Info */
+    .storage-info {
+      display: flex;
+      align-items: center;
+      gap: var(--vsg-space-4);
+      padding: var(--vsg-space-4);
+      background-color: var(--vsg-bg-secondary);
+      border-radius: var(--vsg-radius-sm);
+      margin-bottom: var(--vsg-space-4);
+    }
+
+    .storage-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--vsg-bg-primary);
+      border-radius: var(--vsg-radius-sm);
+      font-size: 24px;
+    }
+
+    .storage-details {
+      flex: 1;
+    }
+
+    .storage-size {
+      font-weight: var(--vsg-font-semibold);
+      margin-bottom: var(--vsg-space-1);
+    }
+
+    .storage-breakdown {
+      font-size: var(--vsg-text-sm);
+      color: var(--vsg-text-secondary);
+    }
+
+    /* Export Options */
+    .export-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--vsg-space-3);
+    }
+
+    .export-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--vsg-space-4);
+      border: 1px solid var(--vsg-border-light);
+      border-radius: var(--vsg-radius-md);
+      cursor: pointer;
+      transition: all var(--vsg-duration-fast);
+    }
+
+    .export-option:hover {
+      border-color: var(--vsg-accent-primary);
+      background-color: var(--vsg-orange-50);
+    }
+
+    .export-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--vsg-space-2);
+      font-size: 24px;
+    }
+
+    .export-label {
+      font-size: var(--vsg-text-sm);
+      font-weight: var(--vsg-font-medium);
+    }
+
+    .export-format {
+      font-size: var(--vsg-text-xs);
+      color: var(--vsg-text-tertiary);
+    }
+
+    /* Responsive */
+    @media (max-width: 639px) {
+      .settings-tabs {
+        flex-direction: column;
+      }
+
+      .theme-options {
+        flex-direction: column;
+      }
+
+      .export-options {
+        grid-template-columns: 1fr;
+      }
+
+      .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .setting-control {
+        margin-top: var(--vsg-space-3);
+      }
+    }
+
+    /* Dark mode adjustments */
+    .dark .danger-section {
+      border-color: var(--vsg-error-800);
+    }
+
+    .dark .danger-section .section-header {
+      background-color: rgba(239, 68, 68, 0.1);
+      border-bottom-color: var(--vsg-error-800);
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-page">
+    <!-- Header -->
+    <header class="header">
+      <a href="index.html" class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+          <circle cx="16" cy="16" r="6" fill="currentColor"/>
+          <circle cx="16" cy="6" r="3" fill="currentColor"/>
+          <circle cx="24" cy="20" r="3" fill="currentColor"/>
+          <circle cx="8" cy="20" r="3" fill="currentColor"/>
+        </svg>
+        <span>Visual Social Graph</span>
+      </a>
+
+      <nav class="nav">
+        <a href="canvas.html" class="nav-link">Network</a>
+        <a href="insights.html" class="nav-link">Insights</a>
+        <a href="settings.html" class="nav-link active">Settings</a>
+      </nav>
+
+      <div style="display: flex; align-items: center; gap: var(--vsg-space-2);">
+        <button class="theme-toggle" onclick="toggleThemeButton()" aria-label="Toggle theme">
+          <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="settings-container">
+      <h1 class="page-title">Settings</h1>
+
+      <!-- Tabs -->
+      <div class="settings-tabs" role="tablist">
+        <button class="settings-tab active" data-tab="appearance" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+          </svg>
+          Appearance
+        </button>
+        <button class="settings-tab" data-tab="privacy" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Privacy
+        </button>
+        <button class="settings-tab" data-tab="data" role="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+          Data Management
+        </button>
+      </div>
+
+      <!-- Appearance Tab -->
+      <div class="tab-panel active" id="appearance">
+        <!-- Theme Section -->
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Theme</h2>
+            <p class="section-description">Choose how Visual Social Graph looks to you</p>
+          </div>
+          <div class="section-content">
+            <div class="theme-options">
+              <div class="theme-option" data-theme="light" onclick="selectTheme('light')">
+                <div class="theme-preview light"></div>
+                <div class="theme-option-label">Light</div>
+              </div>
+              <div class="theme-option active" data-theme="dark" onclick="selectTheme('dark')">
+                <div class="theme-preview dark"></div>
+                <div class="theme-option-label">Dark</div>
+              </div>
+              <div class="theme-option" data-theme="system" onclick="selectTheme('system')">
+                <div class="theme-preview system"></div>
+                <div class="theme-option-label">System</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Accent Color Section -->
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Accent Color</h2>
+            <p class="section-description">Customize the primary accent color throughout the app</p>
+          </div>
+          <div class="section-content">
+            <div class="accent-colors">
+              <div class="accent-color accent-orange active" data-color="orange" onclick="selectAccent('orange')" title="Orange (Default)"></div>
+              <div class="accent-color accent-blue" data-color="blue" onclick="selectAccent('blue')" title="Blue"></div>
+              <div class="accent-color accent-green" data-color="green" onclick="selectAccent('green')" title="Green"></div>
+              <div class="accent-color accent-purple" data-color="purple" onclick="selectAccent('purple')" title="Purple"></div>
+              <div class="accent-color accent-pink" data-color="pink" onclick="selectAccent('pink')" title="Pink"></div>
+              <div class="accent-color accent-teal" data-color="teal" onclick="selectAccent('teal')" title="Teal"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Display Settings -->
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Display</h2>
+            <p class="section-description">Customize visual elements and animations</p>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Reduce Motion</div>
+                <div class="setting-description">Minimize animations and transitions</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="reduceMotion">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Show Node Labels</div>
+                <div class="setting-description">Display names on graph nodes</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="showLabels" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Graph Layout</div>
+                <div class="setting-description">Default layout algorithm for the network</div>
+              </div>
+              <div class="setting-control">
+                <div class="select-wrapper">
+                  <select id="graphLayout">
+                    <option value="force">Force-Directed</option>
+                    <option value="radial">Radial</option>
+                    <option value="hierarchical">Hierarchical</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Privacy Tab -->
+      <div class="tab-panel" id="privacy">
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Data Privacy</h2>
+            <p class="section-description">Control how your data is handled</p>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Local Processing Only</div>
+                <div class="setting-description">All data processing happens in your browser. We never see your data.</div>
+              </div>
+              <div class="setting-control">
+                <span class="badge badge-success">Always On</span>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Offline Mode</div>
+                <div class="setting-description">Disable all network requests for maximum privacy</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="offlineMode">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Analytics</h2>
+            <p class="section-description">Help us improve the product</p>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Anonymous Usage Analytics</div>
+                <div class="setting-description">Share anonymous usage data to help improve the app. No personal or network data is ever shared.</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="analytics" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Crash Reports</div>
+                <div class="setting-description">Automatically send crash reports to help fix bugs</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="crashReports" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Data Management Tab -->
+      <div class="tab-panel" id="data">
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Storage</h2>
+            <p class="section-description">Your data is stored locally in your browser</p>
+          </div>
+          <div class="section-content">
+            <div class="storage-info">
+              <div class="storage-icon">💾</div>
+              <div class="storage-details">
+                <div class="storage-size">12.4 MB used</div>
+                <div class="storage-breakdown">Network data: 11.8 MB • Settings: 0.1 MB • Cache: 0.5 MB</div>
+              </div>
+              <button class="btn btn-ghost btn-sm">Clear Cache</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Export Data</h2>
+            <p class="section-description">Download your network data in various formats</p>
+          </div>
+          <div class="section-content">
+            <div class="export-options">
+              <div class="export-option">
+                <div class="export-icon">📊</div>
+                <div class="export-label">Full Report</div>
+                <div class="export-format">PDF</div>
+              </div>
+              <div class="export-option">
+                <div class="export-icon">🔗</div>
+                <div class="export-label">Network Data</div>
+                <div class="export-format">JSON / CSV</div>
+              </div>
+              <div class="export-option">
+                <div class="export-icon">🖼️</div>
+                <div class="export-label">Graph Image</div>
+                <div class="export-format">SVG / PNG</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="section-header">
+            <h2 class="section-title">Import Network</h2>
+            <p class="section-description">Upload a new network archive</p>
+          </div>
+          <div class="section-content">
+            <a href="upload.html" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17,8 12,3 7,8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Upload New Archive
+            </a>
+          </div>
+        </section>
+
+        <!-- Danger Zone -->
+        <section class="settings-section danger-section">
+          <div class="section-header">
+            <h2 class="section-title">⚠️ Danger Zone</h2>
+            <p class="section-description">Irreversible and destructive actions</p>
+          </div>
+          <div class="section-content">
+            <div class="setting-item">
+              <div class="setting-info">
+                <div class="setting-label">Delete All Data</div>
+                <div class="setting-description">Permanently delete all your network data, insights, and settings. This cannot be undone.</div>
+              </div>
+              <div class="setting-control">
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete()">
+                  Delete Everything
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal" style="display: none;">
+    <div class="modal" role="dialog" aria-labelledby="deleteModalTitle">
+      <div class="modal-header">
+        <h2 class="modal-title" id="deleteModalTitle">Delete All Data?</h2>
+        <button class="modal-close" onclick="closeDeleteModal()" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>This will permanently delete:</p>
+        <ul style="margin: var(--vsg-space-3) 0 var(--vsg-space-3) var(--vsg-space-6); color: var(--vsg-text-secondary);">
+          <li>Your network graph (247 connections)</li>
+          <li>All 8 detected communities</li>
+          <li>12 insights and recommendations</li>
+          <li>All settings and preferences</li>
+        </ul>
+        <p><strong>This action cannot be undone.</strong></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost btn-md" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger btn-md">Delete Everything</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme toggle (header button)
+    function toggleThemeButton() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('vsg-theme', isDark ? 'dark' : 'light');
+      updateThemeOptions();
+    }
+
+    // Theme selection (settings panel)
+    function selectTheme(theme) {
+      document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+      document.querySelector(`[data-theme="${theme}"]`).classList.add('active');
+
+      if (theme === 'system') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', prefersDark);
+        localStorage.setItem('vsg-theme', 'system');
+      } else {
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        localStorage.setItem('vsg-theme', theme);
+      }
+    }
+
+    function updateThemeOptions() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+
+      const savedTheme = localStorage.getItem('vsg-theme');
+      if (savedTheme === 'system') {
+        document.querySelector('[data-theme="system"]').classList.add('active');
+      } else if (isDark) {
+        document.querySelector('[data-theme="dark"]').classList.add('active');
+      } else {
+        document.querySelector('[data-theme="light"]').classList.add('active');
+      }
+    }
+
+    // Accent color selection
+    function selectAccent(color) {
+      document.querySelectorAll('.accent-color').forEach(c => c.classList.remove('active'));
+      document.querySelector(`[data-color="${color}"]`).classList.add('active');
+      localStorage.setItem('vsg-accent', color);
+      // In real app, this would update CSS custom properties
+    }
+
+    // Tab switching
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.tab;
+
+        document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Delete confirmation modal
+    function confirmDelete() {
+      document.getElementById('deleteModal').style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('deleteModal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        closeDeleteModal();
+      }
+    });
+
+    // Initialize theme options based on current state
+    updateThemeOptions();
+  </script>
+</body>
+</html>
