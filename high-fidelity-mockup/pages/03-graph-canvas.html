@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Visualization - Visual Social Graph</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      overflow: hidden;
+    }
+
+    .graph-layout {
+      display: flex;
+      height: calc(100vh - 72px);
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 300px;
+      background-color: var(--vsg-bg-secondary);
+      border-right: 1px solid var(--vsg-border-default);
+      overflow-y: auto;
+      padding: var(--spacing-6);
+      transition: transform var(--duration-moderate) var(--easing-ease-out);
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-6);
+    }
+
+    .filter-group {
+      margin-bottom: var(--spacing-8);
+    }
+
+    .filter-label {
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--spacing-3);
+      display: block;
+      color: var(--vsg-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .community-filters {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+    }
+
+    .community-checkbox {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .community-checkbox:hover {
+      background-color: var(--vsg-bg-tertiary);
+    }
+
+    .community-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    /* Main Canvas Area */
+    .canvas-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-color: var(--vsg-graph-bg);
+    }
+
+    #graph-canvas {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    #graph-canvas:active {
+      cursor: grabbing;
+    }
+
+    #graph-canvas svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      position: absolute;
+      bottom: var(--spacing-6);
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--vsg-bg-secondary);
+      border: 1px solid var(--vsg-border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-3);
+      display: flex;
+      gap: var(--spacing-2);
+      box-shadow: var(--shadow-3);
+      z-index: var(--z-index-fixed);
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background-color: transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--vsg-text-secondary);
+    }
+
+    .control-btn:hover {
+      background-color: var(--vsg-bg-tertiary);
+      color: var(--vsg-accent-primary);
+    }
+
+    .control-btn.active {
+      background-color: var(--vsg-accent-subtle);
+      color: var(--vsg-accent-primary);
+    }
+
+    .control-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Legend */
+    .legend {
+      position: absolute;
+      top: var(--spacing-6);
+      right: var(--spacing-6);
+      background-color: var(--vsg-bg-secondary);
+      border: 1px solid var(--vsg-border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-4);
+      box-shadow: var(--shadow-2);
+      max-width: 250px;
+    }
+
+    .legend-title {
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-3);
+      font-size: var(--font-size-sm);
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      font-size: var(--font-size-xs);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* Node Detail Panel */
+    .detail-panel {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 350px;
+      background-color: var(--vsg-bg-secondary);
+      border-left: 1px solid var(--vsg-border-default);
+      box-shadow: var(--shadow-4);
+      transform: translateX(100%);
+      transition: transform var(--duration-moderate) var(--easing-ease-out);
+      overflow-y: auto;
+      z-index: var(--z-index-fixed);
+      padding: var(--spacing-6);
+    }
+
+    .detail-panel.open {
+      transform: translateX(0);
+    }
+
+    .detail-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--spacing-6);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--vsg-text-secondary);
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+      transition: var(--transition-fast);
+    }
+
+    .close-btn:hover {
+      background-color: var(--vsg-bg-tertiary);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-4);
+      margin-top: var(--spacing-6);
+    }
+
+    .metric-card {
+      background-color: var(--vsg-bg-tertiary);
+      padding: var(--spacing-4);
+      border-radius: var(--radius-md);
+    }
+
+    .metric-value {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--vsg-accent-primary);
+    }
+
+    .metric-label {
+      font-size: var(--font-size-xs);
+      color: var(--vsg-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: var(--spacing-1);
+    }
+
+    /* Guided Reveal Overlay */
+    .guided-reveal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: var(--z-index-modal);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .guided-reveal.active {
+      display: flex;
+    }
+
+    .reveal-content {
+      background-color: var(--vsg-bg-secondary);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-8);
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .reveal-stage {
+      font-size: var(--font-size-sm);
+      color: var(--vsg-accent-primary);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-2);
+    }
+
+    .reveal-title {
+      font-size: var(--font-size-3xl);
+      margin-bottom: var(--spacing-4);
+    }
+
+    .reveal-description {
+      color: var(--vsg-text-secondary);
+      margin-bottom: var(--spacing-8);
+    }
+
+    .reveal-progress {
+      display: flex;
+      gap: var(--spacing-2);
+      justify-content: center;
+      margin-top: var(--spacing-6);
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--vsg-border-default);
+    }
+
+    .progress-dot.active {
+      background-color: var(--vsg-accent-primary);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1023px) {
+      .sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: var(--z-index-fixed);
+        box-shadow: var(--shadow-4);
+      }
+
+      .legend {
+        top: auto;
+        bottom: 80px;
+        right: var(--spacing-4);
+        left: var(--spacing-4);
+        max-width: none;
+      }
+
+      .controls-bar {
+        bottom: var(--spacing-4);
+        left: var(--spacing-4);
+        right: var(--spacing-4);
+        transform: none;
+        justify-content: space-around;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .sidebar {
+        width: 100%;
+      }
+
+      .detail-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="01-landing.html" class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>
+            <circle cx="5" cy="7" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="7" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="5" cy="17" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="17" r="2" fill="currentColor" stroke="none"/>
+            <path d="M12 12L5 7M12 12L19 7M12 12L5 17M12 12L19 17"/>
+          </svg>
+          <span style="display: none; font-size: 1rem;">VSG</span>
+          <span style="display: inline;">My Network</span>
+        </a>
+        <nav class="nav">
+          <a href="04-insights.html" class="nav-link">Insights</a>
+          <button class="btn btn-sm btn-secondary" id="export-btn">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/>
+            </svg>
+            Export
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="graph-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h3 style="font-size: var(--font-size-lg); margin: 0;">Filters</h3>
+        <button class="close-btn" id="close-sidebar" aria-label="Close sidebar">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Community Filters -->
+      <div class="filter-group">
+        <label class="filter-label">Communities</label>
+        <div class="community-filters">
+          <label class="community-checkbox">
+            <input type="checkbox" checked data-community="0">
+            <span class="community-color" style="background-color: var(--vsg-community-1);"></span>
+            <span>Tech Innovators</span>
+            <span class="ml-auto text-tertiary" style="margin-left: auto; font-size: var(--font-size-xs);">(10)</span>
+          </label>
+          <label class="community-checkbox">
+            <input type="checkbox" checked data-community="1">
+            <span class="community-color" style="background-color: var(--vsg-community-2);"></span>
+            <span>Creative Designers</span>
+            <span class="ml-auto text-tertiary" style="margin-left: auto; font-size: var(--font-size-xs);">(10)</span>
+          </label>
+          <label class="community-checkbox">
+            <input type="checkbox" checked data-community="2">
+            <span class="community-color" style="background-color: var(--vsg-community-3);"></span>
+            <span>Business Leaders</span>
+            <span class="ml-auto text-tertiary" style="margin-left: auto; font-size: var(--font-size-xs);">(10)</span>
+          </label>
+          <label class="community-checkbox">
+            <input type="checkbox" checked data-community="3">
+            <span class="community-color" style="background-color: var(--vsg-community-4);"></span>
+            <span>Marketing Experts</span>
+            <span class="ml-auto text-tertiary" style="margin-left: auto; font-size: var(--font-size-xs);">(10)</span>
+          </label>
+          <label class="community-checkbox">
+            <input type="checkbox" checked data-community="4">
+            <span class="community-color" style="background-color: var(--vsg-community-5);"></span>
+            <span>Data Scientists</span>
+            <span class="ml-auto text-tertiary" style="margin-left: auto; font-size: var(--font-size-xs);">(10)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Node Size Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Node Size</label>
+        <select class="input" id="node-size-metric">
+          <option value="betweenness">Betweenness Centrality</option>
+          <option value="pagerank">PageRank</option>
+          <option value="degree">Degree</option>
+        </select>
+      </div>
+
+      <!-- Edge Opacity Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Min Edge Weight</label>
+        <input type="range" min="0" max="1" step="0.1" value="0" id="edge-weight-slider" class="input" style="cursor: pointer;">
+        <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xs); color: var(--vsg-text-tertiary); margin-top: var(--spacing-2);">
+          <span>All</span>
+          <span>Strong only</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="filter-group">
+        <label class="filter-label">Network Stats</label>
+        <div style="background-color: var(--vsg-bg-tertiary); padding: var(--spacing-4); border-radius: var(--radius-md);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-2);">
+            <span style="font-size: var(--font-size-sm);">Nodes:</span>
+            <strong>50</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-2);">
+            <span style="font-size: var(--font-size-sm);">Edges:</span>
+            <strong>120</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-size: var(--font-size-sm);">Communities:</span>
+            <strong>5</strong>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Canvas Area -->
+    <div class="canvas-area">
+      <div id="graph-canvas"></div>
+
+      <!-- Controls Bar -->
+      <div class="controls-bar">
+        <button class="control-btn" id="toggle-sidebar-btn" title="Toggle Filters">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"/>
+          </svg>
+        </button>
+        <button class="control-btn" id="zoom-out-btn" title="Zoom Out">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+            <path fill-rule="evenodd" d="M5 8a1 1 0 011-1h4a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        <button class="control-btn" id="zoom-in-btn" title="Zoom In">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+            <path fill-rule="evenodd" d="M8 5a1 1 0 011 1v1h1a1 1 0 110 2H9v1a1 1 0 11-2 0V9H6a1 1 0 110-2h1V6a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        <button class="control-btn" id="fit-view-btn" title="Fit to View">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+          </svg>
+        </button>
+        <button class="control-btn" id="legend-btn" title="Toggle Legend">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend" id="legend">
+        <div class="legend-title">Communities</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="legend-dot" style="background-color: var(--vsg-community-1);"></div>
+            <span>Tech Innovators</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background-color: var(--vsg-community-2);"></div>
+            <span>Creative Designers</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background-color: var(--vsg-community-3);"></div>
+            <span>Business Leaders</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background-color: var(--vsg-community-4);"></div>
+            <span>Marketing Experts</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background-color: var(--vsg-community-5);"></div>
+            <span>Data Scientists</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Node Detail Panel -->
+      <div class="detail-panel" id="detail-panel">
+        <div class="detail-panel-header">
+          <div>
+            <h3 id="detail-name">Node Name</h3>
+            <div class="badge badge-info" id="detail-role">Role</div>
+          </div>
+          <button class="close-btn" id="close-detail-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-value" id="detail-betweenness">0.82</div>
+            <div class="metric-label">Betweenness</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="detail-pagerank">0.045</div>
+            <div class="metric-label">PageRank</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="detail-degree">12</div>
+            <div class="metric-label">Connections</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="detail-community">Tech</div>
+            <div class="metric-label">Community</div>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <h4 style="font-size: var(--font-size-sm); margin-bottom: var(--spacing-3);">Analysis</h4>
+          <p class="text-secondary" id="detail-analysis">Select a node to see detailed analysis.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guided Reveal Overlay -->
+  <div class="guided-reveal" id="guided-reveal">
+    <div class="reveal-content">
+      <div class="reveal-stage" id="reveal-stage">STAGE 1 OF 5</div>
+      <h2 class="reveal-title" id="reveal-title">Welcome to Your Network</h2>
+      <p class="reveal-description" id="reveal-description">
+        Let's explore your network together. We'll highlight key patterns and insights in 5 quick steps.
+      </p>
+      <div style="display: flex; gap: var(--spacing-3); justify-content: center;">
+        <button class="btn btn-secondary" id="skip-reveal-btn">Skip Tutorial</button>
+        <button class="btn btn-primary" id="next-reveal-btn">Next →</button>
+      </div>
+      <div class="reveal-progress">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Load demo network data
+    fetch('../data/demo-network.json')
+      .then(res => res.json())
+      .then(data => initializeGraph(data))
+      .catch(err => console.error('Error loading network data:', err));
+
+    let simulation, svg, g, nodes, edges;
+    let networkData;
+
+    const communityColors = [
+      getComputedStyle(document.documentElement).getPropertyValue('--vsg-community-1').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--vsg-community-2').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--vsg-community-3').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--vsg-community-4').trim(),
+      getComputedStyle(document.documentElement).getPropertyValue('--vsg-community-5').trim(),
+    ];
+
+    function initializeGraph(data) {
+      networkData = data;
+
+      const container = document.getElementById('graph-canvas');
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      svg = d3.select('#graph-canvas')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+      g = svg.append('g');
+
+      // Add zoom behavior
+      const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+          g.attr('transform', event.transform);
+        });
+
+      svg.call(zoom);
+
+      // Create simulation
+      simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(80))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(d => nodeRadius(d) + 5));
+
+      // Create edges
+      const link = g.append('g')
+        .selectAll('line')
+        .data(data.edges)
+        .enter().append('line')
+        .attr('stroke', getComputedStyle(document.documentElement).getPropertyValue('--vsg-graph-edge-default'))
+        .attr('stroke-width', d => d.weight * 2)
+        .attr('stroke-opacity', d => d.weight * 0.6);
+
+      // Create nodes
+      const node = g.append('g')
+        .selectAll('circle')
+        .data(data.nodes)
+        .enter().append('circle')
+        .attr('r', d => nodeRadius(d))
+        .attr('fill', d => communityColors[d.community])
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2)
+        .call(drag(simulation))
+        .on('click', (event, d) => showNodeDetail(d))
+        .on('mouseover', function() {
+          d3.select(this).attr('stroke-width', 3);
+        })
+        .on('mouseout', function() {
+          d3.select(this).attr('stroke-width', 2);
+        });
+
+      // Add labels for key nodes
+      const label = g.append('g')
+        .selectAll('text')
+        .data(data.nodes.filter(d => d.role === 'bridge' || d.role === 'influencer'))
+        .enter().append('text')
+        .text(d => d.name.split(' ')[0])
+        .attr('font-size', '10px')
+        .attr('fill', getComputedStyle(document.documentElement).getPropertyValue('--vsg-graph-label'))
+        .attr('text-anchor', 'middle')
+        .attr('dy', d => nodeRadius(d) + 15);
+
+      simulation.on('tick', () => {
+        link
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y);
+
+        node
+          .attr('cx', d => d.x)
+          .attr('cy', d => d.y);
+
+        label
+          .attr('x', d => d.x)
+          .attr('y', d => d.y);
+      });
+
+      nodes = node;
+      edges = link;
+
+      // Controls
+      document.getElementById('zoom-in-btn').onclick = () => {
+        svg.transition().call(zoom.scaleBy, 1.3);
+      };
+
+      document.getElementById('zoom-out-btn').onclick = () => {
+        svg.transition().call(zoom.scaleBy, 0.7);
+      };
+
+      document.getElementById('fit-view-btn').onclick = () => {
+        svg.transition().call(zoom.transform, d3.zoomIdentity);
+      };
+
+      // Check if first visit
+      if (!localStorage.getItem('guidedRevealComplete')) {
+        startGuidedReveal();
+      }
+    }
+
+    function nodeRadius(node) {
+      const min = 6, max = 20;
+      const normalized = node.betweenness;
+      return min + (normalized * (max - min));
+    }
+
+    function drag(simulation) {
+      function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+      }
+
+      function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+      }
+
+      function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+      }
+
+      return d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended);
+    }
+
+    function showNodeDetail(node) {
+      const panel = document.getElementById('detail-panel');
+      document.getElementById('detail-name').textContent = node.name;
+      document.getElementById('detail-role').textContent = node.role.toUpperCase();
+      document.getElementById('detail-betweenness').textContent = node.betweenness.toFixed(2);
+      document.getElementById('detail-pagerank').textContent = node.pagerank.toFixed(3);
+      document.getElementById('detail-degree').textContent = node.degree;
+      document.getElementById('detail-community').textContent = networkData.communities[node.community].name.split(' ')[0];
+
+      const analysis = node.role === 'bridge'
+        ? `${node.name} acts as a critical bridge, connecting different communities and facilitating information flow across the network.`
+        : node.role === 'influencer'
+        ? `${node.name} has high influence within their community, with strong connections to many members.`
+        : `${node.name} is a well-connected member of the ${networkData.communities[node.community].name} community.`;
+
+      document.getElementById('detail-analysis').textContent = analysis;
+      panel.classList.add('open');
+    }
+
+    document.getElementById('close-detail-btn').onclick = () => {
+      document.getElementById('detail-panel').classList.remove('open');
+    };
+
+    // Sidebar toggle
+    document.getElementById('toggle-sidebar-btn').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    };
+
+    document.getElementById('close-sidebar').onclick = () => {
+      document.getElementById('sidebar').classList.add('collapsed');
+    };
+
+    // Legend toggle
+    document.getElementById('legend-btn').onclick = () => {
+      const legend = document.getElementById('legend');
+      legend.style.display = legend.style.display === 'none' ? 'block' : 'none';
+    };
+
+    // Guided Reveal
+    const revealStages = [
+      { stage: 1, title: 'Welcome to Your Network', description: 'Let\'s explore your network together. We\'ll highlight key patterns and insights in 5 quick steps.' },
+      { stage: 2, title: 'These Are Your Communities', description: 'Your network has 5 distinct communities, each with different professional focuses.' },
+      { stage: 3, title: 'Key Influencers', description: 'Larger nodes represent people with higher betweenness centrality - they bridge different parts of your network.' },
+      { stage: 4, title: 'Bridge Connections', description: 'Notice the connections between communities? These are your bridge nodes - critical for information flow.' },
+      { stage: 5, title: 'Ready to Explore!', description: 'Click any node to see details. Use the controls to zoom, pan, and filter your network.' }
+    ];
+
+    let currentStage = 0;
+
+    function startGuidedReveal() {
+      document.getElementById('guided-reveal').classList.add('active');
+      updateRevealStage();
+    }
+
+    function updateRevealStage() {
+      const stage = revealStages[currentStage];
+      document.getElementById('reveal-stage').textContent = `STAGE ${stage.stage} OF 5`;
+      document.getElementById('reveal-title').textContent = stage.title;
+      document.getElementById('reveal-description').textContent = stage.description;
+
+      document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentStage);
+      });
+
+      if (currentStage === 4) {
+        document.getElementById('next-reveal-btn').textContent = 'Get Started';
+      }
+    }
+
+    document.getElementById('next-reveal-btn').onclick = () => {
+      currentStage++;
+      if (currentStage >= revealStages.length) {
+        document.getElementById('guided-reveal').classList.remove('active');
+        localStorage.setItem('guidedRevealComplete', 'true');
+      } else {
+        updateRevealStage();
+      }
+    };
+
+    document.getElementById('skip-reveal-btn').onclick = () => {
+      document.getElementById('guided-reveal').classList.remove('active');
+      localStorage.setItem('guidedRevealComplete', 'true');
+    };
+  </script>
+</body>
+</html>

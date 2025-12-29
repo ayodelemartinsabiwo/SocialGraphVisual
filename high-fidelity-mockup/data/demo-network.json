@@ -1,0 +1,296 @@
+{
+  "metadata": {
+    "platform": "LinkedIn",
+    "uploadDate": "2025-12-29",
+    "processingMode": "Standard",
+    "totalNodes": 50,
+    "totalEdges": 120,
+    "totalCommunities": 5,
+    "analysisVersion": "1.0.0"
+  },
+  "nodes": [
+    {"id": "n1", "name": "Alex Chen", "community": 0, "betweenness": 0.82, "pagerank": 0.045, "degree": 12, "role": "bridge"},
+    {"id": "n2", "name": "Maria Garcia", "community": 0, "betweenness": 0.65, "pagerank": 0.038, "degree": 10, "role": "influencer"},
+    {"id": "n3", "name": "James Wilson", "community": 0, "betweenness": 0.45, "pagerank": 0.028, "degree": 8, "role": "connector"},
+    {"id": "n4", "name": "Priya Sharma", "community": 0, "betweenness": 0.38, "pagerank": 0.025, "degree": 7, "role": "regular"},
+    {"id": "n5", "name": "Ahmed Hassan", "community": 0, "betweenness": 0.32, "pagerank": 0.022, "degree": 6, "role": "regular"},
+
+    {"id": "n6", "name": "Sophie Martin", "community": 1, "betweenness": 0.75, "pagerank": 0.042, "degree": 11, "role": "influencer"},
+    {"id": "n7", "name": "David Kim", "community": 1, "betweenness": 0.68, "pagerank": 0.035, "degree": 9, "role": "connector"},
+    {"id": "n8", "name": "Elena Rodriguez", "community": 1, "betweenness": 0.52, "pagerank": 0.030, "degree": 8, "role": "regular"},
+    {"id": "n9", "name": "Michael Brown", "community": 1, "betweenness": 0.42, "pagerank": 0.026, "degree": 7, "role": "regular"},
+    {"id": "n10", "name": "Yuki Tanaka", "community": 1, "betweenness": 0.35, "pagerank": 0.023, "degree": 6, "role": "regular"},
+
+    {"id": "n11", "name": "Sarah Johnson", "community": 2, "betweenness": 0.88, "pagerank": 0.048, "degree": 13, "role": "bridge"},
+    {"id": "n12", "name": "Carlos Mendoza", "community": 2, "betweenness": 0.72, "pagerank": 0.040, "degree": 10, "role": "influencer"},
+    {"id": "n13", "name": "Fatima Ali", "community": 2, "betweenness": 0.58, "pagerank": 0.032, "degree": 9, "role": "connector"},
+    {"id": "n14", "name": "Thomas Anderson", "community": 2, "betweenness": 0.48, "pagerank": 0.028, "degree": 7, "role": "regular"},
+    {"id": "n15", "name": "Lisa Wang", "community": 2, "betweenness": 0.40, "pagerank": 0.024, "degree": 6, "role": "regular"},
+
+    {"id": "n16", "name": "Omar Ibrahim", "community": 3, "betweenness": 0.78, "pagerank": 0.043, "degree": 11, "role": "influencer"},
+    {"id": "n17", "name": "Anna Kowalski", "community": 3, "betweenness": 0.62, "pagerank": 0.036, "degree": 9, "role": "connector"},
+    {"id": "n18", "name": "John Davis", "community": 3, "betweenness": 0.50, "pagerank": 0.029, "degree": 8, "role": "regular"},
+    {"id": "n19", "name": "Mei Lin", "community": 3, "betweenness": 0.44, "pagerank": 0.027, "degree": 7, "role": "regular"},
+    {"id": "n20", "name": "Roberto Silva", "community": 3, "betweenness": 0.36, "pagerank": 0.022, "degree": 6, "role": "regular"},
+
+    {"id": "n21", "name": "Emily Thompson", "community": 4, "betweenness": 0.80, "pagerank": 0.044, "degree": 12, "role": "bridge"},
+    {"id": "n22", "name": "Raj Patel", "community": 4, "betweenness": 0.66, "pagerank": 0.037, "degree": 10, "role": "influencer"},
+    {"id": "n23", "name": "Nina Petrov", "community": 4, "betweenness": 0.54, "pagerank": 0.031, "degree": 8, "role": "connector"},
+    {"id": "n24", "name": "Daniel Lee", "community": 4, "betweenness": 0.46, "pagerank": 0.027, "degree": 7, "role": "regular"},
+    {"id": "n25", "name": "Aisha Mohammed", "community": 4, "betweenness": 0.38, "pagerank": 0.023, "degree": 6, "role": "regular"},
+
+    {"id": "n26", "name": "Lucas Santos", "community": 0, "betweenness": 0.28, "pagerank": 0.020, "degree": 5, "role": "regular"},
+    {"id": "n27", "name": "Olivia Chang", "community": 0, "betweenness": 0.25, "pagerank": 0.019, "degree": 5, "role": "regular"},
+    {"id": "n28", "name": "Hassan Ahmed", "community": 1, "betweenness": 0.30, "pagerank": 0.021, "degree": 5, "role": "regular"},
+    {"id": "n29", "name": "Isabella Rossi", "community": 1, "betweenness": 0.26, "pagerank": 0.019, "degree": 5, "role": "regular"},
+    {"id": "n30", "name": "Kevin O'Brien", "community": 2, "betweenness": 0.34, "pagerank": 0.022, "degree": 6, "role": "regular"},
+
+    {"id": "n31", "name": "Sophia Mueller", "community": 2, "betweenness": 0.31, "pagerank": 0.020, "degree": 5, "role": "regular"},
+    {"id": "n32", "name": "Diego Fernandez", "community": 3, "betweenness": 0.33, "pagerank": 0.021, "degree": 5, "role": "regular"},
+    {"id": "n33", "name": "Anastasia Ivanov", "community": 3, "betweenness": 0.29, "pagerank": 0.020, "degree": 5, "role": "regular"},
+    {"id": "n34", "name": "Marcus Johnson", "community": 4, "betweenness": 0.35, "pagerank": 0.022, "degree": 6, "role": "regular"},
+    {"id": "n35", "name": "Leila Aziz", "community": 4, "betweenness": 0.27, "pagerank": 0.019, "degree": 5, "role": "regular"},
+
+    {"id": "n36", "name": "William Taylor", "community": 0, "betweenness": 0.22, "pagerank": 0.018, "degree": 4, "role": "regular"},
+    {"id": "n37", "name": "Zara Khan", "community": 1, "betweenness": 0.24, "pagerank": 0.018, "degree": 4, "role": "regular"},
+    {"id": "n38", "name": "Gabriel Costa", "community": 2, "betweenness": 0.26, "pagerank": 0.019, "degree": 5, "role": "regular"},
+    {"id": "n39", "name": "Nora Schmidt", "community": 3, "betweenness": 0.23, "pagerank": 0.018, "degree": 4, "role": "regular"},
+    {"id": "n40", "name": "Ryan Mitchell", "community": 4, "betweenness": 0.25, "pagerank": 0.018, "degree": 4, "role": "regular"},
+
+    {"id": "n41", "name": "Amara Okafor", "community": 0, "betweenness": 0.20, "pagerank": 0.017, "degree": 4, "role": "regular"},
+    {"id": "n42", "name": "Pierre Dubois", "community": 1, "betweenness": 0.21, "pagerank": 0.017, "degree": 4, "role": "regular"},
+    {"id": "n43", "name": "Jasmine Patel", "community": 2, "betweenness": 0.19, "pagerank": 0.016, "degree": 3, "role": "regular"},
+    {"id": "n44", "name": "Erik Larsson", "community": 3, "betweenness": 0.18, "pagerank": 0.016, "degree": 3, "role": "regular"},
+    {"id": "n45", "name": "Maya Gupta", "community": 4, "betweenness": 0.17, "pagerank": 0.015, "degree": 3, "role": "regular"},
+
+    {"id": "n46", "name": "Antonio Lopez", "community": 0, "betweenness": 0.16, "pagerank": 0.015, "degree": 3, "role": "regular"},
+    {"id": "n47", "name": "Freya Nielsen", "community": 1, "betweenness": 0.15, "pagerank": 0.014, "degree": 3, "role": "regular"},
+    {"id": "n48", "name": "Kai Zhang", "community": 2, "betweenness": 0.14, "pagerank": 0.014, "degree": 3, "role": "regular"},
+    {"id": "n49", "name": "Sasha Volkov", "community": 3, "betweenness": 0.13, "pagerank": 0.013, "degree": 2, "role": "regular"},
+    {"id": "n50", "name": "Isabelle Moreau", "community": 4, "betweenness": 0.12, "pagerank": 0.012, "degree": 2, "role": "regular"}
+  ],
+  "edges": [
+    {"source": "n1", "target": "n2", "weight": 0.9},
+    {"source": "n1", "target": "n3", "weight": 0.8},
+    {"source": "n1", "target": "n6", "weight": 0.7},
+    {"source": "n1", "target": "n11", "weight": 0.85},
+    {"source": "n2", "target": "n3", "weight": 0.75},
+    {"source": "n2", "target": "n4", "weight": 0.6},
+    {"source": "n3", "target": "n4", "weight": 0.65},
+    {"source": "n3", "target": "n5", "weight": 0.55},
+    {"source": "n4", "target": "n5", "weight": 0.7},
+    {"source": "n4", "target": "n26", "weight": 0.5},
+
+    {"source": "n6", "target": "n7", "weight": 0.88},
+    {"source": "n6", "target": "n8", "weight": 0.78},
+    {"source": "n6", "target": "n1", "weight": 0.7},
+    {"source": "n7", "target": "n8", "weight": 0.72},
+    {"source": "n7", "target": "n9", "weight": 0.62},
+    {"source": "n8", "target": "n9", "weight": 0.68},
+    {"source": "n8", "target": "n10", "weight": 0.58},
+    {"source": "n9", "target": "n10", "weight": 0.64},
+    {"source": "n10", "target": "n28", "weight": 0.52},
+
+    {"source": "n11", "target": "n12", "weight": 0.92},
+    {"source": "n11", "target": "n13", "weight": 0.82},
+    {"source": "n11", "target": "n1", "weight": 0.85},
+    {"source": "n11", "target": "n21", "weight": 0.75},
+    {"source": "n12", "target": "n13", "weight": 0.76},
+    {"source": "n12", "target": "n14", "weight": 0.66},
+    {"source": "n13", "target": "n14", "weight": 0.70},
+    {"source": "n13", "target": "n15", "weight": 0.60},
+    {"source": "n14", "target": "n15", "weight": 0.65},
+    {"source": "n15", "target": "n30", "weight": 0.54},
+
+    {"source": "n16", "target": "n17", "weight": 0.86},
+    {"source": "n16", "target": "n18", "weight": 0.76},
+    {"source": "n17", "target": "n18", "weight": 0.74},
+    {"source": "n17", "target": "n19", "weight": 0.64},
+    {"source": "n18", "target": "n19", "weight": 0.68},
+    {"source": "n18", "target": "n20", "weight": 0.58},
+    {"source": "n19", "target": "n20", "weight": 0.62},
+    {"source": "n20", "target": "n32", "weight": 0.50},
+
+    {"source": "n21", "target": "n22", "weight": 0.90},
+    {"source": "n21", "target": "n23", "weight": 0.80},
+    {"source": "n21", "target": "n11", "weight": 0.75},
+    {"source": "n22", "target": "n23", "weight": 0.74},
+    {"source": "n22", "target": "n24", "weight": 0.64},
+    {"source": "n23", "target": "n24", "weight": 0.70},
+    {"source": "n23", "target": "n25", "weight": 0.60},
+    {"source": "n24", "target": "n25", "weight": 0.66},
+    {"source": "n25", "target": "n34", "weight": 0.55},
+
+    {"source": "n26", "target": "n27", "weight": 0.48},
+    {"source": "n27", "target": "n36", "weight": 0.45},
+    {"source": "n28", "target": "n29", "weight": 0.50},
+    {"source": "n29", "target": "n37", "weight": 0.46},
+    {"source": "n30", "target": "n31", "weight": 0.52},
+    {"source": "n31", "target": "n38", "weight": 0.47},
+    {"source": "n32", "target": "n33", "weight": 0.49},
+    {"source": "n33", "target": "n39", "weight": 0.44},
+    {"source": "n34", "target": "n35", "weight": 0.53},
+    {"source": "n35", "target": "n40", "weight": 0.48},
+
+    {"source": "n36", "target": "n41", "weight": 0.42},
+    {"source": "n37", "target": "n42", "weight": 0.43},
+    {"source": "n38", "target": "n43", "weight": 0.44},
+    {"source": "n39", "target": "n44", "weight": 0.40},
+    {"source": "n40", "target": "n45", "weight": 0.41},
+
+    {"source": "n41", "target": "n46", "weight": 0.38},
+    {"source": "n42", "target": "n47", "weight": 0.39},
+    {"source": "n43", "target": "n48", "weight": 0.36},
+    {"source": "n44", "target": "n49", "weight": 0.35},
+    {"source": "n45", "target": "n50", "weight": 0.37},
+
+    {"source": "n1", "target": "n16", "weight": 0.65},
+    {"source": "n6", "target": "n11", "weight": 0.68},
+    {"source": "n11", "target": "n16", "weight": 0.72},
+    {"source": "n6", "target": "n21", "weight": 0.62},
+    {"source": "n16", "target": "n21", "weight": 0.67},
+
+    {"source": "n5", "target": "n26", "weight": 0.45},
+    {"source": "n10", "target": "n29", "weight": 0.47},
+    {"source": "n15", "target": "n31", "weight": 0.49},
+    {"source": "n20", "target": "n33", "weight": 0.43},
+    {"source": "n25", "target": "n35", "weight": 0.51},
+
+    {"source": "n26", "target": "n41", "weight": 0.40},
+    {"source": "n28", "target": "n42", "weight": 0.41},
+    {"source": "n30", "target": "n43", "weight": 0.42},
+    {"source": "n32", "target": "n44", "weight": 0.38},
+    {"source": "n34", "target": "n45", "weight": 0.44},
+
+    {"source": "n2", "target": "n7", "weight": 0.55},
+    {"source": "n3", "target": "n12", "weight": 0.58},
+    {"source": "n7", "target": "n17", "weight": 0.60},
+    {"source": "n12", "target": "n22", "weight": 0.63},
+    {"source": "n17", "target": "n22", "weight": 0.56},
+
+    {"source": "n4", "target": "n8", "weight": 0.48},
+    {"source": "n9", "target": "n13", "weight": 0.50},
+    {"source": "n14", "target": "n18", "weight": 0.52},
+    {"source": "n19", "target": "n23", "weight": 0.54},
+    {"source": "n24", "target": "n19", "weight": 0.47},
+
+    {"source": "n5", "target": "n10", "weight": 0.44},
+    {"source": "n10", "target": "n15", "weight": 0.46},
+    {"source": "n15", "target": "n20", "weight": 0.48},
+    {"source": "n20", "target": "n25", "weight": 0.50},
+    {"source": "n25", "target": "n5", "weight": 0.42},
+
+    {"source": "n27", "target": "n46", "weight": 0.36},
+    {"source": "n29", "target": "n47", "weight": 0.37},
+    {"source": "n31", "target": "n48", "weight": 0.35},
+    {"source": "n33", "target": "n49", "weight": 0.33},
+    {"source": "n35", "target": "n50", "weight": 0.34},
+
+    {"source": "n36", "target": "n37", "weight": 0.38},
+    {"source": "n37", "target": "n38", "weight": 0.39},
+    {"source": "n38", "target": "n39", "weight": 0.37},
+    {"source": "n39", "target": "n40", "weight": 0.36},
+    {"source": "n40", "target": "n36", "weight": 0.35},
+
+    {"source": "n41", "target": "n42", "weight": 0.32},
+    {"source": "n42", "target": "n43", "weight": 0.33},
+    {"source": "n43", "target": "n44", "weight": 0.31},
+    {"source": "n44", "target": "n45", "weight": 0.30},
+    {"source": "n45", "target": "n41", "weight": 0.29},
+
+    {"source": "n46", "target": "n47", "weight": 0.28},
+    {"source": "n47", "target": "n48", "weight": 0.29},
+    {"source": "n48", "target": "n49", "weight": 0.27},
+    {"source": "n49", "target": "n50", "weight": 0.26},
+    {"source": "n50", "target": "n46", "weight": 0.25}
+  ],
+  "communities": [
+    {
+      "id": 0,
+      "name": "Tech Innovators",
+      "size": 10,
+      "description": "Professionals in software development, AI, and emerging technologies",
+      "color": "#F97316"
+    },
+    {
+      "id": 1,
+      "name": "Creative Designers",
+      "size": 10,
+      "description": "UX/UI designers, graphic artists, and creative professionals",
+      "color": "#3B82F6"
+    },
+    {
+      "id": 2,
+      "name": "Business Leaders",
+      "size": 10,
+      "description": "Executives, entrepreneurs, and business strategists",
+      "color": "#10B981"
+    },
+    {
+      "id": 3,
+      "name": "Marketing Experts",
+      "size": 10,
+      "description": "Digital marketers, content creators, and brand strategists",
+      "color": "#8B5CF6"
+    },
+    {
+      "id": 4,
+      "name": "Data Scientists",
+      "size": 10,
+      "description": "Data analysts, researchers, and quantitative professionals",
+      "color": "#EC4899"
+    }
+  ],
+  "insights": [
+    {
+      "id": "ins1",
+      "type": "bridge",
+      "title": "Alex Chen Bridges Tech and Business Communities",
+      "description": "Alex Chen (betweenness: 0.82) serves as a critical bridge between the Tech Innovators and Business Leaders communities, facilitating knowledge exchange.",
+      "confidence": "high",
+      "actionable": "Leverage Alex for cross-functional initiatives between tech and business teams.",
+      "metric": "Betweenness Centrality",
+      "value": 0.82
+    },
+    {
+      "id": "ins2",
+      "type": "influencer",
+      "title": "Sarah Johnson Is a Key Network Influencer",
+      "description": "Sarah Johnson (PageRank: 0.048) has the highest influence score, indicating significant reach within the Business Leaders community.",
+      "confidence": "high",
+      "actionable": "Prioritize Sarah for thought leadership content and network expansion efforts.",
+      "metric": "PageRank",
+      "value": 0.048
+    },
+    {
+      "id": "ins3",
+      "type": "community",
+      "title": "5 Distinct Professional Communities Detected",
+      "description": "Network analysis reveals 5 well-defined communities: Tech Innovators, Creative Designers, Business Leaders, Marketing Experts, and Data Scientists.",
+      "confidence": "high",
+      "actionable": "Tailor content strategy to each community's interests and engage community leaders.",
+      "metric": "Community Detection",
+      "value": 5
+    },
+    {
+      "id": "ins4",
+      "type": "opportunity",
+      "title": "Weak Connection Between Designers and Data Scientists",
+      "description": "Limited connections exist between Creative Designers and Data Scientists communities, representing an opportunity for cross-pollination.",
+      "confidence": "medium",
+      "actionable": "Host events or create content that brings designers and data scientists together.",
+      "metric": "Inter-community Density",
+      "value": 0.12
+    },
+    {
+      "id": "ins5",
+      "type": "growth",
+      "title": "Business Leaders Community Shows Highest Growth Potential",
+      "description": "The Business Leaders community has the most bridge connections (3), indicating high growth and expansion potential.",
+      "confidence": "medium",
+      "actionable": "Focus networking efforts on expanding within the Business Leaders community.",
+      "metric": "Bridge Connections",
+      "value": 3
+    }
+  ]
+}

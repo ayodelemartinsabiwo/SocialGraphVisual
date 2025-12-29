@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Your Network - Visual Social Graph</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  <style>
+    .upload-container {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-12) 0;
+    }
+
+    .upload-wizard {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .wizard-header {
+      text-align: center;
+      margin-bottom: var(--spacing-12);
+    }
+
+    .wizard-steps {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-8);
+      margin-bottom: var(--spacing-16);
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      color: var(--vsg-text-tertiary);
+      font-size: var(--font-size-sm);
+    }
+
+    .step.active {
+      color: var(--vsg-accent-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .step.completed {
+      color: var(--vsg-color-success);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--vsg-bg-tertiary);
+      border: 2px solid var(--vsg-border-default);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .step.active .step-number {
+      background-color: var(--vsg-accent-primary);
+      border-color: var(--vsg-accent-primary);
+      color: white;
+    }
+
+    .step.completed .step-number {
+      background-color: var(--vsg-color-success);
+      border-color: var(--vsg-color-success);
+      color: white;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--spacing-4);
+      margin-bottom: var(--spacing-8);
+    }
+
+    .platform-card {
+      background-color: var(--vsg-bg-secondary);
+      border: 2px solid var(--vsg-border-default);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+      min-height: var(--touch-target-min);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-2);
+    }
+
+    .platform-card:hover {
+      border-color: var(--vsg-accent-primary);
+      box-shadow: var(--shadow-2);
+    }
+
+    .platform-card.selected {
+      border-color: var(--vsg-accent-primary);
+      background-color: var(--vsg-accent-subtle);
+    }
+
+    .platform-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: var(--spacing-2);
+    }
+
+    .upload-zone {
+      background-color: var(--vsg-bg-secondary);
+      border: 2px dashed var(--vsg-border-strong);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-16);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      border-color: var(--vsg-accent-primary);
+      background-color: var(--vsg-accent-subtle);
+    }
+
+    .upload-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--spacing-6);
+      color: var(--vsg-accent-primary);
+    }
+
+    .upload-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .progress-container {
+      background-color: var(--vsg-bg-secondary);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-12);
+      text-align: center;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: var(--vsg-bg-tertiary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      margin: var(--spacing-6) 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--vsg-accent-primary), var(--vsg-accent-hover));
+      border-radius: var(--radius-full);
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-stages {
+      margin-top: var(--spacing-8);
+      text-align: left;
+    }
+
+    .progress-stage {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+      padding: var(--spacing-3);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--spacing-2);
+      color: var(--vsg-text-tertiary);
+    }
+
+    .progress-stage.active {
+      background-color: var(--vsg-accent-subtle);
+      color: var(--vsg-accent-text);
+    }
+
+    .progress-stage.completed {
+      color: var(--vsg-color-success);
+    }
+
+    .stage-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .success-container {
+      background-color: var(--vsg-bg-secondary);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-12);
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--spacing-6);
+      color: var(--vsg-color-success);
+    }
+
+    .success-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 767px) {
+      .wizard-steps {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-4);
+      }
+
+      .platform-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="01-landing.html" class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>
+            <circle cx="5" cy="7" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="7" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="5" cy="17" r="2" fill="currentColor" stroke="none"/>
+            <circle cx="19" cy="17" r="2" fill="currentColor" stroke="none"/>
+            <path d="M12 12L5 7M12 12L19 7M12 12L5 17M12 12L19 17"/>
+          </svg>
+          Visual Social Graph
+        </a>
+        <nav class="nav">
+          <a href="01-landing.html" class="nav-link">← Back to Home</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="upload-container">
+    <div class="container">
+      <div class="upload-wizard">
+        <!-- Wizard Header -->
+        <div class="wizard-header">
+          <h1>Upload Your Network Data</h1>
+          <p class="text-secondary">We'll analyze your connections in under 60 seconds. Privacy-first, no social platform access required.</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="wizard-steps">
+          <div class="step active" id="step-1">
+            <div class="step-number">1</div>
+            <span>Choose Platform</span>
+          </div>
+          <div class="step" id="step-2">
+            <div class="step-number">2</div>
+            <span>Upload Data</span>
+          </div>
+          <div class="step" id="step-3">
+            <div class="step-number">3</div>
+            <span>Processing</span>
+          </div>
+          <div class="step" id="step-4">
+            <div class="step-number">4</div>
+            <span>Complete</span>
+          </div>
+        </div>
+
+        <!-- Step 1: Platform Selection -->
+        <div id="platform-selection" class="card">
+          <h3 class="mb-6">Select Your Social Platform</h3>
+          <div class="platform-grid">
+            <div class="platform-card" data-platform="linkedin">
+              <div class="platform-icon">
+                <svg viewBox="0 0 48 48" fill="#0A66C2">
+                  <path d="M44.45 0H3.55A3.5 3.5 0 0 0 0 3.46v41.08A3.5 3.5 0 0 0 3.54 48h40.91A3.51 3.51 0 0 0 48 44.54V3.46A3.5 3.5 0 0 0 44.45 0zM14.18 40.86H7.09V18h7.09zm-3.55-25.94a4.11 4.11 0 1 1 0-8.22 4.11 4.11 0 0 1 0 8.22zm30.23 25.94h-7.09V29.73c0-2.65-.05-6.06-3.69-6.06-3.7 0-4.26 2.89-4.26 5.87v11.32h-7.09V18h6.81v3.12h.1a7.48 7.48 0 0 1 6.73-3.69c7.2 0 8.53 4.74 8.53 10.91z"/>
+                </svg>
+              </div>
+              <strong>LinkedIn</strong>
+            </div>
+
+            <div class="platform-card" data-platform="twitter">
+              <div class="platform-icon">
+                <svg viewBox="0 0 48 48" fill="#1DA1F2">
+                  <path d="M42 12.42a15.84 15.84 0 0 1-4.57 1.25 8 8 0 0 0 3.5-4.4 16 16 0 0 1-5.06 1.93 8 8 0 0 0-13.6 7.27A22.6 22.6 0 0 1 6 10.56a8 8 0 0 0 2.46 10.64 7.93 7.93 0 0 1-3.6-1v.1a8 8 0 0 0 6.4 7.83 8 8 0 0 1-3.6.14 8 8 0 0 0 7.46 5.54A16 16 0 0 1 4.42 37a16.4 16.4 0 0 1-1.9-.11 22.5 22.5 0 0 0 12.21 3.58c14.65 0 22.66-12.14 22.66-22.66 0-.35 0-.69-.02-1a16.2 16.2 0 0 0 3.97-4.12z"/>
+                </svg>
+              </div>
+              <strong>Twitter</strong>
+            </div>
+
+            <div class="platform-card" data-platform="instagram">
+              <div class="platform-icon">
+                <svg viewBox="0 0 48 48" fill="url(#instagram-gradient)">
+                  <defs>
+                    <linearGradient id="instagram-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#833AB4"/>
+                      <stop offset="50%" style="stop-color:#FD1D1D"/>
+                      <stop offset="100%" style="stop-color:#FCAF45"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M24 4.32c6.41 0 7.17.03 9.7.14 2.34.11 3.61.5 4.46.83 1.12.43 1.92.95 2.76 1.8.85.84 1.37 1.64 1.8 2.76.33.85.72 2.12.83 4.46.11 2.53.14 3.29.14 9.7s-.03 7.17-.14 9.7c-.11 2.34-.5 3.61-.83 4.46-.43 1.12-.95 1.92-1.8 2.76-.84.85-1.64 1.37-2.76 1.8-.85.33-2.12.72-4.46.83-2.53.11-3.29.14-9.7.14s-7.17-.03-9.7-.14c-2.34-.11-3.61-.5-4.46-.83-1.12-.43-1.92-.95-2.76-1.8-.85-.84-1.37-1.64-1.8-2.76-.33-.85-.72-2.12-.83-4.46-.11-2.53-.14-3.29-.14-9.7s.03-7.17.14-9.7c.11-2.34.5-3.61.83-4.46.43-1.12.95-1.92 1.8-2.76.84-.85 1.64-1.37 2.76-1.8.85-.33 2.12-.72 4.46-.83 2.53-.11 3.29-.14 9.7-.14M24 0c-6.52 0-7.33.03-9.89.14-2.55.12-4.3.53-5.82 1.13a11.76 11.76 0 0 0-4.25 2.77 11.76 11.76 0 0 0-2.77 4.25c-.6 1.52-1.01 3.27-1.13 5.82C.03 16.67 0 17.48 0 24s.03 7.33.14 9.89c.12 2.55.53 4.3 1.13 5.82a11.76 11.76 0 0 0 2.77 4.25 11.76 11.76 0 0 0 4.25 2.77c1.52.6 3.27 1.01 5.82 1.13 2.56.11 3.37.14 9.89.14s7.33-.03 9.89-.14c2.55-.12 4.3-.53 5.82-1.13a11.76 11.76 0 0 0 4.25-2.77 11.76 11.76 0 0 0 2.77-4.25c.6-1.52 1.01-3.27 1.13-5.82.11-2.56.14-3.37.14-9.89s-.03-7.33-.14-9.89c-.12-2.55-.53-4.3-1.13-5.82a11.76 11.76 0 0 0-2.77-4.25 11.76 11.76 0 0 0-4.25-2.77c-1.52-.6-3.27-1.01-5.82-1.13C31.33.03 30.52 0 24 0z"/>
+                  <path d="M24 11.67a12.33 12.33 0 1 0 0 24.66 12.33 12.33 0 0 0 0-24.66zM24 32a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm15.34-20.67a2.88 2.88 0 1 1-5.76 0 2.88 2.88 0 0 1 5.76 0z"/>
+                </svg>
+              </div>
+              <strong>Instagram</strong>
+            </div>
+
+            <div class="platform-card" data-platform="facebook">
+              <div class="platform-icon">
+                <svg viewBox="0 0 48 48" fill="#1877F2">
+                  <path d="M48 24C48 10.75 37.25 0 24 0S0 10.75 0 24c0 11.98 8.77 21.91 20.25 23.72V30.94h-6.09V24h6.09v-5.29c0-6.01 3.58-9.33 9.06-9.33 2.62 0 5.37.47 5.37.47v5.91h-3.03c-2.98 0-3.91 1.85-3.91 3.75V24h6.66l-1.07 6.94h-5.59v16.78C39.23 45.91 48 35.98 48 24z"/>
+                </svg>
+              </div>
+              <strong>Facebook</strong>
+            </div>
+          </div>
+
+          <div class="mt-8" style="text-align: center;">
+            <button class="btn btn-primary btn-lg" id="continue-to-upload" disabled>
+              Continue to Upload
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Upload Zone -->
+        <div id="upload-section" class="card" style="display: none;">
+          <h3 class="mb-4">Upload Your Data File</h3>
+          <p class="text-secondary mb-8">Accepted formats: ZIP (recommended), CSV, JSON • Max size: 2GB</p>
+
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+            </div>
+            <h4>Drag & Drop Your File Here</h4>
+            <p class="text-secondary mt-2">or click to browse</p>
+            <input type="file" id="file-input" accept=".zip,.csv,.json" style="display: none;">
+          </div>
+
+          <div class="mt-8" style="background-color: var(--vsg-color-info-light); padding: var(--spacing-4); border-radius: var(--radius-md); border-left: 4px solid var(--vsg-color-info);">
+            <strong style="color: var(--vsg-color-info-dark);">Privacy Note:</strong>
+            <span style="color: var(--vsg-color-info-dark);"> 80% of processing happens locally in your browser. Your data is encrypted during transfer.</span>
+          </div>
+        </div>
+
+        <!-- Step 3: Processing -->
+        <div id="processing-section" class="progress-container" style="display: none;">
+          <div class="spinner" style="margin: 0 auto var(--spacing-6);"></div>
+          <h3>Analyzing Your Network...</h3>
+          <p class="text-secondary mb-6">This usually takes 30-60 seconds</p>
+
+          <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+
+          <div class="progress-stages">
+            <div class="progress-stage" id="stage-1">
+              <div class="stage-icon">⏳</div>
+              <span>Parsing connections...</span>
+            </div>
+            <div class="progress-stage" id="stage-2">
+              <div class="stage-icon">📊</div>
+              <span>Calculating graph metrics...</span>
+            </div>
+            <div class="progress-stage" id="stage-3">
+              <div class="stage-icon">🔍</div>
+              <span>Detecting communities...</span>
+            </div>
+            <div class="progress-stage" id="stage-4">
+              <div class="stage-icon">✨</div>
+              <span>Generating insights...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div id="success-section" class="success-container" style="display: none;">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+          </div>
+          <h2>Analysis Complete!</h2>
+          <p class="text-secondary mb-8">We've identified <strong id="network-stats">50 connections, 5 communities, and 12 insights</strong> in your network.</p>
+
+          <div style="display: flex; gap: var(--spacing-4); justify-content: center; flex-wrap: wrap;">
+            <a href="03-graph-canvas.html" class="btn btn-primary btn-lg">
+              Explore Your Network
+            </a>
+            <a href="04-insights.html" class="btn btn-secondary btn-lg">
+              View Insights
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedPlatform = null;
+
+    // Platform selection
+    document.querySelectorAll('.platform-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.platform-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedPlatform = card.dataset.platform;
+        document.getElementById('continue-to-upload').disabled = false;
+      });
+    });
+
+    // Continue to upload
+    document.getElementById('continue-to-upload').addEventListener('click', () => {
+      document.getElementById('platform-selection').style.display = 'none';
+      document.getElementById('upload-section').style.display = 'block';
+      updateStep(2);
+    });
+
+    // Upload zone functionality
+    const uploadZone = document.getElementById('upload-zone');
+    const fileInput = document.getElementById('file-input');
+
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('drag-over');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('drag-over');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+      if (!file) return;
+
+      // Simulate file processing
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('processing-section').style.display = 'block';
+      updateStep(3);
+
+      simulateProcessing();
+    }
+
+    function simulateProcessing() {
+      let progress = 0;
+      const stages = ['stage-1', 'stage-2', 'stage-3', 'stage-4'];
+      let currentStage = 0;
+
+      const interval = setInterval(() => {
+        progress += Math.random() * 10;
+
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+
+          setTimeout(() => {
+            document.getElementById('processing-section').style.display = 'none';
+            document.getElementById('success-section').style.display = 'block';
+            updateStep(4);
+          }, 500);
+        }
+
+        document.getElementById('progress-bar').style.width = progress + '%';
+
+        // Update active stage
+        const newStage = Math.floor((progress / 100) * stages.length);
+        if (newStage !== currentStage && newStage < stages.length) {
+          if (currentStage < stages.length) {
+            document.getElementById(stages[currentStage]).classList.add('completed');
+            document.getElementById(stages[currentStage]).classList.remove('active');
+          }
+          document.getElementById(stages[newStage]).classList.add('active');
+          currentStage = newStage;
+        }
+      }, 300);
+    }
+
+    function updateStep(stepNumber) {
+      document.querySelectorAll('.step').forEach((step, index) => {
+        const num = index + 1;
+        step.classList.remove('active', 'completed');
+        if (num < stepNumber) step.classList.add('completed');
+        if (num === stepNumber) step.classList.add('active');
+      });
+    }
+  </script>
+</body>
+</html>
