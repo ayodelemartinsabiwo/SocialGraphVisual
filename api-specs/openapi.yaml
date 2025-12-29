@@ -1,0 +1,3413 @@
+openapi: 3.1.0
+
+info:
+  title: Visual Social Graph API
+  version: 1.0.0
+  description: |
+    Privacy-first social network analysis API for Visual Social Graph platform.
+
+    **Core Principles:**
+    - Algorithm-first, deterministic intelligence (no external AI dependencies)
+    - Privacy-first data model (HMAC-SHA256 pseudonymization, server-side only)
+    - Graceful degradation with partial success support
+
+    **Privacy Guarantees:**
+    - Server NEVER persists display names/usernames (client-only labels in IndexedDB)
+    - All node IDs pseudonymized using HMAC-SHA256 with per-user server-held secret keys
+    - Timestamps use day-level granularity (YYYY-MM-DD) to prevent temporal correlation
+    - GDPR-compliant dual deletion modes (soft/hard with 30-day grace period)
+
+    **Authentication:**
+    - Primary: Cookie-based JWT sessions with CSRF double-submit tokens
+    - Alternative: Bearer token authentication for Creator tier programmatic access
+
+    **Rate Limiting:**
+    - Per-tier quotas (Free/Pro/Creator) with rate limit headers on all responses
+    - Token bucket algorithm with burst traffic support
+
+    **Performance:**
+    - <500ms p95 latency for read operations
+    - Redis caching (15-min TTL for graphs, 1-hour for insights)
+    - Auto-scaling with horizontal/vertical strategies
+
+  contact:
+    name: Visual Social Graph API Support
+    email: api-support@visualsocialgraph.com
+    url: https://visualsocialgraph.com/support
+
+  license:
+    name: Proprietary
+    url: https://visualsocialgraph.com/terms
+
+servers:
+  - url: https://api.visualsocialgraph.com/api/v1
+    description: Production server
+  - url: https://staging-api.visualsocialgraph.com/api/v1
+    description: Staging environment
+  - url: http://localhost:3000/api/v1
+    description: Local development
+
+tags:
+  - name: Authentication
+    description: |
+      Magic-link and OAuth authentication endpoints for session management.
+
+      **Methods:**
+      - Magic link (email-based, one-time tokens)
+      - Google OAuth (for VSG authentication only, not platform data access)
+
+      **Session Management:**
+      - Cookie-based JWT (httpOnly, Secure, SameSite=Lax)
+      - 24-hour session lifetime
+      - CSRF protection via double-submit tokens
+
+  - name: Graphs
+    description: |
+      Graph snapshot creation, retrieval, and management.
+
+      **Standard Mode (Server-Side Pseudonymization):**
+      - Client sends original platform user IDs (externalId field)
+      - Server pseudonymizes IDs at ingestion boundary using HMAC-SHA256
+      - Server returns pseudonym mapping for client label storage
+      - Server persists only pseudonymized graph structure
+
+      **Privacy:**
+      - All node IDs pseudonymized (HMAC-SHA256, server-side only)
+      - Original IDs transiently processed, never persisted
+      - Display names/usernames NOT persisted (client-only labels)
+      - Day-level timestamp granularity (YYYY-MM-DD)
+
+      **Deletion:**
+      - Soft delete (default, 30-day grace period with restore)
+      - Hard delete (immediate, GDPR-compliant, irreversible)
+
+  - name: Uploads
+    description: |
+      Resumable file uploads for server-side fallback processing (opt-in only).
+
+      **Protocol:** Tus (resumable uploads)
+      **Use Case:** When client-side processing fails or user opts for server processing
+      **Lifecycle:** Upload → Parse → Build Graph → Persist → Delete Raw ZIP
+      **Retention:** Raw archives deleted immediately after processing (7 days if failed)
+
+  - name: Insights
+    description: |
+      Deterministic, algorithm-based insight generation.
+
+      **Categories:**
+      - Network structure (communities, clusters)
+      - Influence (bridge accounts, key connectors)
+      - Engagement (interaction patterns)
+      - Growth (temporal trends)
+      - Diversity (echo chamber detection)
+      - Anomalies (outlier detection)
+
+      **Caching:**
+      - 1-hour TTL for insights (deterministic outputs)
+      - Cache key: graphId + insight types hash
+
+      **Feature Gating:**
+      - Free tier: 3 basic insight types (community, engagement, influencers)
+      - Pro tier: 8 advanced insight types
+      - Creator tier: All 8+ types including proprietary analytics
+
+  - name: Exports
+    description: |
+      Graph export to PDF, PNG, SVG formats.
+
+      **Export Modes:**
+      - Synchronous (201 response, <3s generation, download URL ready)
+      - Asynchronous (202 response, >3s generation, poll status endpoint)
+
+      **Lifecycle:**
+      - Signed download URLs expire after 7 days
+      - Export files auto-delete 7 days after creation
+
+      **Rate Limits:**
+      - Free tier: 1 PDF/day
+      - Pro tier: 50 PDFs/day
+      - Creator tier: 200 PDFs/day
+
+  - name: Webhooks
+    description: |
+      Stripe subscription webhook integration for tier management.
+
+      **Authentication:** HMAC-SHA256 signature verification (Stripe-Signature header)
+      **Events:** subscription.created, subscription.updated, subscription.deleted, payment.succeeded, payment.failed
+      **Idempotency:** Event IDs tracked for 24 hours to prevent duplicate processing
+      **Retry:** Stripe retries failed webhooks with exponential backoff for 3 days
+
+  - name: Account
+    description: |
+      Account and data management, GDPR compliance.
+
+      **Data Export:** JSON export of all user data (graphs, insights, metadata)
+      **Account Deletion:** Soft delete (30-day grace) or hard delete (immediate, GDPR)
+      **Backup Purge:** Deleted data purged from backups within 90 days
+
+security:
+  - cookieAuth: []
+    csrfToken: []
+  - bearerAuth: []
+
+paths:
+  # ========================================
+  # Authentication Endpoints
+  # ========================================
+
+  /auth/magic-link:
+    post:
+      tags:
+        - Authentication
+      summary: Send magic link login email
+      description: |
+        Initiates passwordless authentication by sending a magic link to the user's email.
+
+        **Flow:**
+        1. User submits email address
+        2. Server generates one-time token (15-minute expiry)
+        3. Email sent with magic link (token embedded)
+        4. User clicks link → redirected to frontend with token in query param
+        5. Frontend POSTs token to /auth/verify to create session
+
+        **Security:**
+        - Rate limited: 5 requests/hour per email (prevents spam)
+        - Token single-use (invalidated after first verification attempt)
+        - 15-minute expiration window
+
+      operationId: sendMagicLink
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                  description: User's email address (RFC 5322 compliant)
+                  example: user@example.com
+
+      responses:
+        '200':
+          description: Magic link sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                    description: Always true for success
+              example:
+                ok: true
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '429':
+          $ref: '#/components/responses/RateLimited429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+      security: []  # Public endpoint, no authentication required
+
+  /auth/verify:
+    post:
+      tags:
+        - Authentication
+      summary: Verify magic link token and create session
+      description: |
+        Verifies a magic link token and creates an authenticated session.
+
+        **Security Note:** Token submitted via POST body (NOT URL path) to prevent leakage in:
+        - Server access logs
+        - Proxy logs
+        - Referrer headers
+        - Browser history
+        - Analytics tools
+
+        **Flow:**
+        1. User clicks magic link: https://visualsocialgraph.com/auth/verify?token=mlt_abc123...
+        2. Frontend extracts token from query parameter
+        3. Frontend POSTs token to /auth/verify in request body
+        4. Server validates token (single-use, not expired)
+        5. Server creates session, sets vsg_session and vsg_csrf cookies
+        6. Frontend redirects user to dashboard
+
+        **Cookies Set:**
+        - vsg_session (httpOnly, Secure, SameSite=Lax): JWT session token
+        - vsg_csrf (readable by JS, Secure, SameSite=Lax): CSRF protection token
+
+      operationId: verifyMagicLink
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+                  pattern: '^mlt_[A-Za-z0-9]{40,}$'
+                  description: Magic link token (one-time use, 15-minute expiry)
+                  example: mlt_abc123def456ghi789jkl012mno345pqr678stu
+
+      responses:
+        '200':
+          description: Token verified successfully, session created
+          headers:
+            Set-Cookie:
+              description: Session and CSRF cookies set
+              schema:
+                type: string
+              examples:
+                session:
+                  value: vsg_session=eyJhbGc...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400
+                csrf:
+                  value: vsg_csrf=abc123...; Secure; SameSite=Lax; Path=/; Max-Age=86400
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  redirectUrl:
+                    type: string
+                    description: URL to redirect user after successful authentication
+                    example: /dashboard
+              example:
+                ok: true
+                redirectUrl: /dashboard
+
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01JBCD...
+                  level: INTEGRITY
+                  code: INVALID_TOKEN
+                  message: Magic link token is invalid, expired, or already used.
+                  details:
+                    tokenPrefix: mlt_abc123...
+                  retryable: false
+                  suggestedAction: Request a new magic link via /auth/magic-link.
+
+        '429':
+          $ref: '#/components/responses/RateLimited429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+      security: []  # Public endpoint, no authentication required
+
+  /auth/google/callback:
+    get:
+      tags:
+        - Authentication
+      summary: Google OAuth callback endpoint
+      description: |
+        OAuth 2.0 callback endpoint for Google authentication.
+
+        **OAuth Flow:**
+        1. User clicks "Sign in with Google" button
+        2. Frontend redirects to Google OAuth consent screen
+        3. User authorizes VSG application
+        4. Google redirects back to this endpoint with authorization code
+        5. Server exchanges code for ID token
+        6. Server validates ID token signature using Google's public keys
+        7. Server creates session, sets cookies
+        8. Server redirects user to dashboard
+
+        **Security:**
+        - State parameter validated to prevent CSRF attacks
+        - ID token signature verified using Google's published keys
+        - OAuth used ONLY for VSG authentication (NOT for platform data access)
+
+      operationId: googleOAuthCallback
+
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: OAuth authorization code from Google
+
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          description: CSRF protection state parameter (must match original request)
+
+      responses:
+        '302':
+          description: Redirect to dashboard with session cookies set
+          headers:
+            Location:
+              schema:
+                type: string
+                example: https://visualsocialgraph.com/dashboard
+            Set-Cookie:
+              schema:
+                type: string
+              examples:
+                session:
+                  value: vsg_session=eyJhbGc...; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=86400
+                csrf:
+                  value: vsg_csrf=abc123...; Secure; SameSite=Lax; Path=/; Max-Age=86400
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+      security: []  # OAuth callback, no session required yet
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: End current session
+      description: |
+        Invalidates the current session and clears authentication cookies.
+
+        **Actions:**
+        - Session token invalidated in database
+        - CSRF token invalidated
+        - Cookies cleared (Set-Cookie with Max-Age=0)
+        - User must re-authenticate to access protected resources
+
+        **Note:** CSRF token NOT required for logout (safe operation, no state change risk)
+
+      operationId: logout
+
+      responses:
+        '200':
+          description: Session invalidated successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              examples:
+                clearSession:
+                  value: vsg_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0
+                clearCsrf:
+                  value: vsg_csrf=; Secure; SameSite=Lax; Path=/; Max-Age=0
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+              example:
+                ok: true
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+      security:
+        - cookieAuth: []  # Only session cookie required, CSRF NOT needed
+
+  /auth/session:
+    get:
+      tags:
+        - Authentication
+      summary: Get current session status
+      description: |
+        Returns current authentication state and user information.
+
+        **Use Cases:**
+        - Frontend session restoration (refresh page, reopen tab)
+        - Check subscription tier for feature gating
+        - Verify session validity before API calls
+
+        **Response:**
+        - If authenticated: Returns user object with tier and email
+        - If not authenticated: Returns authenticated: false (200 status, NOT 401)
+
+      operationId: getSession
+
+      responses:
+        '200':
+          description: Session status retrieved
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required:
+                      - authenticated
+                      - user
+                    properties:
+                      authenticated:
+                        type: boolean
+                        enum: [true]
+                      user:
+                        $ref: '#/components/schemas/User'
+
+                  - type: object
+                    required:
+                      - authenticated
+                    properties:
+                      authenticated:
+                        type: boolean
+                        enum: [false]
+              examples:
+                authenticated:
+                  value:
+                    authenticated: true
+                    user:
+                      id: user_01J...
+                      email: user@example.com
+                      tier: pro
+
+                notAuthenticated:
+                  value:
+                    authenticated: false
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+      security: []  # Public endpoint, returns auth status without requiring auth
+
+  # ========================================
+  # Graph Endpoints
+  # ========================================
+
+  /graphs:
+    get:
+      tags:
+        - Graphs
+      summary: List user's graphs
+      description: |
+        Retrieves a paginated list of graphs owned by the authenticated user.
+
+        **Pagination:**
+        - Cursor-based (avoids offset performance degradation)
+        - Default limit: 20 graphs per page
+        - Max limit: 100 graphs per page
+
+        **Filtering:**
+        - By platform (optional): Filter to specific social network
+
+        **Sorting:**
+        - By creation date (newest first)
+
+        **Performance:**
+        - Target p95 latency: <200ms
+        - Caching: 15-minute TTL (Redis)
+
+      operationId: listGraphs
+
+      parameters:
+        - name: platform
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Platform'
+          description: Filter graphs by social media platform
+          example: twitter
+
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Number of graphs to return per page
+          example: 20
+
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Pagination cursor from previous response (opaque string)
+          example: eyJjcmVhdGVkQXQi...
+
+      responses:
+        '200':
+          description: Graphs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GraphMetadata'
+                  nextCursor:
+                    type: string
+                    nullable: true
+                    description: Cursor for next page (null if no more results)
+              example:
+                data:
+                  - id: graph_01J...
+                    platform: twitter
+                    nodeCount: 1234
+                    edgeCount: 5678
+                    isLatest: true
+                    createdAt: '2025-12-27'
+                  - id: graph_01J...
+                    platform: instagram
+                    nodeCount: 890
+                    edgeCount: 2345
+                    isLatest: false
+                    createdAt: '2025-12-20'
+                nextCursor: eyJjcmVhdGVkQXQi...
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '429':
+          $ref: '#/components/responses/RateLimited429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+    post:
+      tags:
+        - Graphs
+      summary: Create new graph (server-side pseudonymization at ingestion)
+      description: |
+        Accepts graph inputs containing **original platform user IDs** (no display names/usernames).
+        Server pseudonymizes IDs using per-user HMAC-SHA256 before storage and returns:
+        - persisted graph (pseudonymized node IDs)
+        - pseudonymMapping (externalId → pseudonymId), **ALWAYS**
+
+        **Server-Side Pseudonymization Flow (Option B - Standard Practice):**
+        1. Client sends graph with original platform user IDs (externalId field in nodes/edges)
+        2. Server performs HMAC-SHA256 pseudonymization at ingestion boundary using per-user secret key
+        3. Server persists ONLY pseudonymized graph structure (original IDs NEVER stored)
+        4. Server returns pseudonymMapping to client for local label storage
+        5. Client stores display name/username labels in IndexedDB (pseudonymId → label mapping)
+
+        **Privacy Guarantees:**
+        - Original IDs are **transiently processed** (held in memory only during request), MUST NOT be persisted
+        - Display names/usernames MUST NOT be sent to server (client-only labels in IndexedDB)
+        - Server NEVER sees or stores human-readable labels
+        - All node IDs pseudonymized using HMAC-SHA256 with server-held secret keys (no client key exposure)
+        - Timestamps truncated to day-level granularity (YYYY-MM-DD) for privacy
+
+        **Processing Modes:**
+        - Synchronous (201 response): Graph created immediately (<1s processing)
+        - Asynchronous (202 response): Graph queued for processing (server fallback mode)
+
+        **Rate Limits:**
+        - Free tier: 5 graphs/day
+        - Pro tier: 100 graphs/day
+        - Creator tier: 500 graphs/day
+
+        **Size Limits:**
+        - Free/Pro: 10 MB JSON payload
+        - Creator: 50 MB JSON payload
+
+        **Performance:**
+        - Target p95 latency: <1000ms (includes validation + persistence)
+        - Excludes metrics computation (computed asynchronously if needed)
+
+      operationId: createGraph
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphCreateRequest'
+
+      responses:
+        '201':
+          description: Graph created successfully (synchronous processing)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphCreateResponse'
+
+        '202':
+          description: Graph queued for processing (asynchronous, server fallback mode)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - graphId
+                  - status
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  graphId:
+                    type: string
+                    pattern: '^graph_[A-Za-z0-9]{26}$'
+                    description: Unique graph identifier (ULID format)
+                  status:
+                    type: string
+                    enum: [processing]
+                  estimatedCompletionTime:
+                    type: string
+                    format: date-time
+                    description: ISO 8601 timestamp for estimated completion
+              example:
+                ok: true
+                graphId: graph_01J...
+                status: processing
+                estimatedCompletionTime: '2025-12-27T12:35:00Z'
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '413':
+          description: Graph payload exceeds size limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: RECOVERABLE
+                  code: GRAPH_TOO_LARGE
+                  message: Graph JSON exceeds 10 MB limit for Free tier.
+                  details:
+                    tier: free
+                    limit: 10485760
+                    actualSize: 12582912
+                  retryable: false
+                  suggestedAction: Simplify graph or upgrade to Creator tier for 50 MB limit.
+
+        '429':
+          $ref: '#/components/responses/QuotaExceeded429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /graphs/{id}:
+    get:
+      tags:
+        - Graphs
+      summary: Get single graph with full payload
+      description: |
+        Retrieves complete graph data including nodes, edges, and metadata.
+
+        **Privacy:**
+        - Contains only pseudonymized IDs (display names/usernames NOT included)
+        - Client must map pseudonym IDs to friendly labels using local IndexedDB storage
+
+        **Performance:**
+        - Target p95 latency: <200ms
+        - Caching: 15-minute TTL (Redis)
+
+        **Response Size:**
+        - Can be large for graphs with 10,000+ nodes
+        - Consider compression (Accept-Encoding: gzip, br)
+
+      operationId: getGraph
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier (ULID format)
+          example: graph_01J...
+
+      responses:
+        '200':
+          description: Graph retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphFull'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+    put:
+      tags:
+        - Graphs
+      summary: Update graph metadata
+      description: |
+        Updates editable metadata for a graph (does NOT modify graph structure).
+
+        **Editable Fields:**
+        - User-defined notes/annotations (future feature)
+        - Tags/labels (future feature)
+
+        **Note:** Graph structure (nodes, edges) is immutable after creation.
+        To update graph structure, create a new graph snapshot.
+
+      operationId: updateGraph
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier
+          example: graph_01J...
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+                  maxLength: 1000
+                  description: User-defined notes about this graph
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 50
+                  maxItems: 10
+                  description: User-defined tags for categorization
+
+      responses:
+        '200':
+          description: Graph metadata updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+              example:
+                ok: true
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+    delete:
+      tags:
+        - Graphs
+      summary: Delete graph (soft or hard delete)
+      description: |
+        Deletes a graph snapshot with optional permanent deletion.
+
+        **Soft Delete (Default):**
+        - Graph removed from active views immediately
+        - Marked with deleted_at timestamp, retained for 30-day grace period
+        - User can restore within 30 days via /graphs/{id}/restore
+        - After 30 days, automatically hard-deleted
+
+        **Hard Delete (GDPR-compliant):**
+        - Query parameter: ?permanent=true
+        - Graph and all associated data immediately and irreversibly deleted
+        - No grace period, cannot be restored
+        - Backups purged within 90 days
+
+        **Cascade:**
+        - Associated insights deleted
+        - Associated exports deleted
+        - Cached data invalidated
+
+      operationId: deleteGraph
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier
+          example: graph_01J...
+
+        - name: permanent
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: If true, performs immediate hard delete (GDPR right-to-erasure)
+          example: false
+
+      responses:
+        '200':
+          description: Graph deleted successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Soft delete response
+                    required:
+                      - ok
+                      - deletionType
+                      - recoverableUntil
+                    properties:
+                      ok:
+                        type: boolean
+                        enum: [true]
+                      deletionType:
+                        type: string
+                        enum: [soft]
+                      recoverableUntil:
+                        type: string
+                        format: date
+                        description: Date until which graph can be restored (YYYY-MM-DD)
+
+                  - type: object
+                    description: Hard delete response
+                    required:
+                      - ok
+                      - deletionType
+                      - message
+                    properties:
+                      ok:
+                        type: boolean
+                        enum: [true]
+                      deletionType:
+                        type: string
+                        enum: [hard]
+                      message:
+                        type: string
+              examples:
+                softDelete:
+                  value:
+                    ok: true
+                    deletionType: soft
+                    recoverableUntil: '2026-01-26'
+
+                hardDelete:
+                  value:
+                    ok: true
+                    deletionType: hard
+                    message: Graph permanently deleted. This action cannot be undone.
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '409':
+          description: Graph already deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: INTEGRITY
+                  code: CONFLICT
+                  message: Graph is already marked as deleted.
+                  details:
+                    graphId: graph_01J...
+                    deletedAt: '2025-12-20'
+                  retryable: false
+                  suggestedAction: Refresh graph state or use /graphs/{id}/restore to recover.
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /graphs/{id}/restore:
+    post:
+      tags:
+        - Graphs
+      summary: Restore soft-deleted graph
+      description: |
+        Restores a graph that was soft-deleted within the 30-day grace period.
+
+        **Availability:** Phase 2+ (currently requires support request)
+
+        **Requirements:**
+        - Graph must be soft-deleted (NOT hard-deleted)
+        - Within 30-day grace period (recoverableUntil date)
+
+        **Actions:**
+        - deleted_at timestamp cleared
+        - Graph reappears in /graphs list
+        - Cache invalidated
+
+        **Limitations:**
+        - Cannot restore hard-deleted graphs
+        - Cannot restore after 30-day grace period expired
+
+      operationId: restoreGraph
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier
+          example: graph_01J...
+
+      responses:
+        '200':
+          description: Graph restored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - graphId
+                  - restoredAt
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  graphId:
+                    type: string
+                    pattern: '^graph_[A-Za-z0-9]{26}$'
+                  restoredAt:
+                    type: string
+                    format: date
+                    description: Date when graph was restored (YYYY-MM-DD)
+              example:
+                ok: true
+                graphId: graph_01J...
+                restoredAt: '2025-12-27'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          description: Graph not found or hard-deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: CRITICAL
+                  code: RESOURCE_NOT_FOUND
+                  message: Graph not found or was permanently deleted.
+                  details:
+                    graphId: graph_01J...
+                  retryable: false
+                  suggestedAction: Verify graph ID is correct. Hard-deleted graphs cannot be restored.
+
+        '410':
+          description: Grace period expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: CRITICAL
+                  code: RESOURCE_DELETED
+                  message: Graph restoration period expired (30-day limit).
+                  details:
+                    graphId: graph_01J...
+                    deletedAt: '2025-11-15'
+                    gracePeriodExpired: '2025-12-15'
+                  retryable: false
+                  suggestedAction: Graph has been permanently deleted. Create a new graph snapshot.
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /graphs/validate:
+    post:
+      tags:
+        - Graphs
+      summary: Validate graph schema without persisting
+      description: |
+        Validates graph JSON payload without creating a graph record.
+
+        **Use Cases:**
+        - Pre-flight validation before actual graph creation
+        - Client-side schema debugging
+        - Integration testing
+
+        **Checks:**
+        - JSON schema validation (required fields, data types)
+        - Size limit validation (10 MB / 50 MB based on tier)
+        - Graph structure validation (node/edge integrity)
+
+        **Does NOT:**
+        - Persist graph to database
+        - Count against rate limits
+        - Generate graph ID
+
+      operationId: validateGraph
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphCreateRequest'
+
+      responses:
+        '200':
+          description: Graph schema is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  valid:
+                    type: boolean
+                    enum: [true]
+                  warnings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Warning'
+              example:
+                ok: true
+                valid: true
+                warnings: []
+
+        '400':
+          description: Graph schema validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: RECOVERABLE
+                  code: INVALID_SCHEMA
+                  message: Graph validation failed.
+                  details:
+                    field: graph.nodes[0].id
+                    issue: Field is required but was missing.
+                  retryable: false
+                  suggestedAction: Ensure all nodes have an 'id' field.
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  # ========================================
+  # Upload Endpoints (Server Fallback)
+  # ========================================
+
+  /uploads:
+    post:
+      tags:
+        - Uploads
+      summary: Create resumable Tus upload
+      description: |
+        Initiates a resumable file upload using the Tus protocol for server-side fallback processing.
+
+        **Protocol:** Tus 1.0.0 (resumable upload)
+        **Client Library:** tus-js-client
+        **Max File Size:** 500 MB
+
+        **Use Cases:**
+        - Client-side processing fails (memory constraints, performance)
+        - User explicitly opts for server-side processing
+        - Large archives that exceed client processing capabilities
+
+        **Lifecycle:**
+        1. POST /uploads (create upload, get upload URL)
+        2. PATCH /uploads/{id} (upload chunks via Tus)
+        3. Server processes on completion (parse → build graph → persist)
+        4. Raw ZIP deleted immediately after processing
+
+        **Rate Limits:**
+        - Free tier: 5 uploads/day
+        - Pro tier: 100 uploads/day
+        - Creator tier: 500 uploads/day
+
+      operationId: createUpload
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - platform
+                - fileName
+                - fileSize
+              properties:
+                platform:
+                  $ref: '#/components/schemas/Platform'
+                fileName:
+                  type: string
+                  maxLength: 255
+                  description: Original filename (for display purposes)
+                  example: twitter-archive.zip
+                fileSize:
+                  type: integer
+                  minimum: 1
+                  maximum: 524288000
+                  description: File size in bytes (max 500 MB)
+                  example: 52428800
+
+      responses:
+        '201':
+          description: Upload created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - uploadUrl
+                  - expiresAt
+                properties:
+                  id:
+                    type: string
+                    pattern: '^upload_[A-Za-z0-9]{26}$'
+                    description: Unique upload identifier
+                  uploadUrl:
+                    type: string
+                    format: uri
+                    description: Tus upload endpoint for chunked uploads
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: Upload URL expiration (24 hours from creation)
+              example:
+                id: upload_01J...
+                uploadUrl: https://api.visualsocialgraph.com/api/v1/uploads/upload_01J...
+                expiresAt: '2025-12-28T14:32:00Z'
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '413':
+          description: File size exceeds limit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: RECOVERABLE
+                  code: FILE_TOO_LARGE
+                  message: Upload file size exceeds 500 MB limit.
+                  details:
+                    maxSize: 524288000
+                    actualSize: 629145600
+                  retryable: false
+                  suggestedAction: Reduce archive size or contact support for limit increase.
+
+        '429':
+          $ref: '#/components/responses/QuotaExceeded429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /uploads/{id}:
+    get:
+      tags:
+        - Uploads
+      summary: Get upload status
+      description: |
+        Returns current status of a server-side upload and processing job.
+
+        **Statuses:**
+        - queued: Upload complete, waiting for processing
+        - processing: Archive being parsed and graph being built
+        - complete: Graph created successfully (graphId available)
+        - failed: Processing encountered fatal error
+
+        **Polling:**
+        - Client should poll this endpoint every 2-5 seconds during processing
+        - Consider using /uploads/{id}/events (WebSocket) for real-time updates instead
+
+        **Performance:**
+        - Target p95 latency: <200ms
+        - Caching: 5-minute TTL (status updates don't need real-time accuracy)
+
+      operationId: getUploadStatus
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^upload_[A-Za-z0-9]{26}$'
+          description: Unique upload identifier
+          example: upload_01J...
+
+      responses:
+        '200':
+          description: Upload status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadStatus'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+    patch:
+      tags:
+        - Uploads
+      summary: Upload file chunk (Tus protocol)
+      description: |
+        Uploads file data in chunks using Tus resumable upload protocol.
+
+        **Tus Headers:**
+        - Upload-Offset: Byte offset in file where chunk starts
+        - Content-Length: Size of current chunk
+        - Content-Type: application/offset+octet-stream
+
+        **Resumability:**
+        - If upload interrupted, client can resume from last successful offset
+        - Server responds with Upload-Offset header indicating received bytes
+
+        **Completion:**
+        - When Upload-Offset == file size, upload marked complete
+        - Server automatically triggers processing pipeline
+
+        **Note:** This endpoint is typically called by tus-js-client library,
+        not directly by application code.
+
+      operationId: uploadChunk
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^upload_[A-Za-z0-9]{26}$'
+          description: Unique upload identifier
+          example: upload_01J...
+
+        - name: Upload-Offset
+          in: header
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+          description: Byte offset where this chunk starts
+
+        - name: Content-Length
+          in: header
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Size of chunk being uploaded
+
+      requestBody:
+        required: true
+        content:
+          application/offset+octet-stream:
+            schema:
+              type: string
+              format: binary
+
+      responses:
+        '204':
+          description: Chunk uploaded successfully
+          headers:
+            Upload-Offset:
+              schema:
+                type: integer
+              description: Total bytes received so far
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '410':
+          description: Upload expired or deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+    delete:
+      tags:
+        - Uploads
+      summary: Cancel and delete upload
+      description: |
+        Cancels an in-progress or failed upload and deletes associated files.
+
+        **Use Cases:**
+        - User cancels upload midway
+        - User deletes failed upload to retry
+        - Cleanup after 7-day retention for failed uploads
+
+        **Actions:**
+        - Upload marked as canceled
+        - Uploaded chunks deleted from temporary storage
+        - Processing job terminated (if running)
+        - Cannot be resumed after deletion
+
+        **Conflict:**
+        - Returns 409 if upload already completed and converted to graph
+        - Use DELETE /graphs/{id} instead for completed graphs
+
+      operationId: deleteUpload
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^upload_[A-Za-z0-9]{26}$'
+          description: Unique upload identifier
+          example: upload_01J...
+
+      responses:
+        '200':
+          description: Upload deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  deletedAt:
+                    type: string
+                    format: date
+                    description: Deletion date (YYYY-MM-DD)
+              example:
+                ok: true
+                deletedAt: '2025-12-27'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '409':
+          description: Upload already completed and converted to graph
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: INTEGRITY
+                  code: CONFLICT
+                  message: Upload already completed and converted to graph.
+                  details:
+                    uploadId: upload_01J...
+                    graphId: graph_01J...
+                  retryable: false
+                  suggestedAction: Use DELETE /graphs/{graphId} to delete the graph instead.
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /uploads/{id}/events:
+    get:
+      tags:
+        - Uploads
+      summary: Real-time upload progress stream (WebSocket/SSE)
+      description: |
+        Streams real-time progress updates for server-side upload processing.
+
+        **Implementation Options:**
+        - WebSocket (preferred): Bidirectional, richer progress updates
+        - Server-Sent Events (SSE): Fallback for simpler clients
+
+        **Event Types:**
+        - progress: Processing stage update with percentage
+        - complete: Graph created successfully
+        - error: Processing failed with error details
+
+        **Connection:**
+        - Authenticate via Cookie (WebSocket) or query param token (SSE)
+        - Auto-close after completion or error event
+        - Reconnect logic recommended (exponential backoff)
+
+        **Example WebSocket Message:**
+        ```json
+        {
+          "type": "progress",
+          "uploadId": "upload_01J...",
+          "status": "processing",
+          "stage": "build_graph",
+          "progress": {
+            "percent": 67,
+            "message": "Building pseudonymized graph structure"
+          }
+        }
+        ```
+
+      operationId: getUploadEvents
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^upload_[A-Za-z0-9]{26}$'
+          description: Unique upload identifier
+          example: upload_01J...
+
+      responses:
+        '101':
+          description: WebSocket upgrade successful
+
+        '200':
+          description: SSE stream established
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  # ========================================
+  # Insight Endpoints
+  # ========================================
+
+  /insights:
+    post:
+      tags:
+        - Insights
+      summary: Generate or retrieve cached insights
+      description: |
+        Generates deterministic, algorithm-based insights for a graph or retrieves cached results.
+
+        **Algorithm-First:**
+        - No external AI dependencies
+        - Deterministic outputs (same graph → same insights)
+        - Template-based narrative generation
+        - Explainable confidence scores
+
+        **Caching:**
+        - 1-hour TTL (deterministic outputs allow long caching)
+        - Cache key: graphId + insight types hash
+        - Cache warming on first request
+
+        **Insight Types by Tier:**
+        - Free tier: community, engagement, influencers (3 basic types)
+        - Pro tier: All 8 types (adds bridge_accounts, echo_chamber, growth, diversity, anomalies)
+        - Creator tier: All 8+ types including proprietary analytics
+
+        **Rate Limits:**
+        - Free tier: 10 requests/day
+        - Pro tier: Unlimited
+        - Creator tier: Unlimited
+
+        **Performance:**
+        - Target p95 latency: <500ms (per SRS requirement)
+        - Cached requests: <200ms
+
+        **Partial Success:**
+        - May return 200 with warnings if some insight types timeout
+        - Partial results included in response
+        - Client can retry specific failed types
+
+      operationId: generateInsights
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - graphId
+              properties:
+                graphId:
+                  type: string
+                  pattern: '^graph_[A-Za-z0-9]{26}$'
+                  description: Unique graph identifier
+                types:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InsightCategory'
+                  description: Specific insight types to generate (omit for all available types based on tier)
+                  example: [community, bridge_accounts, engagement]
+
+      responses:
+        '200':
+          description: Insights generated successfully (may include warnings for partial success)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - graphId
+                      - insights
+                    properties:
+                      graphId:
+                        type: string
+                      insights:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Insight'
+                  warnings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Warning'
+              example:
+                data:
+                  graphId: graph_01J...
+                  insights:
+                    - id: insight_01J...
+                      graphId: graph_01J...
+                      templateId: community_detection_v1
+                      category: community
+                      narrative: Your network has 3 distinct communities with minimal cross-community connections.
+                      actions:
+                        - text: Engage with accounts in different communities to broaden your reach
+                          priority: high
+                          estimatedImpact: +25% engagement diversity
+                      confidence: high
+                      priority: 1
+                      explanation:
+                        triggeredConditions:
+                          - modularity > 0.6
+                          - distinct_communities >= 3
+                        metrics:
+                          - key: modularity
+                            value: 0.73
+                          - key: community_count
+                            value: 3
+                        templateVersion: 1
+                      createdAt: '2025-12-27T14:32:00Z'
+                warnings: []
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '403':
+          $ref: '#/components/responses/TierRestricted403'
+
+        '429':
+          $ref: '#/components/responses/QuotaExceeded429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+    get:
+      tags:
+        - Insights
+      summary: Get cached insights for graph
+      description: |
+        Retrieves previously generated insights from cache.
+
+        **Query Parameters:**
+        - graphId: Required, filter insights by graph
+        - types: Optional, filter by specific insight categories
+
+        **Performance:**
+        - Target p95 latency: <200ms
+        - Always served from cache (no computation)
+
+        **Cache Miss:**
+        - Returns empty array if no cached insights
+        - Client should call POST /insights to generate
+
+      operationId: getInsights
+
+      parameters:
+        - name: graphId
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier
+          example: graph_01J...
+
+        - name: types
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/InsightCategory'
+          description: Filter by specific insight categories
+          example: [community, engagement]
+
+      responses:
+        '200':
+          description: Cached insights retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - graphId
+                  - insights
+                properties:
+                  graphId:
+                    type: string
+                  insights:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Insight'
+              example:
+                graphId: graph_01J...
+                insights: []
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  # ========================================
+  # Export Endpoints
+  # ========================================
+
+  /exports/pdf:
+    post:
+      tags:
+        - Exports
+      summary: Generate PDF export of graph
+      description: |
+        Generates a PDF report for a graph with visualization and insights.
+
+        **Export Modes:**
+        - Synchronous (201): PDF generated in <3s, download URL ready immediately
+        - Asynchronous (202): PDF queued for processing, poll /exports/pdf/{exportId} for status
+
+        **PDF Contents:**
+        - Graph visualization (force-directed layout)
+        - Top insights with actionable recommendations
+        - Network statistics (node/edge counts, density, metrics)
+        - Metadata (platform, creation date, user notes)
+
+        **Rate Limits:**
+        - Free tier: 1 PDF export/day
+        - Pro tier: 50 PDF exports/day
+        - Creator tier: 200 PDF exports/day
+
+        **Download URLs:**
+        - Pre-signed S3 URLs (secure, time-limited)
+        - 7-day expiration
+        - HTTPS-only
+
+        **File Size:**
+        - Max 20 MB per PDF
+        - Graphs with 10,000+ nodes may require async processing
+
+      operationId: exportPdf
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - graphId
+              properties:
+                graphId:
+                  type: string
+                  pattern: '^graph_[A-Za-z0-9]{26}$'
+                  description: Unique graph identifier
+                includeInsights:
+                  type: boolean
+                  default: true
+                  description: Include insights in PDF report
+                layout:
+                  type: string
+                  enum: [force, circular, hierarchical]
+                  default: force
+                  description: Graph visualization layout algorithm
+
+      responses:
+        '201':
+          description: PDF export created successfully (synchronous, download ready)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResponse'
+              example:
+                exportId: export_01J...
+                format: pdf
+                downloadUrl: https://vsg-exports.s3.amazonaws.com/export_01J.pdf?X-Amz-Signature=...
+                expiresAt: '2026-01-03T00:00:00Z'
+
+        '202':
+          description: PDF export accepted for async processing
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - exportId
+                  - format
+                  - status
+                  - statusUrl
+                properties:
+                  exportId:
+                    type: string
+                    pattern: '^export_[A-Za-z0-9]{26}$'
+                  format:
+                    type: string
+                    enum: [pdf]
+                  status:
+                    type: string
+                    enum: [processing]
+                  statusUrl:
+                    type: string
+                    format: uri
+                    description: URL to poll for export status
+              example:
+                exportId: export_01J...
+                format: pdf
+                status: processing
+                statusUrl: /exports/pdf/export_01J...
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '429':
+          $ref: '#/components/responses/QuotaExceeded429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /exports/pdf/{exportId}:
+    get:
+      tags:
+        - Exports
+      summary: Check PDF export job status
+      description: |
+        Polls the status of an asynchronous PDF export job.
+
+        **Statuses:**
+        - processing: PDF being rendered (includes progress percentage)
+        - complete: PDF ready for download (downloadUrl available)
+        - failed: PDF generation failed (errorMessage available)
+
+        **Polling:**
+        - Client should poll every 2-5 seconds during processing
+        - Stop polling when status is complete or failed
+
+        **Performance:**
+        - Target p95 latency: <200ms
+        - No caching (status needs to be current)
+
+      operationId: getPdfExportStatus
+
+      parameters:
+        - name: exportId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^export_[A-Za-z0-9]{26}$'
+          description: Unique export job identifier
+          example: export_01J...
+
+      responses:
+        '200':
+          description: Export status retrieved
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Processing status
+                    required:
+                      - exportId
+                      - format
+                      - status
+                      - progress
+                    properties:
+                      exportId:
+                        type: string
+                      format:
+                        type: string
+                        enum: [pdf]
+                      status:
+                        type: string
+                        enum: [processing]
+                      progress:
+                        type: integer
+                        minimum: 0
+                        maximum: 100
+                        description: Completion percentage
+
+                  - $ref: '#/components/schemas/ExportResponse'
+
+                  - type: object
+                    description: Failed status
+                    required:
+                      - exportId
+                      - format
+                      - status
+                      - errorMessage
+                    properties:
+                      exportId:
+                        type: string
+                      format:
+                        type: string
+                        enum: [pdf]
+                      status:
+                        type: string
+                        enum: [failed]
+                      errorMessage:
+                        type: string
+              examples:
+                processing:
+                  value:
+                    exportId: export_01J...
+                    format: pdf
+                    status: processing
+                    progress: 67
+
+                complete:
+                  value:
+                    exportId: export_01J...
+                    format: pdf
+                    status: complete
+                    downloadUrl: https://vsg-exports.s3.amazonaws.com/export_01J.pdf?X-Amz-Signature=...
+                    expiresAt: '2026-01-03T00:00:00Z'
+
+                failed:
+                  value:
+                    exportId: export_01J...
+                    format: pdf
+                    status: failed
+                    errorMessage: Graph too large for PDF rendering (max 50,000 nodes)
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '404':
+          $ref: '#/components/responses/NotFound404'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /exports/social-card:
+    post:
+      tags:
+        - Exports
+      summary: Generate social media sharing card
+      description: |
+        Generates a visual social media card for sharing on platforms like Twitter, LinkedIn, Instagram.
+
+        **Templates:**
+        - my-social-dna: Circular graph visualization with top metrics
+        - network-snapshot: Force-directed layout with key insights
+        - influence-map: Heatmap showing connection strength
+
+        **Feature Gating:**
+        - Free tier: Not available
+        - Pro tier: Available (50 cards/day)
+        - Creator tier: Available (200 cards/day)
+
+        **Image Specs:**
+        - Format: PNG
+        - Size: 1200x630px (Twitter/LinkedIn optimized)
+        - Max file size: 5 MB
+
+        **Download:**
+        - Signed S3 URLs
+        - 7-day expiration
+
+      operationId: exportSocialCard
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - graphId
+                - template
+              properties:
+                graphId:
+                  type: string
+                  pattern: '^graph_[A-Za-z0-9]{26}$'
+                template:
+                  type: string
+                  enum: [my-social-dna, network-snapshot, influence-map]
+                  description: Social card template
+
+      responses:
+        '201':
+          description: Social card generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResponse'
+              example:
+                exportId: export_01J...
+                format: png
+                downloadUrl: https://vsg-exports.s3.amazonaws.com/social_card_01J.png?X-Amz-Signature=...
+                expiresAt: '2026-01-03T00:00:00Z'
+
+        '400':
+          $ref: '#/components/responses/BadRequest400'
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '403':
+          $ref: '#/components/responses/TierRestricted403'
+
+        '429':
+          $ref: '#/components/responses/QuotaExceeded429'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  # ========================================
+  # Webhook Endpoints
+  # ========================================
+
+  /webhooks/stripe:
+    post:
+      tags:
+        - Webhooks
+      summary: Stripe subscription webhook handler
+      description: |
+        Receives and processes Stripe webhook events for subscription management.
+
+        **Authentication:**
+        - Webhook signature verification using Stripe-Signature header
+        - HMAC-SHA256 signature computed with STRIPE_WEBHOOK_SECRET
+        - Reject requests with invalid or missing signatures (401)
+
+        **Event Types:**
+        - customer.subscription.created: New subscription activated
+        - customer.subscription.updated: Tier changed or renewed
+        - customer.subscription.deleted: Subscription canceled or expired
+        - invoice.payment_succeeded: Payment processed successfully
+        - invoice.payment_failed: Payment failed (trigger retry or downgrade)
+
+        **Idempotency:**
+        - Event IDs tracked in database for 24 hours
+        - Duplicate events return 200 without reprocessing
+        - Prevents race conditions from Stripe retries
+
+        **Processing:**
+        1. Verify webhook signature
+        2. Check event idempotency (already processed?)
+        3. Update user's subscription tier in database
+        4. Invalidate cache (rate limits, feature gating)
+        5. Log event to audit log
+        6. Respond with 200 within 5 seconds
+
+        **Retry Policy:**
+        - Stripe retries failed webhooks with exponential backoff for 3 days
+        - Transient errors (DB timeout): Return 500 to trigger retry
+        - Permanent errors (invalid customer): Return 200 after logging (prevents infinite retries)
+
+        **Security:**
+        - Signature verification is mandatory (primary security control)
+        - Optional: IP whitelist (Stripe IP ranges only)
+
+      operationId: handleStripeWebhook
+
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+          description: HMAC-SHA256 signature of webhook payload
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Stripe webhook event payload
+              required:
+                - id
+                - type
+                - data
+              properties:
+                id:
+                  type: string
+                  description: Unique event identifier (for idempotency)
+                  example: evt_1Abc123...
+                type:
+                  type: string
+                  description: Event type
+                  example: customer.subscription.updated
+                data:
+                  type: object
+                  description: Event-specific data (Stripe subscription, invoice, etc.)
+
+      responses:
+        '200':
+          description: Webhook received and processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+                    enum: [true]
+              example:
+                received: true
+
+        '400':
+          description: Unrecognized event type (logged for investigation)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: RECOVERABLE
+                  code: INVALID_SCHEMA
+                  message: Unrecognized Stripe event type.
+                  details:
+                    eventType: customer.unknown.event
+                  retryable: false
+                  suggestedAction: Internal investigation required.
+
+        '401':
+          description: Invalid webhook signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                error:
+                  id: err_01J...
+                  level: INTEGRITY
+                  code: WEBHOOK_SIGNATURE_INVALID
+                  message: Stripe webhook signature verification failed.
+                  details: {}
+                  retryable: false
+                  suggestedAction: Contact support if issue persists.
+
+        '500':
+          description: Transient error (Stripe will retry)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+      security: []  # Authenticated via Stripe-Signature header, not session
+
+  # ========================================
+  # Account & Data Management Endpoints
+  # ========================================
+
+  /account/data-export:
+    get:
+      tags:
+        - Account
+      summary: Export all user data (GDPR data portability)
+      description: |
+        Generates a comprehensive JSON export of all user-owned data.
+
+        **GDPR Compliance:**
+        - Article 20: Right to data portability
+        - Machine-readable format (JSON)
+        - All user-created data included
+
+        **Contents:**
+        - User profile (email, tier, subscription status)
+        - All graphs (metadata + full payloads)
+        - All generated insights
+        - Subscription history
+        - Audit log entries (user-specific actions)
+
+        **Privacy:**
+        - Export contains pseudonymized data by default
+        - Client-side mappings (display names/usernames) NOT included (stored locally only)
+
+        **File Size:**
+        - Can be large for users with many graphs
+        - Consider compression (Accept-Encoding: gzip)
+
+        **Performance:**
+        - May take several seconds for large datasets
+        - Consider async job pattern (future enhancement)
+
+      operationId: exportUserData
+
+      responses:
+        '200':
+          description: Data export generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user
+                  - graphs
+                  - insights
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  graphs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GraphFull'
+                  insights:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Insight'
+                  subscription:
+                    type: object
+                    properties:
+                      tier:
+                        $ref: '#/components/schemas/SubscriptionTier'
+                      status:
+                        type: string
+                        enum: [active, canceled, expired, trialing]
+                      currentPeriodEnd:
+                        type: string
+                        format: date-time
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+  /account:
+    delete:
+      tags:
+        - Account
+      summary: Delete user account (soft or hard delete)
+      description: |
+        Deletes user account and all associated data with optional permanent deletion.
+
+        **Soft Delete (Default):**
+        - Account marked as deleted, user cannot log in
+        - All data retained for 30-day grace period
+        - User can contact support to restore within 30 days
+        - After 30 days, automatically hard-deleted
+
+        **Hard Delete (GDPR right-to-erasure):**
+        - Query parameter: ?permanent=true
+        - Account and ALL data immediately deleted from active systems
+        - Cascades to graphs, insights, uploads, exports, subscription metadata
+        - Backups purged within 90 days (compliance requirement)
+        - Irreversible, cannot be restored
+
+        **Cascade Deletion:**
+        - All graphs (and associated insights)
+        - All uploads (in-progress and failed)
+        - All exports (PDF, social cards)
+        - Subscription data (Stripe customer ID retained for financial records)
+        - Session tokens invalidated
+        - Cache invalidated
+
+        **GDPR Compliance:**
+        - Article 17: Right to erasure
+        - Hard delete option ensures immediate deletion from active systems
+        - 90-day backup purge documented in Privacy Policy
+
+      operationId: deleteAccount
+
+      parameters:
+        - name: permanent
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: If true, performs immediate hard delete (GDPR right-to-erasure)
+          example: false
+
+      responses:
+        '200':
+          description: Account deleted successfully
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: Session cookies cleared
+              example: vsg_session=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    description: Soft delete response
+                    required:
+                      - ok
+                      - deletionType
+                      - recoverableUntil
+                    properties:
+                      ok:
+                        type: boolean
+                        enum: [true]
+                      deletionType:
+                        type: string
+                        enum: [soft]
+                      recoverableUntil:
+                        type: string
+                        format: date
+                        description: Date until which account can be restored
+
+                  - type: object
+                    description: Hard delete response
+                    required:
+                      - ok
+                      - deletionType
+                      - message
+                    properties:
+                      ok:
+                        type: boolean
+                        enum: [true]
+                      deletionType:
+                        type: string
+                        enum: [hard]
+                      message:
+                        type: string
+              examples:
+                softDelete:
+                  value:
+                    ok: true
+                    deletionType: soft
+                    recoverableUntil: '2026-01-26'
+
+                hardDelete:
+                  value:
+                    ok: true
+                    deletionType: hard
+                    message: Account and all associated data permanently deleted. This action cannot be undone.
+
+        '401':
+          $ref: '#/components/responses/Unauthorized401'
+
+        '500':
+          $ref: '#/components/responses/InternalError500'
+
+# ========================================
+# Reusable Components
+# ========================================
+
+components:
+  # Security Schemes
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: vsg_session
+      description: |
+        Cookie-based JWT session authentication (PRIMARY method).
+
+        **Cookie Attributes:**
+        - HttpOnly: true (prevents XSS access)
+        - Secure: true (HTTPS-only)
+        - SameSite: Lax (CSRF protection for top-level navigation)
+        - Max-Age: 86400 (24-hour session lifetime)
+
+        **Token Format:** JWT (HS256)
+        **Payload:** { sub: userId, email, tier, iat, exp }
+        **Rotation:** Session refreshed on each authenticated request
+
+    csrfToken:
+      type: apiKey
+      in: header
+      name: X-CSRF-Token
+      description: |
+        CSRF protection token for state-changing operations (POST, PUT, DELETE).
+
+        **Double-Submit Pattern:**
+        1. Server generates random token on login (128-bit, Base64)
+        2. Token stored in cookie (vsg_csrf, readable by JS) AND session database
+        3. Client reads cookie value, includes in X-CSRF-Token header
+        4. Server validates header matches database value
+
+        **Token Lifecycle:**
+        - Generated on login (/auth/verify, /auth/google/callback)
+        - Valid for session lifetime (24 hours)
+        - Rotated on logout and session expiry
+
+        **Security:**
+        - Prevents CSRF attacks (cookies auto-sent, CSRF token requires JS access)
+        - NOT required for GET requests (safe methods)
+        - NOT required for Bearer token auth (tokens not auto-sent)
+
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Bearer token authentication for Creator tier programmatic API access (ALTERNATIVE method).
+
+        **Use Cases:**
+        - Non-browser clients (scripts, automation, integrations)
+        - Server-to-server communication
+        - API testing tools (Postman, curl)
+
+        **Token Format:** Opaque API key (long-lived, 90-day expiry)
+        **Generation:** Via dashboard (Creator tier only)
+        **Scope:** Read-write access to user's own resources
+        **CSRF Protection:** NOT required (tokens not auto-sent by browsers)
+
+        **Example:**
+        ```
+        Authorization: Bearer vsg_live_sk_abc123def456...
+        ```
+
+        **Security:**
+        - Treat as password (never expose in client-side code)
+        - Rotate every 90 days
+        - Revoke immediately if compromised
+
+  # Common Parameters
+  parameters:
+    GraphIdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^graph_[A-Za-z0-9]{26}$'
+      description: Unique graph identifier (ULID format, sortable, time-ordered)
+      example: graph_01J...
+
+    UploadIdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^upload_[A-Za-z0-9]{26}$'
+      description: Unique upload identifier (ULID format)
+      example: upload_01J...
+
+    ExportIdPath:
+      name: exportId
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^export_[A-Za-z0-9]{26}$'
+      description: Unique export job identifier (ULID format)
+      example: export_01J...
+
+  # Schemas
+  schemas:
+    # ========================================
+    # Core Domain Schemas
+    # ========================================
+
+    Platform:
+      type: string
+      enum:
+        - twitter
+        - instagram
+        - linkedin
+        - facebook
+        - tiktok
+      description: Supported social media platforms
+      example: twitter
+
+    SubscriptionTier:
+      type: string
+      enum:
+        - free
+        - pro
+        - creator
+      description: User subscription tier (affects quotas and feature access)
+      example: pro
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - tier
+      properties:
+        id:
+          type: string
+          pattern: '^user_[A-Za-z0-9]{26}$'
+          description: Unique user identifier (ULID format)
+          example: user_01J...
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: User's email address
+          example: user@example.com
+        tier:
+          $ref: '#/components/schemas/SubscriptionTier'
+
+    # ========================================
+    # Graph Schemas
+    # ========================================
+
+    GraphMetadata:
+      type: object
+      required:
+        - id
+        - platform
+        - nodeCount
+        - edgeCount
+        - isLatest
+        - createdAt
+      properties:
+        id:
+          type: string
+          pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier
+          example: graph_01J...
+        platform:
+          $ref: '#/components/schemas/Platform'
+        nodeCount:
+          type: integer
+          minimum: 1
+          description: Total number of nodes in graph
+          example: 1234
+        edgeCount:
+          type: integer
+          minimum: 0
+          description: Total number of edges in graph
+          example: 5678
+        isLatest:
+          type: boolean
+          description: Whether this is the most recent graph for this platform
+          example: true
+        createdAt:
+          type: string
+          format: date
+          description: Graph creation date (day-level granularity for privacy)
+          example: '2025-12-27'
+        uploadedOn:
+          type: string
+          format: date
+          description: Original upload date (day-level granularity)
+          example: '2025-12-27'
+
+    GraphNode:
+      type: object
+      required:
+        - type
+      properties:
+        id:
+          type: string
+          description: |
+            **Responses only:** Pseudonymized node ID (HMAC-SHA256 of original platform user ID).
+            Not accepted in create requests (use externalId instead).
+          example: node_a3f2b8c1d4e5f6g7h8i9j0k1l2m3n4o5
+        externalId:
+          type: string
+          maxLength: 128
+          description: |
+            **Requests only:** Original platform user identifier (e.g., Twitter user ID "123456789").
+            Transiently processed server-side for HMAC-SHA256 pseudonymization.
+            MUST NOT be persisted by server. Not returned in responses.
+          example: "123456789"
+        type:
+          type: string
+          enum: [self, user]
+          description: Node type (self = authenticated user, user = other account)
+          example: user
+        degree:
+          type: integer
+          minimum: 0
+          description: Total number of connections (in + out degree)
+          example: 42
+        pageRank:
+          type: number
+          format: double
+          minimum: 0
+          description: PageRank centrality score (0-1, higher = more influential)
+          example: 0.0023
+        betweenness:
+          type: number
+          format: double
+          minimum: 0
+          description: Betweenness centrality (measures bridge account importance)
+          example: 0.0015
+        communityId:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Community cluster identifier (from Louvain algorithm)
+          example: 3
+        followerCount:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Platform follower count (if available in archive)
+          example: 1500
+        followingCount:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Platform following count (if available in archive)
+          example: 320
+        addedAt:
+          type: string
+          format: date
+          nullable: true
+          description: Date node was first seen (day-level granularity)
+          example: '2025-12-15'
+        lastInteraction:
+          type: string
+          format: date
+          nullable: true
+          description: Date of most recent interaction (day-level granularity)
+          example: '2025-12-26'
+
+    GraphEdge:
+      type: object
+      required:
+        - source
+        - target
+        - type
+        - weight
+      properties:
+        source:
+          type: string
+          maxLength: 128
+          description: |
+            Source node identifier.
+            **Requests:** Original platform user ID (refers to node's externalId).
+            **Responses:** Pseudonymized node ID (refers to node's id).
+          example: node_a3f2b8c...
+        target:
+          type: string
+          maxLength: 128
+          description: |
+            Target node identifier.
+            **Requests:** Original platform user ID (refers to node's externalId).
+            **Responses:** Pseudonymized node ID (refers to node's id).
+          example: node_d4e5f6g...
+        type:
+          type: string
+          enum: [follows, followed_by, mutual, engages_with]
+          description: Edge relationship type
+          example: mutual
+        weight:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          description: Edge weight (0-1, normalized interaction strength)
+          example: 0.75
+        interactions:
+          type: object
+          nullable: true
+          description: Detailed interaction counts (if available in archive)
+          properties:
+            likes:
+              type: integer
+              minimum: 0
+            comments:
+              type: integer
+              minimum: 0
+            shares:
+              type: integer
+              minimum: 0
+            messages:
+              type: integer
+              minimum: 0
+        createdAt:
+          type: string
+          format: date
+          nullable: true
+          description: Edge creation date (day-level granularity)
+          example: '2025-11-10'
+
+    GraphMetrics:
+      type: object
+      required:
+        - nodeCount
+        - edgeCount
+      properties:
+        nodeCount:
+          type: integer
+          minimum: 1
+          example: 1234
+        edgeCount:
+          type: integer
+          minimum: 0
+          example: 5678
+        density:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          nullable: true
+          description: Network density (actual edges / possible edges)
+          example: 0.042
+        averageDegree:
+          type: number
+          format: double
+          minimum: 0
+          nullable: true
+          description: Mean number of connections per node
+          example: 9.2
+
+    GraphCreateRequest:
+      type: object
+      required:
+        - platform
+        - parseVersion
+        - graph
+      properties:
+        platform:
+          $ref: '#/components/schemas/Platform'
+        parseVersion:
+          type: string
+          description: Parser version identifier (for backward compatibility)
+          example: twitter_v2.1
+        graph:
+          type: object
+          required:
+            - nodes
+            - edges
+            - metadata
+          properties:
+            nodes:
+              type: array
+              items:
+                $ref: '#/components/schemas/GraphNode'
+              minItems: 1
+              maxItems: 1000000
+              description: |
+                Array of graph nodes with ORIGINAL platform IDs (externalId field).
+                Server pseudonymizes at ingestion. Display names/usernames MUST NOT be included.
+            edges:
+              type: array
+              items:
+                $ref: '#/components/schemas/GraphEdge'
+              minItems: 0
+              maxItems: 10000000
+              description: |
+                Array of graph edges with ORIGINAL platform IDs in source/target fields.
+                Server pseudonymizes edge references at ingestion.
+            metadata:
+              type: object
+              required:
+                - statistics
+              properties:
+                statistics:
+                  $ref: '#/components/schemas/GraphMetrics'
+                timePeriod:
+                  type: object
+                  nullable: true
+                  properties:
+                    start:
+                      type: string
+                      format: date
+                      description: Earliest interaction date (day-level)
+                    end:
+                      type: string
+                      format: date
+                      description: Latest interaction date (day-level)
+                parsingErrors:
+                  type: array
+                  nullable: true
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                  description: Non-fatal parsing errors encountered
+
+    GraphCreateResponse:
+      type: object
+      required:
+        - id
+        - platform
+        - nodeCount
+        - edgeCount
+        - isLatest
+        - createdAt
+        - pseudonymMapping
+      properties:
+        id:
+          type: string
+          pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Unique graph identifier
+          example: graph_01J...
+        uploadId:
+          type: string
+          pattern: '^upload_[A-Za-z0-9]{26}$'
+          nullable: true
+          description: Present if created from server-side fallback upload
+          example: upload_01J...
+        platform:
+          $ref: '#/components/schemas/Platform'
+        nodeCount:
+          type: integer
+          minimum: 1
+          example: 1234
+        edgeCount:
+          type: integer
+          minimum: 0
+          example: 5678
+        isLatest:
+          type: boolean
+          description: Whether this is the most recent graph for this platform
+          example: true
+        createdAt:
+          type: string
+          format: date
+          description: Graph creation date (day-level granularity)
+          example: '2025-12-27'
+        pseudonymMapping:
+          type: object
+          additionalProperties:
+            type: string
+          description: |
+            ALWAYS returned. Map of original externalId (platform user ID) to pseudonymized node ID.
+            Client uses this mapping to store display name/username labels locally in IndexedDB.
+            MUST NOT be persisted server-side.
+          example:
+            "123456789": "node_a3f2b8c1d4e5f6g7h8i9j0k1l2m3n4o5"
+            "987654321": "node_d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9"
+        warnings:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/Warning'
+          description: Non-critical warnings (e.g., partial imports, skipped records)
+
+    GraphFull:
+      allOf:
+        - $ref: '#/components/schemas/GraphMetadata'
+        - type: object
+          required:
+            - graph
+          properties:
+            graph:
+              type: object
+              required:
+                - nodes
+                - edges
+                - metadata
+              properties:
+                nodes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/GraphNode'
+                edges:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/GraphEdge'
+                metadata:
+                  type: object
+                  properties:
+                    statistics:
+                      $ref: '#/components/schemas/GraphMetrics'
+                    timePeriod:
+                      type: object
+                      nullable: true
+                      properties:
+                        start:
+                          type: string
+                          format: date
+                        end:
+                          type: string
+                          format: date
+
+    # ========================================
+    # Upload Schemas
+    # ========================================
+
+    UploadStatus:
+      type: object
+      required:
+        - id
+        - platform
+        - status
+      properties:
+        id:
+          type: string
+          pattern: '^upload_[A-Za-z0-9]{26}$'
+          example: upload_01J...
+        platform:
+          $ref: '#/components/schemas/Platform'
+        status:
+          type: string
+          enum: [queued, processing, complete, failed]
+          description: Current upload processing status
+          example: processing
+        stage:
+          type: string
+          enum: [upload, parse, build_graph, persist_graph, generate_insights]
+          nullable: true
+          description: Current processing stage (if status=processing)
+          example: build_graph
+        progress:
+          type: object
+          nullable: true
+          properties:
+            percent:
+              type: integer
+              minimum: 0
+              maximum: 100
+              description: Completion percentage
+            message:
+              type: string
+              description: Human-readable progress description
+          example:
+            percent: 67
+            message: Building pseudonymized graph structure
+        graphId:
+          type: string
+          pattern: '^graph_[A-Za-z0-9]{26}$'
+          nullable: true
+          description: Graph ID (if status=complete)
+          example: graph_01J...
+        errorMessage:
+          type: string
+          nullable: true
+          description: Error details (if status=failed)
+          example: Archive parsing failed - unsupported format
+
+    # ========================================
+    # Insight Schemas
+    # ========================================
+
+    InsightCategory:
+      type: string
+      enum:
+        - bridge_accounts
+        - echo_chamber
+        - engagement
+        - community
+        - growth
+        - influencers
+        - diversity
+        - anomalies
+      description: Insight category/type
+      example: community
+
+    Confidence:
+      type: string
+      enum: [high, medium, low]
+      description: Insight confidence level
+      example: high
+
+    Insight:
+      type: object
+      required:
+        - id
+        - graphId
+        - templateId
+        - category
+        - narrative
+        - actions
+        - confidence
+        - priority
+        - explanation
+        - createdAt
+      properties:
+        id:
+          type: string
+          pattern: '^insight_[A-Za-z0-9]{26}$'
+          description: Unique insight identifier
+          example: insight_01J...
+        graphId:
+          type: string
+          pattern: '^graph_[A-Za-z0-9]{26}$'
+          description: Associated graph ID
+          example: graph_01J...
+        templateId:
+          type: string
+          description: Template identifier (for reproducibility)
+          example: community_detection_v1
+        category:
+          $ref: '#/components/schemas/InsightCategory'
+        narrative:
+          type: string
+          maxLength: 1000
+          description: Human-readable insight narrative
+          example: Your network has 3 distinct communities with minimal cross-community connections.
+        actions:
+          type: array
+          items:
+            type: object
+            required:
+              - text
+              - priority
+            properties:
+              text:
+                type: string
+                description: Actionable recommendation
+              priority:
+                type: string
+                enum: [high, medium, low]
+              estimatedImpact:
+                type: string
+                nullable: true
+                description: Expected outcome if action taken
+              url:
+                type: string
+                format: uri
+                nullable: true
+                description: Link to detailed guide
+          description: Actionable recommendations based on insight
+        confidence:
+          $ref: '#/components/schemas/Confidence'
+        priority:
+          type: integer
+          minimum: 1
+          description: Display priority (1=highest)
+          example: 1
+        explanation:
+          type: object
+          required:
+            - triggeredConditions
+            - metrics
+            - templateVersion
+          properties:
+            triggeredConditions:
+              type: array
+              items:
+                type: string
+              description: Algorithm conditions that triggered this insight
+              example: ['modularity > 0.6', 'distinct_communities >= 3']
+            metrics:
+              type: array
+              items:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  value:
+                    type: number
+                    nullable: true
+              description: Supporting metrics for this insight
+              example:
+                - key: modularity
+                  value: 0.73
+                - key: community_count
+                  value: 3
+            templateVersion:
+              type: integer
+              minimum: 1
+              description: Template version number (for A/B testing)
+              example: 1
+        createdAt:
+          type: string
+          format: date
+          description: Insight generation date (day-level granularity for privacy, YYYY-MM-DD)
+          example: '2025-12-27'
+
+    # ========================================
+    # Export Schemas
+    # ========================================
+
+    ExportResponse:
+      type: object
+      required:
+        - exportId
+        - format
+        - downloadUrl
+        - expiresAt
+      properties:
+        exportId:
+          type: string
+          pattern: '^export_[A-Za-z0-9]{26}$'
+          description: Unique export job identifier
+          example: export_01J...
+        format:
+          type: string
+          enum: [pdf, png, svg]
+          description: Export file format
+          example: pdf
+        downloadUrl:
+          type: string
+          format: uri
+          description: Pre-signed S3 URL for file download (HTTPS-only, time-limited)
+          example: https://vsg-exports.s3.amazonaws.com/export_01J.pdf?X-Amz-Signature=...
+        expiresAt:
+          type: string
+          format: date-time
+          description: Download URL expiration timestamp (7 days from creation)
+          example: '2026-01-03T00:00:00Z'
+
+    # ========================================
+    # Error & Warning Schemas
+    # ========================================
+
+    ErrorSeverity:
+      type: string
+      enum:
+        - TRANSIENT
+        - RECOVERABLE
+        - PARTIAL
+        - CRITICAL
+        - INTEGRITY
+      description: |
+        Error severity classification for client retry logic:
+        - TRANSIENT: Temporary failures, retry expected to succeed
+        - RECOVERABLE: User can fix with corrected input
+        - PARTIAL: Operation partially succeeded
+        - CRITICAL: Severe errors requiring investigation
+        - INTEGRITY: Data consistency or security violations
+      example: TRANSIENT
+
+    ErrorEnvelope:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - id
+            - level
+            - code
+            - message
+            - retryable
+          properties:
+            id:
+              type: string
+              pattern: '^err_[A-Za-z0-9]{26}$'
+              description: Unique error identifier (for support debugging)
+              example: err_01JBCD...
+            level:
+              $ref: '#/components/schemas/ErrorSeverity'
+            code:
+              type: string
+              description: Machine-readable error code (see Appendix A in narrative spec)
+              example: QUOTA_EXCEEDED
+            message:
+              type: string
+              maxLength: 500
+              description: Human-readable error description
+              example: Daily graph creation quota exceeded for Free tier (5/day).
+            details:
+              type: object
+              nullable: true
+              description: Additional error context (field-specific, tier-specific, etc.)
+              example:
+                tier: free
+                limit: 5
+                used: 5
+                resetAt: '2025-12-28T00:00:00Z'
+            retryable:
+              type: boolean
+              description: Whether client should retry this request
+              example: true
+            suggestedAction:
+              type: string
+              nullable: true
+              maxLength: 500
+              description: Optional user-facing next step
+              example: Upgrade to Pro tier for 100 graphs/day or wait until quota resets.
+
+    Warning:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable warning code
+          example: PARTIAL_IMPORT_SOME_RECORDS_SKIPPED
+        message:
+          type: string
+          description: Human-readable warning description
+          example: 45 nodes skipped due to missing required fields.
+        count:
+          type: integer
+          nullable: true
+          description: Number of affected items
+          example: 45
+
+  # ========================================
+  # Reusable Response Components
+  # ========================================
+
+  responses:
+    BadRequest400:
+      description: Invalid request (schema validation failed, missing required fields, invalid enum values)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCE...
+              level: RECOVERABLE
+              code: INVALID_SCHEMA
+              message: Request body validation failed.
+              details:
+                field: platform
+                issue: Required field missing.
+              retryable: false
+              suggestedAction: Review API documentation and ensure all required fields are provided.
+
+    Unauthorized401:
+      description: Authentication required or session expired
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCF...
+              level: CRITICAL
+              code: AUTHENTICATION_FAILED
+              message: Invalid or expired session token.
+              details: {}
+              retryable: false
+              suggestedAction: Re-authenticate via magic link or Google OAuth.
+
+    Forbidden403:
+      description: Permission denied (resource ownership violation)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCG...
+              level: CRITICAL
+              code: PERMISSION_DENIED
+              message: User lacks permission to access this resource.
+              details:
+                resourceId: graph_01J...
+                ownerId: user_01J...
+                requesterId: user_01J...
+              retryable: false
+              suggestedAction: Ensure you own the resource.
+
+    TierRestricted403:
+      description: Feature not available in current subscription tier (NOT retryable via wait, requires upgrade)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCG...
+              level: RECOVERABLE
+              code: TIER_FEATURE_RESTRICTED
+              message: This feature is not available in Free tier.
+              details:
+                tier: free
+                feature: advanced_insights
+                requiredTier: pro
+              retryable: false
+              suggestedAction: Upgrade to Pro tier to access this feature.
+
+    NotFound404:
+      description: Resource not found (graph, upload, export does not exist)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCH...
+              level: CRITICAL
+              code: RESOURCE_NOT_FOUND
+              message: Requested graph does not exist.
+              details:
+                graphId: graph_01J...
+              retryable: false
+              suggestedAction: Verify resource ID is correct.
+
+    QuotaExceeded429:
+      description: |
+        Daily/monthly tier plan quota exceeded (NOT short-window rate limiting).
+
+        This error indicates the user has exhausted their subscription tier's quota limit
+        (e.g., 5 graphs/day for Free tier, 100/day for Pro). Unlike transient rate limits
+        that reset after minutes, tier quotas reset at midnight (daily) or month-end (monthly).
+
+        Client should NOT retry immediately. Recovery requires either:
+        1. Waiting until quota reset window (hours/days, see resetAt timestamp)
+        2. Upgrading subscription tier
+
+        Use RateLimited429 for short-window throttling (e.g., 5 requests/hour).
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Total quota allowed for this tier
+          example: 5
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining quota in current window
+          example: 0
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Unix timestamp when quota resets
+          example: 1735257600
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until quota reset
+          example: 43200
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCI...
+              level: RECOVERABLE
+              code: QUOTA_EXCEEDED
+              message: Daily graph creation quota exceeded for Free tier (5/day).
+              details:
+                tier: free
+                limit: 5
+                used: 5
+                resetAt: '2025-12-28T00:00:00Z'
+              retryable: false
+              suggestedAction: Upgrade to Pro tier for 100 graphs/day or wait until quota resets.
+
+    RateLimited429:
+      description: Too many requests from this user/IP (short time window, e.g., 5 requests/hour)
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Total requests allowed in window
+          example: 5
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Requests remaining in current window
+          example: 0
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Unix timestamp when limit resets
+          example: 1735094400
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds until rate limit reset
+          example: 3600
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCJ...
+              level: TRANSIENT
+              code: RATE_LIMITED
+              message: Too many requests. Please wait before retrying.
+              details:
+                limit: 5
+                windowSeconds: 3600
+                retryAfter: 3600
+              retryable: true
+              suggestedAction: Wait 1 hour before retrying this request.
+
+    InternalError500:
+      description: Unexpected server error (internal processing failure)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            error:
+              id: err_01JBCK...
+              level: CRITICAL
+              code: INTERNAL_ERROR
+              message: An unexpected error occurred. Our team has been notified.
+              details: {}
+              retryable: false
+              suggestedAction: Contact support with error ID err_01JBCK... if issue persists.
