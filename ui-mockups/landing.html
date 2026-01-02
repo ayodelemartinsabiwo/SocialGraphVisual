@@ -7,36 +7,163 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="flex flex-col h-full">
+    <div class="gradient-bg">
         <!-- Navigation -->
-        <nav class="container flex justify-between items-center" style="padding: var(--spacing-md) 2rem;">
-            <div class="font-bold text-xl" style="color: var(--color-primary);">VSG.</div>
-            <a href="app.html" class="btn btn-primary">Launch App</a>
-        </nav>
+        <header class="container flex justify-between items-center" style="padding: var(--space-4) 0;">
+            <div class="flex items-center gap-2">
+                <div class="badge">VSG</div>
+                <span class="body-md">Visual Social Graph</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="#features" class="body-md">Features</a>
+                <a href="#how" class="body-md">How it works</a>
+                <a href="app.html" class="btn btn-primary">Launch App</a>
+            </div>
+        </header>
 
-        <!-- Hero Section -->
-        <main class="flex-1 flex items-center justify-center">
-            <div class="text-center" style="padding: 0 var(--spacing-md);">
-                <h1 class="font-bold text-4xl md-text-6xl" style="margin-bottom: var(--spacing-lg);">
-                    See Your Network.<br>
-                    <span style="color: var(--color-primary);">Own Your Data.</span>
-                </h1>
-                <p style="color: var(--color-text-muted); margin-bottom: var(--spacing-xl); max-width: 600px; margin: 0 auto var(--spacing-xl) auto;">
-                    Transform your social connections into actionable intelligence.
-                    Visualize hidden patterns, identify key influencers, and take control of your digital graph.
-                </p>
-                <div class="flex justify-center" style="gap: var(--spacing-md);">
-                    <a href="app.html" class="btn btn-primary">Get Started</a>
-                    <a href="#" class="btn btn-outline">Learn More</a>
+        <!-- Hero -->
+        <section class="container hero" id="top">
+            <div class="hero-grid">
+                <div>
+                    <div class="eyebrow">Algorithm-first · Privacy by design</div>
+                    <h1 class="heading-hero" style="margin: var(--space-4) 0;">
+                        See Your Digital Self.<br>
+                        <span style="color: var(--color-primary);">Own Your Data.</span>
+                    </h1>
+                    <p class="body-md" style="margin-bottom: var(--space-6); max-width: 640px;">
+                        Transform your social data into a living map of your online identity. All processing stays local. No API limits. No cloud lock-in.
+                    </p>
+                    <div class="flex gap-4" style="margin-bottom: var(--space-4); flex-wrap: wrap;">
+                        <a href="app.html" class="btn btn-primary">Visualize Your Network (Free)</a>
+                        <a href="#how" class="btn btn-ghost">See how it works</a>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="chip">100% Private • Local</div>
+                        <div class="chip">Platform Agnostic</div>
+                        <div class="chip">Graph Theory First</div>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="ring"></div>
+                    <div class="ring r2"></div>
+                    <div class="ring r3"></div>
+                    <div class="node center" style="animation: pulse 2s ease-in-out infinite;"></div>
+                    <div class="node n1"></div>
+                    <div class="node n2"></div>
+                    <div class="node n3"></div>
+                    <div class="node n4"></div>
+                    <div class="card glass" style="position:absolute; right: var(--space-4); bottom: var(--space-4); width: 260px;">
+                        <div class="eyebrow">Insight</div>
+                        <div class="heading-lg" style="margin: var(--space-2) 0 var(--space-3);">Bridge Connection</div>
+                        <p class="body-md" style="color: var(--color-text-main);">This person connects you to 200+ others you don't actively engage with.</p>
+                    </div>
                 </div>
             </div>
-        </main>
+        </section>
 
-        <!-- Footer -->
-        <footer style="border-top: 1px solid var(--color-border); padding: var(--spacing-lg) 2rem;">
-            <div class="flex flex-col md-flex-row justify-between items-center" style="color: var(--color-text-muted); font-size: 0.9rem;">
-                <p>&copy; 2025 Visual Social Graph.</p>
-                <div class="flex" style="gap: var(--spacing-md); margin-top: var(--spacing-sm);">
+        <!-- How it works -->
+        <section class="container section" id="how">
+            <div class="heading-xl" style="margin-bottom: var(--space-4);">How it works</div>
+            <div class="how-grid">
+                <div class="step">
+                    <div class="feature-icon">⬇</div>
+                    <h3 class="heading-lg" style="margin-bottom: var(--space-2);">Download</h3>
+                    <p class="body-md">Request your data archive from Twitter/X, Instagram, LinkedIn, or TikTok. Keep it local.</p>
+                </div>
+                <div class="step">
+                    <div class="feature-icon">🛡</div>
+                    <h3 class="heading-lg" style="margin-bottom: var(--space-2);">Upload (Local)</h3>
+                    <p class="body-md">Drag and drop your ZIP/JSON. Parsing happens on-device. No PII leaves your machine.</p>
+                </div>
+                <div class="step">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="heading-lg" style="margin-bottom: var(--space-2);">Discover</h3>
+                    <p class="body-md">Watch the 5-stage reveal uncover communities, bridge connections, and engagement gaps.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="container section" id="features">
+            <div class="heading-xl" style="margin-bottom: var(--space-4);">Why VSG is different</div>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="heading-lg">100% Private</h3>
+                    <p class="body-md">No tokens, no API calls. Everything runs locally—algorithm-first, privacy-always.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="heading-lg">Instant Insights</h3>
+                    <p class="body-md">Guided reveal in under 10 seconds: nodes, edges, communities, spotlight, controls.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🧭</div>
+                    <h3 class="heading-lg">Bridge Detection</h3>
+                    <p class="body-md">Automatically spot the connectors that open entire sub-graphs you overlook.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="heading-lg">Network Intelligence</h3>
+                    <p class="body-md">Density, clustering coefficient, avg. path length, and PageRank surfaced clearly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="container section" id="testimonials">
+            <div class="heading-xl" style="margin-bottom: var(--space-4);">Loved by people who grow networks</div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4" style="margin-bottom: var(--space-3);">
+                        <div class="avatar">MI</div>
+                        <div>
+                            <div class="heading-lg">Tara (Micro-influencer)</div>
+                            <div class="body-md">Fitness • 38k followers</div>
+                        </div>
+                    </div>
+                    <p>“I finally understood why my engagement was dropping. I was talking to the same 50 people. VSG showed me the ghosts in my network.”</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4" style="margin-bottom: var(--space-3);">
+                        <div class="avatar">PB</div>
+                        <div>
+                            <div class="heading-lg">Leo (Personal brand)</div>
+                            <div class="body-md">Product • 120k followers</div>
+                        </div>
+                    </div>
+                    <p>“I didn't realize my professional network was so siloed. The bridge callout revealed the connectors I was ignoring.”</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4" style="margin-bottom: var(--space-3);">
+                        <div class="avatar">CR</div>
+                        <div>
+                            <div class="heading-lg">Ada (Community lead)</div>
+                            <div class="body-md">Climate • 14k members</div>
+                        </div>
+                    </div>
+                    <p>“The 5-stage reveal is the first time a graph felt like a story. My team actually understood what mattered.”</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="container section" style="padding-bottom: var(--space-16);">
+            <div class="card glass" style="text-align: center;">
+                <div class="heading-xl" style="margin-bottom: var(--space-3);">Ready to see your network differently?</div>
+                <p class="body-md" style="margin-bottom: var(--space-6);">Upload your archive and get a full insight pass in under 10 seconds. Local-first. Algorithm-first.</p>
+                <div class="flex justify-center gap-4">
+                    <a href="app.html" class="btn btn-primary">Launch App</a>
+                    <a href="#features" class="btn btn-ghost">Explore features</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="container" style="padding: var(--space-6) 0; border-top: 1px solid var(--color-border);">
+            <div class="flex justify-between items-center">
+                <div class="body-md">© 2025 Visual Social Graph. 100% local processing.</div>
+                <div class="flex gap-4 body-md">
                     <a href="#">Privacy</a>
                     <a href="#">Terms</a>
                 </div>
