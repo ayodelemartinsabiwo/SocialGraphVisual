@@ -46,23 +46,26 @@ Implementation (React/Next.js components)
 
 1. [Layout Principles & Philosophy](#1-layout-principles--philosophy)
 2. [Global Layout Structure](#2-global-layout-structure)
-3. [Phase 1 Layouts (Foundation)](#3-phase-1-layouts-foundation)
+3. [Phase 1 Layouts (Complete Product Launch)](#3-phase-1-layouts-complete-product-launch)
    - 3.1 [Landing Page](#31-landing-page)
    - 3.2 [Authentication Pages](#32-authentication-pages)
    - 3.3 [Upload Flow](#33-upload-flow)
    - 3.4 [Graph Canvas (Main Visualization)](#34-graph-canvas-main-visualization)
-   - 3.5 [Basic Insights View](#35-basic-insights-view)
-   - 3.6 [User Dashboard](#36-user-dashboard)
-4. [Phase 2 Layouts (Enhancement)](#4-phase-2-layouts-enhancement)
-   - 4.1 [Enhanced Insights Views](#41-enhanced-insights-views)
-   - 4.2 [Export & Sharing](#42-export--sharing)
-   - 4.3 [Settings & Profile](#43-settings--profile)
-5. [Phase 3+ Layouts (Deferred)](#5-phase-3-layouts-deferred)
-6. [Responsive Breakpoints & Behavior](#6-responsive-breakpoints--behavior)
-7. [Layout Flow & Navigation](#7-layout-flow--navigation)
-8. [Marketing Copy Specifications](#8-marketing-copy-specifications)
-9. [Icon & Button Placement Matrix](#9-icon--button-placement-matrix)
-10. [Amendment Log](#10-amendment-log)
+   - 3.5 [Insights Dashboard](#35-insights-dashboard)
+      - 3.5.1 [Network Graph View](#351-network-graph-view)
+      - 3.5.2 [Positioning Map View](#352-positioning-map-view)
+      - 3.5.3 [Engagement Circles View](#353-engagement-circles-view)
+      - 3.5.4 [Content Resonance View](#354-content-resonance-view)
+      - 3.5.5 [Growth Opportunities View](#355-growth-opportunities-view)
+   - 3.6 [Export & Sharing](#36-export--sharing)
+   - 3.7 [Settings & Profile](#37-settings--profile)
+   - 3.8 [User Dashboard](#38-user-dashboard)
+4. [Phase 2+ Layouts (Future Features)](#4-phase-2-layouts-future-features)
+5. [Responsive Breakpoints & Behavior](#5-responsive-breakpoints--behavior)
+6. [Layout Flow & Navigation](#6-layout-flow--navigation)
+7. [Marketing Copy Specifications](#7-marketing-copy-specifications)
+8. [Icon & Button Placement Matrix](#8-icon--button-placement-matrix)
+9. [Amendment Log](#9-amendment-log)
 
 ---
 
@@ -83,7 +86,7 @@ Implementation (React/Next.js components)
 ### **1.2 Layout Constraints (Non-Negotiable)**
 
 **From VSG_DESIGN_PRINCIPLE.md:**
-- **Algorithm-First**: No AI branding, transparent metrics visible
+- **Algorithm-First**: Transparent metrics visible, explainable methods
 - **Privacy-First**: "No account access" messaging prominent
 - **Manual Upload**: Upload flow is primary entry, not secondary
 
@@ -251,7 +254,7 @@ Specifications:
 
 ---
 
-## **3. Phase 1 Layouts (Foundation)**
+## **3. PHASE 1 LAYOUTS (COMPLETE PRODUCT LAUNCH)**
 
 ### **3.1 Landing Page**
 
@@ -401,8 +404,9 @@ Card 2: "Algorithm-Driven"
 │  └─ Center-aligned
 ├─ Title: "Algorithm-Driven" (20px, semibold, center)
 └─ Description:
-   "Betweenness centrality, PageRank, community detection.
-    Transparent, explainable graph-theoretic methods."
+   "We identify your bridges (people who connect different groups),
+    influencers (people whose opinions spread), and communities
+    (clusters of interconnected people)—all using transparent algorithms."
 
 Card 3: "Instant Insights"
 ├─ Icon: Lightning bolt (64×64px)
@@ -937,9 +941,19 @@ Would you like me to continue in a new file or would you prefer I consolidate th
 │ │      │                                                   │   │
 │ │Filter│  CANVAS AREA (Main visualization)                │   │
 │ │Panel │  Background: White (light), Gray-900 (dark)      │   │
+│ │      │  with subtle dot grid pattern:                   │   │
+│ │      │  - Dot size: 1px radius                          │   │
+│ │300px │  - Dot opacity: 5% black (light), 3% white (dark)│   │
+│ │width │  - Grid spacing: 20px × 20px                     │   │
+│ │      │  - Effect: Visible but not overwhelming          │   │
 │ │      │                                                   │   │
-│ │300px │  ┌────────────────────────────────────────────┐  │   │
-│ │width │  │ #graph-canvas                              │  │   │
+│ │      │  CSS Implementation:                             │   │
+│ │      │  background-image: radial-gradient(             │   │
+│ │      │    circle, rgba(0,0,0,0.05) 1px, transparent 1px)│   │
+│ │      │  background-size: 20px 20px                      │   │
+│ │      │                                                   │   │
+│ │      │  ┌────────────────────────────────────────────┐  │   │
+│ │      │  │ #graph-canvas                              │  │   │
 │ │      │  │ (SVG container, D3.js force-directed)      │  │   │
 │ │Sticky│  │                                            │  │   │
 │ │      │  │ Nodes: 50 circles (4-20px radius)          │  │   │
@@ -1023,6 +1037,32 @@ FILTER SIDEBAR (Left, 300px width):
 │ ├─ Padding: 8px                  │
 │ ├─ Hover: Background Gray-50     │
 │ └─ Border-radius: 6px            │
+│                                  │
+│ **COMMUNITY LABELING SYSTEM:**   │
+│                                  │
+│ Communities are algorithmically  │
+│ detected, then labeled using     │
+│ client-side LLM (optional):      │
+│                                  │
+│ 1. Default: Generic labels       │
+│    - "Community A", "Community B"│
+│    - Or: "Orange Group", etc.    │
+│                                  │
+│ 2. Smart Labels (optional):      │
+│    - Uses Phi-3-mini (500MB)     │
+│    - Runs 100% in browser        │
+│    - Analyzes profile data       │
+│    - Suggests: "Tech Founders",  │
+│      "Marketing Pros", etc.      │
+│                                  │
+│ 3. Manual labeling:              │
+│    - Click [✏️ Edit] button      │
+│    - Rename any community        │
+│    - Stored in localStorage      │
+│                                  │
+│ [✏️] Edit Label (icon button)    │
+│ Position: Next to each comm. label│
+│ Size: 16×16px, hover visible     │
 │                                  │
 │ ──────────────────────────────   │
 │                                  │
@@ -1244,132 +1284,7 @@ Mobile Adaptations:
 
 ---
 
-### **3.5 Basic Insights View**
-
-**Phase 1: 4 Core Insights**
-
-**Desktop Layout:**
-```
-┌────────────────────────────────────────────────────────────────┐
-│ Insights Page                                                   │
-│ ┌──────────────────────────────────────────────────────────┐   │
-│ │ HERO SECTION (Background: Orange gradient, color: white) │   │
-│ │ Padding: 64px 0, text-align: center                      │   │
-│ │                                                           │   │
-│ │ H1: "Network Insights & Recommendations"                 │   │
-│ │ (48px, white, semibold)                                  │   │
-│ │                                                           │   │
-│ │ P: "Data-driven insights from graph-theoretic analysis.  │   │
-│ │     All metrics are explainable and deterministic."      │   │
-│ │ (20px, white, opacity: 0.95)                             │   │
-│ └──────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│ ┌──────────────────────────────────────────────────────────┐   │
-│ │ STATS GRID (4 columns, negative margin-top: -48px)       │   │
-│ │ Overlaps hero section                                    │   │
-│ │ ┌──────┬──────┬──────┬──────┐                           │   │
-│ │ │  50  │ 120  │  5   │  12  │                           │   │
-│ │ │Conns │Rels  │Comms │Insghts                           │   │
-│ │ └──────┴──────┴──────┴──────┘                           │   │
-│ │                                                           │   │
-│ │ Each stat card:                                          │   │
-│ │ ├─ Background: White, Shadow: elevation-3                │   │
-│ │ ├─ Border-radius: 12px, Padding: 24px                    │   │
-│ │ ├─ Value: 36px, bold, Orange-500                         │   │
-│ │ ├─ Label: 12px, uppercase, Gray-500                      │   │
-│ │ └─ Hover: Transform translateY(-2px), shadow +1          │   │
-│ └──────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│ ┌──────────────────────────────────────────────────────────┐   │
-│ │ FILTERS BAR                                              │   │
-│ │ Background: White, Border: Gray-200, Border-radius: 12px │   │
-│ │ Padding: 16px, Display: flex, gap: 16px, flex-wrap       │   │
-│ │                                                           │   │
-│ │ Label: "Filter by:" (semibold, Gray-700)                 │   │
-│ │ [All Insights] [High Confidence] [Bridges]               │   │
-│ │ [Influencers] [Opportunities]                            │   │
-│ │                                                           │   │
-│ │ Filter chip:                                             │   │
-│ │ ├─ Padding: 8px 16px, Border-radius: full               │   │
-│ │ ├─ Border: 1px Gray-300 (default)                        │   │
-│ │ ├─ Background: Orange-500 (active), White (default)      │   │
-│ │ ├─ Text: White (active), Gray-700 (default)              │   │
-│ │ ├─ Font-size: 14px, cursor: pointer                      │   │
-│ │ └─ Hover: Border Orange-500, Background Orange-50        │   │
-│ └──────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│ ┌──────────────────────────────────────────────────────────┐   │
-│ │ INSIGHTS GRID (Grid: auto-fill, min: 350px, gap: 24px)   │   │
-│ │ ┌────────────────┬────────────────┬────────────────┐     │   │
-│ │ │ Insight Card 1 │ Insight Card 2 │ Insight Card 3 │     │   │
-│ │ └────────────────┴────────────────┴────────────────┘     │   │
-│ │ ┌────────────────┬────────────────┐                      │   │
-│ │ │ Insight Card 4 │ Insight Card 5 │ ...                  │   │
-│ │ └────────────────┴────────────────┘                      │   │
-│ └──────────────────────────────────────────────────────────┘   │
-└────────────────────────────────────────────────────────────────┘
-
-INSIGHT CARD STRUCTURE:
-┌──────────────────────────────────┐
-│ Insight Card                     │
-│ Background: White                │
-│ Border: 1px Gray-200             │
-│ Border-left: 4px (Confidence)    │
-│   Green-500 (High)               │
-│   Amber-500 (Medium)             │
-│   Blue-500 (Low)                 │
-│ Border-radius: 12px              │
-│ Padding: 24px                    │
-│ Transition: all 200ms            │
-│ Hover: Shadow elevation +1       │
-│                                  │
-│ ┌──────────────────────────────┐ │
-│ │ Header (flex, space-between) │ │
-│ │ ┌─────────┬────────────────┐ │ │
-│ │ │ BRIDGE  │ [HIGH]         │ │ │
-│ │ │ (12px,↑)│ Confidence     │ │ │
-│ │ │ Gray-500│ Badge          │ │ │
-│ │ └─────────┴────────────────┘ │ │
-│ └──────────────────────────────┘ │
-│                                  │
-│ H3: "Alex Chen Bridges Tech and  │
-│      Business Communities"       │
-│ (18px, semibold, margin-b: 16px) │
-│                                  │
-│ P: "Alex Chen (betweenness: 0.82)│
-│     serves as a critical bridge  │
-│     between Tech Innovators and  │
-│     Business Leaders..."         │
-│ (14px, Gray-600, line: 1.625)    │
-│                                  │
-│ ┌──────────────────────────────┐ │
-│ │ ACTION BOX                   │ │
-│ │ Background: Orange-50        │ │
-│ │ Border-left: 3px Orange-500  │ │
-│ │ Padding: 16px                │ │
-│ │ Border-radius: 8px           │ │
-│ │                              │ │
-│ │ 💡 Actionable:               │ │
-│ │ Leverage Alex for cross-     │ │
-│ │ functional initiatives...    │ │
-│ │ (14px, Orange-900)           │ │
-│ └──────────────────────────────┘ │
-│                                  │
-│ ┌──────────────────────────────┐ │
-│ │ METRIC DISPLAY               │ │
-│ │ Border-top: 1px Gray-200     │ │
-│ │ Padding-top: 16px            │ │
-│ │ Display: flex, align: center │ │
-│ │                              │ │
-│ │ Betweenness Centrality: 0.82 │ │
-│ │ (14px Gray-600, 18px Orange) │ │
-│ └──────────────────────────────┘ │
-└──────────────────────────────────┘
-```
-
----
-
-### **3.6 User Dashboard**
+### **3.8 User Dashboard**
 
 **Purpose:** Hub for managing graphs, viewing history, accessing settings
 
@@ -1458,17 +1373,15 @@ NETWORK CARD:
 
 ---
 
-## **4. PHASE 2 LAYOUTS (PUBLIC LAUNCH - ENHANCEMENT)**
-
-Phase 2 brings enhanced insights, export capabilities, and settings. Timeline: Weeks 7-12 after beta launch.
+**Note:** Phase 1 includes all core features for complete product launch.
 
 ---
 
-### **4.1 Enhanced Insights Views (All 5 Core Views)**
+### **3.5 Insights Dashboard (All 5 Core Views)**
 
-Phase 2 expands from basic insights to 5 complete visualization types.
+The insights dashboard provides 5 complete visualization types for network analysis.
 
-#### **4.1.1 Network Graph View (Enhanced Version of Phase 1)**
+#### **3.5.1 Network Graph View (Enhanced Visualization)**
 
 **Purpose:** Interactive force-directed graph with advanced filters and annotations
 
@@ -1643,7 +1556,7 @@ Opens when node is clicked. Semi-transparent backdrop.
 
 ---
 
-#### **4.1.2 Positioning Map View**
+#### **3.5.2 Positioning Map View**
 
 **Purpose:** 2D scatter plot showing influence vs. reach positioning
 
@@ -1739,7 +1652,7 @@ Opens when node is clicked. Semi-transparent backdrop.
 
 ---
 
-#### **4.1.3 Engagement Circles View**
+#### **3.5.3 Engagement Circles View**
 
 **Purpose:** Concentric circles showing engagement frequency tiers
 
@@ -1825,19 +1738,19 @@ Opens when node is clicked. Semi-transparent backdrop.
 │ │ 🎯 Actions You Can Take                                  │   │
 │ │ ─────────────────────────────────────────────            │   │
 │ │                                                          │   │
-│ │ 1. RE-ENGAGE DORMANT CONNECTIONS (15 people)             │   │
-│ │    These are people you haven't interacted with in 3+    │   │
-│ │    months. Consider reaching out to:                     │   │
-│ │    • Sarah Lee (last: 4 months ago) - Birthday coming up│   │
-│ │    • Mike Chen (last: 6 months ago) - Works at target co│   │
-│ │    • Lisa Wong (last: 8 months ago) - Shared interests   │   │
+│ │ 1. STRENGTHEN PERIPHERAL CONNECTIONS (15 people)         │   │
+│ │    These people are in your network's outer circle       │   │
+│ │    (few connections to others). Consider reaching out:   │   │
+│ │    • Sarah Lee (Business Leaders community)             │   │
+│ │    • Mike Chen (Tech Innovators community)              │   │
+│ │    • Lisa Wong (Creative Designers community)           │   │
 │ │                                                          │   │
 │ │    [View All 15 →]                                       │   │
 │ │                                                          │   │
-│ │ 2. NURTURE RISING STARS (3 people)                       │   │
-│ │    These connections have moved from Monthly → Weekly:   │   │
-│ │    • Alex Johnson (trend: ↗ +40% this month)            │   │
-│ │    Consider strengthening these relationships            │   │
+│ │ 2. CONNECT ISOLATED CLUSTERS (3 opportunities)          │   │
+│ │    These groups could benefit from more connections:     │   │
+│ │    • Connect Alex Johnson (Tech) with Sarah Lee (Biz)   │   │
+│ │    • High potential for collaboration                    │   │
 │ │                                                          │   │
 │ │    [View Details →]                                      │   │
 │ └──────────────────────────────────────────────────────────┘   │
@@ -1845,7 +1758,7 @@ Opens when node is clicked. Semi-transparent backdrop.
 ```
 
 **Interactive Features:**
-- Hover node → Tooltip with name, engagement frequency, last interaction date
+- Hover node → Tooltip with name, community, connection strength
 - Click node → Detail panel (slides from right)
 - Filter by community (top controls)
 - Animate on load: Nodes fade in from center outward (0.5s stagger)
@@ -1858,7 +1771,7 @@ Opens when node is clicked. Semi-transparent backdrop.
 
 ---
 
-#### **4.1.4 Content Resonance View**
+#### **3.5.4 Content Resonance View**
 
 **Purpose:** Bar chart showing which content types resonate with which communities
 
@@ -1949,7 +1862,7 @@ Opens when node is clicked. Semi-transparent backdrop.
 
 ---
 
-#### **4.1.5 Growth Opportunities View**
+#### **3.5.5 Growth Opportunities View**
 
 **Purpose:** Prioritized list of actionable network growth strategies
 
@@ -2040,20 +1953,20 @@ Opens when node is clicked. Semi-transparent backdrop.
 │ │                                                          │   │
 │ │ THE INSIGHT:                                             │   │
 │ │ 6 of your connections are high-value (influencers or     │   │
-│ │ bridges) but haven't been contacted in 3+ months.        │   │
+│ │ bridges) but are in your network's peripheral zone.      │   │
 │ │                                                          │   │
 │ │ RECOMMENDED ACTIONS:                                     │   │
-│ │ 1. Sarah Martinez (last contact: 4 months ago)           │   │
-│ │    Occasion: Her company just raised Series B (detected) │   │
-│ │    [Draft Congratulations Message] [Skip] [Done ✓]      │   │
+│ │ 1. Sarah Martinez (Business Leaders community)           │   │
+│ │    Role: Influencer - Consider reconnecting              │   │
+│ │    [Add to Contact List] [Skip] [Done ✓]                │   │
 │ │                                                          │   │
-│ │ 2. David Chen (last contact: 5 months ago)               │   │
-│ │    Occasion: Birthday in 3 days                          │   │
-│ │    [Draft Birthday Message] [Skip] [Done ✓]             │   │
+│ │ 2. David Chen (Tech Innovators community)                │   │
+│ │    Role: Bridge - Connects multiple groups               │   │
+│ │    [Add to Contact List] [Skip] [Done ✓]                │   │
 │ │                                                          │   │
 │ │ [View All 6 →]                                           │   │
 │ │                                                          │   │
-│ │ [Start Re-Engagement] [Dismiss]                          │   │
+│ │ [Plan Outreach] [Dismiss]                                │   │
 │ └──────────────────────────────────────────────────────────┘   │
 │                                                                │
 │ ┌──────────────────────────────────────────────────────────┐   │
@@ -2108,7 +2021,7 @@ Opens when node is clicked. Semi-transparent backdrop.
 
 ---
 
-### **4.2 Export & Sharing Layouts**
+### **3.6 Export & Sharing Layouts**
 
 Phase 2 introduces export capabilities for insights and data.
 
@@ -2238,7 +2151,7 @@ For social media sharing (LinkedIn, Twitter, etc.)
 
 ---
 
-### **4.3 Settings & Profile Pages**
+### **3.7 Settings & Profile Pages**
 
 #### **4.3.1 Settings Page**
 
@@ -2331,7 +2244,7 @@ Covered in Section 3.6 (Phase 1). No changes for Phase 2.
 
 ---
 
-## **5. PHASE 3+ LAYOUTS (FUTURE FEATURES)**
+## **4. PHASE 2+ LAYOUTS (FUTURE FEATURES)**
 
 Phase 3 and beyond are deferred. Layouts not specified until features are finalized.
 
@@ -2351,11 +2264,11 @@ Phase 3 and beyond are deferred. Layouts not specified until features are finali
 
 ---
 
-## **6. RESPONSIVE BREAKPOINTS & BEHAVIOR**
+## **5. RESPONSIVE BREAKPOINTS & BEHAVIOR**
 
 This section defines exact behavior at each breakpoint.
 
-### **6.1 Breakpoint Definitions**
+### **5.1 Breakpoint Definitions**
 
 ```css
 /* Mobile (default, mobile-first) */
@@ -2371,7 +2284,7 @@ This section defines exact behavior at each breakpoint.
 1440px+: Max-width containers (1200-1400px), centered
 ```
 
-### **6.2 Layout Transformations by Breakpoint**
+### **5.2 Layout Transformations by Breakpoint**
 
 #### **Header (Global)**
 
@@ -2438,7 +2351,7 @@ Menu Content (Full-width on mobile, 320px on tablet):
 │ [Email input, full-width]   │
 │ [Subscribe] (full-width)    │
 │                             │
-│ [LinkedIn] [Twitter] [GitHub]│
+│ [LinkedIn] [Twitter]        │
 │ (centered, 40×40px each)    │
 │                             │
 │ © 2025 VSG. All rights reserved.│
@@ -2539,7 +2452,7 @@ Close: Swipe down OR tap backdrop OR [×] button
 
 ---
 
-### **6.3 Typography Scaling**
+### **5.3 Typography Scaling**
 
 **Responsive Font Sizes (using clamp()):**
 
@@ -2562,7 +2475,7 @@ Small: 1.5
 
 ---
 
-### **6.4 Spacing Adjustments**
+### **5.4 Spacing Adjustments**
 
 **Container Padding:**
 
@@ -2583,7 +2496,7 @@ Small: 1.5
 
 ---
 
-### **6.5 Touch Target Minimums**
+### **5.5 Touch Target Minimums**
 
 **WCAG 2.2 AA Compliance:**
 - Minimum touch target: 44×44px (all interactive elements)
@@ -2597,9 +2510,9 @@ Small: 1.5
 
 ---
 
-## **7. LAYOUT FLOW & NAVIGATION**
+## **6. LAYOUT FLOW & NAVIGATION**
 
-### **7.1 User Journey Flows**
+### **6.1 User Journey Flows**
 
 #### **Flow 1: First-Time User (Onboarding)**
 
@@ -2697,7 +2610,7 @@ Small: 1.5
 
 ---
 
-### **7.2 Navigation Patterns**
+### **6.2 Navigation Patterns**
 
 #### **Primary Navigation (Header)**
 
@@ -2742,7 +2655,7 @@ Scrollable on mobile (horizontal scroll)
 
 ---
 
-### **7.3 Screen-to-Screen Transitions**
+### **6.3 Screen-to-Screen Transitions**
 
 **Transition Types:**
 
@@ -2773,7 +2686,7 @@ Scrollable on mobile (horizontal scroll)
 
 ---
 
-### **7.4 Empty States & Error States**
+### **6.4 Empty States & Error States**
 
 #### **Empty State: No Networks Yet**
 
@@ -2858,11 +2771,11 @@ Scrollable on mobile (horizontal scroll)
 
 ---
 
-## **8. MARKETING COPY SPECIFICATIONS**
+## **7. MARKETING COPY SPECIFICATIONS**
 
 All exact copy for every section, following VSG voice and tone.
 
-### **8.1 Voice & Tone Guidelines**
+### **7.1 Voice & Tone Guidelines**
 
 **Voice Characteristics:**
 - **Clear, not clever**: Direct language, avoid jargon
@@ -2878,7 +2791,7 @@ All exact copy for every section, following VSG voice and tone.
 
 ---
 
-### **8.2 Landing Page Copy**
+### **7.2 Landing Page Copy**
 
 #### **Hero Section**
 
@@ -2926,7 +2839,7 @@ Built on Transparency, Not Black Boxes
 **Feature 1: Algorithm-First**
 - **Icon**: Graph icon (nodes + edges)
 - **Headline (H3)**: "Graph Theory, Not Guesswork"
-- **Body**: "We use proven algorithms—PageRank, betweenness centrality, community detection—to analyze your network. No AI, no black boxes, just math you can verify."
+- **Body**: "We identify who connects your communities, who influences opinions, and how groups form—using proven mathematical methods. No AI, no black boxes, just transparent analysis you can verify."
 - **Link**: [Learn about our methods →]
 
 **Feature 2: Privacy-First**
@@ -2950,22 +2863,17 @@ Built on Transparency, Not Black Boxes
 Trusted by Privacy-Conscious Professionals
 ```
 
-**Badge 1: Open Source**
-- Icon: GitHub logo
-- Text: "Open Source"
-- Subtext: "Fully auditable code"
-
-**Badge 2: No Tracking**
+**Badge 1: No Tracking**
 - Icon: Shield
 - Text: "No Tracking"
 - Subtext: "Zero analytics cookies"
 
-**Badge 3: Client-Side**
+**Badge 2: Client-Side**
 - Icon: Browser window
 - Text: "Runs in Browser"
 - Subtext: "80% local processing"
 
-**Badge 4: Forever Free**
+**Badge 3: Forever Free**
 - Icon: Gift
 - Text: "Always Free"
 - Subtext: "Core features, no limits"
@@ -2996,7 +2904,7 @@ View Demo Network
 
 ---
 
-### **8.3 Authentication Page Copy**
+### **7.3 Authentication Page Copy**
 
 **Page Title (H1):**
 ```
@@ -3051,7 +2959,7 @@ Didn't receive it? [Resend link]
 
 ---
 
-### **8.4 Upload Flow Copy**
+### **7.4 Upload Flow Copy**
 
 #### **Step 1: Platform Selection**
 
@@ -3155,9 +3063,76 @@ Your Network is Ready! 🎉
 [View Insights First] (Secondary)
 ```
 
+**Optional: Smart Community Labels Modal**
+(Appears after success screen if rich profile data detected)
+
+```
+┌─────────────────────────────────────────────────┐
+│ ✨ Smart Community Labels Available             │
+│ ─────────────────────────────────────────────   │
+│                                                 │
+│ We can analyze your network data to suggest    │
+│ meaningful labels for each community.           │
+│                                                 │
+│ 🔒 100% Private:                                │
+│ • Analysis runs in your browser only            │
+│ • No data sent to servers                       │
+│ • Requires 500MB model download (one-time)      │
+│ • You can edit or reject any suggestion         │
+│                                                 │
+│ [Generate Smart Labels] (Primary)               │
+│ [Skip, I'll Name Them Later] (Secondary)        │
+└─────────────────────────────────────────────────┘
+
+If user clicks [Generate Smart Labels]:
+
+1. Model Download Screen (first time only):
+┌─────────────────────────────────────────────────┐
+│ Downloading AI Model...                         │
+│ ─────────────────────────────────────────────   │
+│                                                 │
+│ [████████████░░░░░░░░] 65% (325MB / 500MB)     │
+│                                                 │
+│ This happens once. The model is cached for      │
+│ future use.                                     │
+│                                                 │
+│ Time remaining: ~30 seconds                     │
+└─────────────────────────────────────────────────┘
+
+2. Analysis Progress:
+┌─────────────────────────────────────────────────┐
+│ Analyzing Communities...                        │
+│ ─────────────────────────────────────────────   │
+│                                                 │
+│ ✓ Community 1 (10 people) → "Tech Founders"    │
+│ ✓ Community 2 (8 people) → "Marketing Pros"    │
+│ ⏳ Community 3 (12 people) → Analyzing...       │
+│ ○ Community 4 (6 people) → Pending             │
+│ ○ Community 5 (14 people) → Pending            │
+└─────────────────────────────────────────────────┘
+
+3. Review & Edit Suggestions:
+┌─────────────────────────────────────────────────┐
+│ Review Suggested Labels                         │
+│ ─────────────────────────────────────────────   │
+│                                                 │
+│ Community 1 (10 people):                        │
+│ Suggested: "Tech Founders"                      │
+│ [Accept] [Edit: Tech Founders___] [Skip]       │
+│                                                 │
+│ Community 2 (8 people):                         │
+│ Suggested: "Marketing Professionals"            │
+│ [Accept] [Edit: _______________] [Skip]         │
+│                                                 │
+│ [Show 3 more...]                                │
+│                                                 │
+│ [Apply All Accepted Labels]                     │
+└─────────────────────────────────────────────────┘
+```
+
 ---
 
-### **8.5 Graph Canvas Copy**
+### **7.5 Graph Canvas Copy**
 
 #### **5-Stage Guided Reveal**
 
@@ -3190,9 +3165,9 @@ People in the same community are more connected to each other.
 Title: Your Key Connections
 
 Body:
-⭐ Influencers (high PageRank): Shape opinions
-🔗 Bridges (high betweenness): Connect communities
-🌐 Connectors (high degree): Know many people
+⭐ Influencers: Shape opinions in your network
+🔗 Bridges: Connect different groups together
+🌐 Connectors: Know many people
 
 [Highlight key nodes]
 
@@ -3248,9 +3223,9 @@ Checkboxes:
 ```
 Title: Filter by Metrics
 Sliders:
-- Betweenness (0.0 - 1.0)
-- PageRank (0.0 - 0.1)
-- Degree (1 - 20)
+- Bridge Score (0.0 - 1.0) - How well they connect groups
+- Influence Score (0.0 - 0.1) - How much their opinions spread
+- Connections (1 - 20) - Number of people they know
 Helper: "Drag to filter"
 ```
 
@@ -3269,10 +3244,10 @@ Helper: "Drag to filter"
 **Role Badge:** "Bridge" / "Influencer" / "Connector" / "Peripheral"
 
 **Metrics Labels:**
-- Degree: "Number of connections"
-- PageRank: "Influence score"
-- Betweenness: "Bridge score"
-- Community: "Group membership"
+- Connections: "12 people" (was: Degree)
+- Influence Score: "0.045" (how much opinions spread)
+- Bridge Score: "0.82" (how well they connect groups)
+- Community: "Tech Innovators"
 
 **Analysis Section Title:**
 ```
@@ -3304,7 +3279,7 @@ Edge strength: 0.8 | Community: Business Leaders
 
 ---
 
-### **8.6 Insights Dashboard Copy**
+### **7.6 Insights Dashboard Copy**
 
 #### **Hero Section**
 
@@ -3353,17 +3328,18 @@ Action:
 [View Bridge Connections →]
 ```
 
-**Card 3: Weak Ties**
+**Card 3: Peripheral Connections**
 ```
-Title: 15 Dormant Connections
+Title: 15 Peripheral Connections
 Badge: [MEDIUM CONFIDENCE]
 
 Body:
-You haven't interacted with 15 people (30%) in 3+ months. Consider
-re-engaging—weak ties often lead to unexpected opportunities.
+15 people (30%) are in your network's outer circle with few connections
+to others. Consider strengthening ties—peripheral connections often lead
+to unexpected opportunities.
 
 Action:
-[See Re-Engagement Tips →]
+[View Peripheral Connections →]
 ```
 
 **Card 4: Opportunities**
@@ -3381,7 +3357,7 @@ Action:
 
 ---
 
-### **8.7 Settings Copy**
+### **7.7 Settings Copy**
 
 **Page Title:**
 ```
@@ -3418,7 +3394,7 @@ This action cannot be undone.
 
 ---
 
-### **8.8 Error Messages**
+### **7.8 Error Messages**
 
 **Upload Error (invalid format):**
 ```
@@ -3463,11 +3439,11 @@ Please enter a valid email address (e.g., you@example.com)
 
 ---
 
-## **9. ICON & BUTTON PLACEMENT MATRIX**
+## **8. ICON & BUTTON PLACEMENT MATRIX**
 
 Complete inventory of all icons and buttons with exact specifications.
 
-### **9.1 Icon Library**
+### **8.1 Icon Library**
 
 **Primary Icon Set: Heroicons** (MIT License, 24×24px default)
 
@@ -3481,7 +3457,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.2 Navigation Icons**
+### **8.2 Navigation Icons**
 
 | Icon | Name | Usage | Size | Color |
 |------|------|-------|------|-------|
@@ -3502,7 +3478,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.3 Action Icons**
+### **8.3 Action Icons**
 
 | Icon | Name | Usage | Size | Color |
 |------|------|-------|------|-------|
@@ -3524,7 +3500,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.4 Status Icons**
+### **8.4 Status Icons**
 
 | Icon | Name | Usage | Size | Color |
 |------|------|-------|------|-------|
@@ -3545,7 +3521,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.5 Data Icons**
+### **8.5 Data Icons**
 
 | Icon | Name | Usage | Size | Color |
 |------|------|-------|------|-------|
@@ -3569,7 +3545,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.6 Social Platform Icons**
+### **8.6 Social Platform Icons**
 
 | Icon | Platform | Size | Usage |
 |------|----------|------|-------|
@@ -3577,7 +3553,6 @@ Complete inventory of all icons and buttons with exact specifications.
 | [Twitter logo] | Twitter | 24×24px | Platform selection, network cards |
 | [Facebook logo] | Facebook | 24×24px | Platform selection, network cards |
 | [Instagram logo] | Instagram | 24×24px | Platform selection, network cards |
-| [GitHub logo] | GitHub | 24×24px | Footer, open-source badge |
 | [Google logo] | Google | 20×20px | OAuth button (left side) |
 
 **Placement:**
@@ -3587,7 +3562,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.7 Button Inventory**
+### **8.7 Button Inventory**
 
 #### **Primary Buttons**
 
@@ -3684,7 +3659,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-### **9.8 Button Placement by Page**
+### **8.8 Button Placement by Page**
 
 #### **Landing Page**
 
@@ -3746,7 +3721,7 @@ Complete inventory of all icons and buttons with exact specifications.
 
 ---
 
-## **10. AMENDMENT LOG**
+## **9. AMENDMENT LOG**
 
 This section tracks changes to the layout specification over time.
 
