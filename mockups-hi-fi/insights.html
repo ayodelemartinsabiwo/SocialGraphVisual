@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <title>VSG · Insights</title>
+</head>
+<body class="page" id="page">
+  <header class="header">
+    <div class="brand">VSG</div>
+    <nav class="nav">
+      <a href="index.html">Landing</a>
+      <a href="upload.html">Upload</a>
+      <a href="canvas.html">Graph</a>
+      <a class="active" href="insights.html">Insights</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+    <div class="actions">
+      <button class="toggle" aria-label="Toggle theme" onclick="toggleTheme()">Light/Dark</button>
+      <a class="button secondary" href="canvas.html">Back to canvas</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="section">
+      <div class="panel">
+        <div class="tag">Narrative + actions</div>
+        <h1>Spotlight insights</h1>
+        <p class="muted">Deterministic templates with confidence badges. Sort by impact, confidence, or community.</p>
+        <div class="pills">
+          <div class="pill">Sort: Impact</div>
+          <div class="pill">Filter: Community 1</div>
+          <div class="pill">Confidence ≥ Medium</div>
+          <div class="pill">Last updated: 12h ago</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section insights-grid">
+      <article class="insight-card">
+        <div class="badge">High confidence</div>
+        <h4>Bridge creators and investors through Alex Chen</h4>
+        <p class="muted">Alex sits on 3 high-weight paths linking Creator and Investor clusters. A joint intro could lift your launch reach by 18%.</p>
+        <div class="stat-blocks">
+          <div class="stat"><div class="label">Betweenness</div><div class="value">0.62</div></div>
+          <div class="stat"><div class="label">Edge weight avg</div><div class="value">0.54</div></div>
+          <div class="stat"><div class="label">Community mix</div><div class="value">C1/C3</div></div>
+        </div>
+        <div class="pills">
+          <div class="pill">Action: DM Alex</div>
+          <div class="pill">Share deck</div>
+          <div class="pill">Export ego graph</div>
+        </div>
+      </article>
+
+      <article class="insight-card">
+        <div class="badge">Medium confidence</div>
+        <h4>Designers respond to case-study content</h4>
+        <p class="muted">Designer cluster shows dense intra-links and higher response to long-form posts. Publish a carousel with outcomes and tag top 5 connectors.</p>
+        <div class="stat-blocks">
+          <div class="stat"><div class="label">Cluster density</div><div class="value">0.71</div></div>
+          <div class="stat"><div class="label">Avg engagement</div><div class="value">+22%</div></div>
+          <div class="stat"><div class="label">Top connectors</div><div class="value">5</div></div>
+        </div>
+        <div class="pills">
+          <div class="pill">Action: Publish carousel</div>
+          <div class="pill">Tag connectors</div>
+          <div class="pill">Schedule this week</div>
+        </div>
+      </article>
+
+      <article class="insight-card">
+        <div class="badge">High confidence</div>
+        <h4>Re-engage silent supporters</h4>
+        <p class="muted">20 high-weight followers in the Operator cluster have not interacted in 60 days. A targeted update could restore reach.</p>
+        <div class="stat-blocks">
+          <div class="stat"><div class="label">Count</div><div class="value">20</div></div>
+          <div class="stat"><div class="label">Avg weight</div><div class="value">0.48</div></div>
+          <div class="stat"><div class="label">Recency</div><div class="value">60d</div></div>
+        </div>
+        <div class="pills">
+          <div class="pill">Action: Send update</div>
+          <div class="pill">Create shortlist</div>
+          <div class="pill">Export CSV</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    Explainable narratives · Confidence badges · Action-first.
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const body = document.getElementById('page');
+      body.classList.toggle('theme-dark');
+    }
+  </script>
+</body>
+</html>
