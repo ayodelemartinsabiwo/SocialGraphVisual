@@ -41,7 +41,7 @@ It enables individuals to:
 
 **Phase 1 Launch excludes:**
 - Real-time data synchronization (manual refresh only)
-- Browser extension for automated updates (evaluated in Phase 2)
+- Browser extension for automated updates (evaluated in Phase 2+)
 - API integrations with third-party platforms
 - Multi-user collaboration features
 - White-label solutions for agencies
@@ -259,7 +259,7 @@ Priority: HIGH
 Why: High lifetime value, strategic mindset, underserved market
 ```
 
-### **Secondary Users (Phase 2)**
+### **Secondary Users (Phase 1)**
 
 **3. Community Managers & Advocates**
 ```
@@ -285,7 +285,7 @@ Priority: MEDIUM
 Why: Different value perception (free/academic pricing), citation potential
 ```
 
-### **Future Users (Phase 3+)**
+### **Future Users (Phase 2+)**
 
 **5. Small Business Owners**
 ```
@@ -1958,7 +1958,7 @@ Deliverables:
 
 ---
 
-### **Phase 1: Foundation (Weeks 3-8)**
+### **Phase 1: Complete Product Launch (Weeks 3-14)**
 
 **Week 3-4: Design & Mockups**
 ```
@@ -2055,12 +2055,8 @@ Deployment:
 └─ Beta launch to 50 users
 ```
 
----
-
-### **Phase 2: Enhancement (Weeks 9-14)**
-
+**Week 9-10: Multi-Platform Support**
 ```
-Week 9-10: Multi-Platform Support
 ├─ Platform merge logic (unified graph)
 │  └─ Handle conflicting data gracefully
 ├─ Cross-platform insights
@@ -2094,7 +2090,7 @@ Week 13-14: Export & Sharing
 
 ---
 
-### **Phase 3: Scale & Monetization (Weeks 15-20)**
+### **Phase 2: Scale & Monetization (Weeks 15-20)**
 
 ```
 Week 15-16: Polish & Optimization
@@ -2256,7 +2252,7 @@ Week 19-20: Marketing Launch
 
 ### **Learning Objectives (What We Need to Discover)**
 
-**Phase 1 (First 90 Days):**
+**Phase 1 (Weeks 3-14, First 90 Days Post-Launch):**
 ```
 Questions to answer:
 1. Which user segment has highest conversion? (Micro-influencers? Professionals?)
@@ -2274,7 +2270,7 @@ Methods:
 └─ Cohort analysis (retention by acquisition source)
 ```
 
-**Phase 2 (Days 91-180):**
+**Phase 2 (Weeks 15-20, Months 4-6):**
 ```
 Questions to answer:
 1. What drives long-term retention? (Monthly refresh? New insights?)
@@ -2467,7 +2463,7 @@ Performance Targets:
 └─ 2GB file: <6 minutes (Maximum)
 
 Contingency Plan:
-├─ Desktop app for power users (Electron, future Phase 3)
+├─ Desktop app for power users (Electron, future Phase 2+)
 ├─ Server-side processing option (paid tier)
 ├─ Recommend data filtering before export
 └─ Clear "Your account is too large" messaging with solutions
@@ -3073,22 +3069,22 @@ Mitigation: Strong free tier, position privacy as peace of mind
 - Assumption validated: Visualization is performant
 - Assumption tested: Users feel "aha moment" (5 users)
 
-**Phase 1 (Months 1-3): Product-Market Fit Signals**
+**Phase 1 (Weeks 3-14): Complete Product Launch**
 - Assumption tested: Users will download their data (completion rate)
 - Assumption tested: Freemium conversion works (track 3 months)
 - Assumption tested: Visual graph is valuable (engagement metrics)
-- Learning: Which user segment converts best?
-
-**Phase 2 (Months 4-6): Retention & Monetization**
-- Assumption tested: Users return for updates (retention curves)
 - Assumption tested: Multi-platform adds value (feature usage)
-- Assumption tested: Pricing is acceptable (churn analysis)
-- Learning: What drives long-term retention?
+- Assumption tested: All 5 insight views deliver value (feature adoption)
+- Learning: Which user segment converts best?
+- Learning: Which insights drive "aha moment"?
 
-**Phase 3 (Months 7-12): Scale & Optimization**
+**Phase 2 (Weeks 15-20): Scale & Monetization**
+- Assumption tested: Users return for updates (retention curves)
+- Assumption tested: Pricing is acceptable (churn analysis)
 - Assumption tested: Social sharing drives growth (viral coefficient)
 - Assumption tested: Content creators are right market (segment analysis)
 - Assumption tested: Privacy positioning justifies premium (value perception)
+- Learning: What drives long-term retention?
 - Learning: What is sustainable growth model?
 
 ---
@@ -3573,7 +3569,7 @@ Target: 50+ quality backlinks by Month 6
 1. ✅ **Fundraising** - Comprehensive, investor-grade document
 2. ✅ **Team Alignment** - Shared mental model, clear priorities
 3. ✅ **Phase 0 Execution** - Technical spike fully scoped
-4. ✅ **Phase 1-3 Development** - Detailed roadmap with success criteria
+4. ✅ **Phase 1-2 Development** - Detailed roadmap with success criteria
 5. ✅ **Market Positioning** - Category definition, competitive differentiation
 6. ✅ **Risk Management** - Honest assessment with mitigation strategies
 7. ✅ **Performance Tracking** - Metrics framework for data-driven decisions
@@ -3592,17 +3588,14 @@ January 2026:
 └─ Phase 0: Technical Spike (Weeks 1-2)
 └─ Go/No-Go Decision (End of Week 2)
 
-February-March 2026:
-└─ Phase 1: Foundation (Weeks 3-8)
-└─ Beta launch to 50 users
-
-April-May 2026:
-└─ Phase 2: Enhancement (Weeks 9-14)
-└─ Product Hunt launch
+February-May 2026:
+└─ Phase 1: Complete Product Launch (Weeks 3-14)
+└─ Beta launch to 50 users (Week 8)
+└─ Product Hunt launch (Week 14)
 └─ First 1,000 users
 
 June-August 2026:
-└─ Phase 3: Scale & Monetization (Weeks 15-20)
+└─ Phase 2: Scale & Monetization (Weeks 15-20)
 └─ 10,000 users, $10K MRR
 
 September-December 2026:
@@ -3686,7 +3679,7 @@ Let's make social media more intentional, one visualization at a time.
 
 - [ ] Execute Phase 0 Technical Spike (2 weeks)
 - [ ] Go/No-Go Decision (data-driven)
-- [ ] Proceed to Phase 1 if validated
+- [ ] Proceed to Phase 1 Complete Product Launch if validated
 
 ---
 
@@ -3694,9 +3687,9 @@ Let's make social media more intentional, one visualization at a time.
 
 This appendix documents capabilities intentionally deferred to later phases. Each capability has specific **decision gates** that trigger re-evaluation based on validated user demand or market signals.
 
-### **B.1 Real-Time Data Updates (Phase 3+ - Demand-Driven)**
+### **B.1 Real-Time Data Updates (Phase 2+ - Demand-Driven)**
 
-**Current State (Phase 1-2):**
+**Current State (Phase 1):**
 - Manual upload only (ZIP file download from platforms)
 - Users can re-upload anytime for updates
 - Historical comparison available for repeat uploads
@@ -3708,7 +3701,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 **Decision Gate:**
 - **Trigger:** >30% of Pro users request more frequent updates (via surveys, support tickets, feature votes)
-- **Evaluation Point:** End of Phase 2 (August 2026)
+- **Evaluation Point:** End of Phase 1 (May 2026)
 - **Data Required:** User research interviews, feature request volume, competitor analysis
 
 **Implementation Options (If Validated):**
@@ -3742,9 +3735,9 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 ---
 
-### **B.2 Collaboration Features (Phase 3+ - Enterprise Demand)**
+### **B.2 Collaboration Features (Phase 2+ - Enterprise Demand)**
 
-**Current State (Phase 1-2):**
+**Current State (Phase 1):**
 - Single-user experience only
 - Individual network analysis
 
@@ -3756,7 +3749,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 **Decision Gate:**
 - **Trigger:** >50 inbound requests from agencies, teams, or enterprises
-- **Evaluation Point:** Phase 3 (Q3-Q4 2026)
+- **Evaluation Point:** Phase 2 (Q3 2026)
 - **Data Required:** Enterprise sales pipeline, team use case validation
 
 **Implementation Options (If Validated):**
@@ -3790,9 +3783,9 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 ---
 
-### **B.3 Internationalization - Content Translation (Phase 3+ - Traffic-Driven)**
+### **B.3 Internationalization - Content Translation (Phase 2+ - Traffic-Driven)**
 
-**Current State (Phase 1-2):**
+**Current State (Phase 1):**
 - English-only UI
 - i18n architecture in place (next-i18next)
 - All strings externalized in /locales/en/common.json
@@ -3810,7 +3803,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 - **Japanese:** Creator market emergence in Japan OR >5% traffic
 - **German:** >10% traffic from Germany/Austria/Switzerland
 
-**Evaluation Point:** Monthly traffic review starting Phase 3 (Q3 2026)
+**Evaluation Point:** Monthly traffic review starting Phase 2 (Q3 2026)
 
 **Implementation Process (Per Language):**
 1. Export English strings from /locales/en/common.json
@@ -3831,7 +3824,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 ---
 
-### **B.4 Mobile Strategy: PWA-First (Phase 1), Native Apps (Phase 4 - If PWA Limitations Found)**
+### **B.4 Mobile Strategy: PWA-First (Phase 1), Native Apps (Phase 3+ - If PWA Limitations Found)**
 
 **Phase 1 Core Strategy: Progressive Web App (PWA)**
 
@@ -3847,7 +3840,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
   - Works on all devices: 320px phones to 4K desktops
   - Touch-optimized graph interactions (pan, pinch, zoom)
   - Background sync for offline uploads
-  - Push notifications (opt-in, if user demands in Phase 2+)
+  - Push notifications (opt-in, if user demand emerges in Phase 2+)
 
 **PWA Benefits:**
 - ✅ ONE codebase (web, mobile, tablet, desktop)
@@ -3866,7 +3859,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 ---
 
-**Future Capability: Native Apps (Phase 4+ - Only If PWA Shows Limitations)**
+**Future Capability: Native Apps (Phase 3+ - Only If PWA Shows Limitations)**
 
 **Decision Gate (Strict - REAL Limitations Only):**
 
@@ -3885,7 +3878,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
   - ❌ "Works on iPhone" → PWA installable on iOS Safari 16.4+
 
 - **Alternative Trigger:** >40% mobile traffic AND >30% explicit requests for native app AND clear PWA limitation identified
-- **Evaluation Point:** End of Phase 3 (Q4 2026)
+- **Evaluation Point:** End of Phase 2 (Q3 2026)
 - **Data Required:**
   - PWA analytics (install rates, offline usage, actual performance bottlenecks)
   - User interviews (>50 users) on **specific** PWA limitations (not general "want native app")
@@ -3929,15 +3922,15 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 - Native app users LTV >2x PWA users (justifies 2x cost)
 
 **Default Stance: Bet on PWA, Build Native Only If Necessary**
-- Phase 1-3: PWA is sufficient for 95% of use cases
-- Phase 4+: Evaluate PWA limitations based on real user data, not assumptions
+- Phase 1-2: PWA is sufficient for 95% of use cases
+- Phase 3+: Evaluate PWA limitations based on real user data, not assumptions
 - Philosophy: "Simplify Ruthlessly" - avoid native complexity unless data demands it
 
 ---
 
-### **B.5 API Access for Developers (Phase 3+ - Creator Demand)**
+### **B.5 API Access for Developers (Phase 2+ - Creator Demand)**
 
-**Current State (Phase 1-2):**
+**Current State (Phase 1):**
 - No public API
 - Internal APIs for frontend only
 
@@ -3949,7 +3942,7 @@ This appendix documents capabilities intentionally deferred to later phases. Eac
 
 **Decision Gate:**
 - **Trigger:** >100 Creator tier users AND >30 API access requests
-- **Evaluation Point:** Phase 3 (Q3-Q4 2026)
+- **Evaluation Point:** Phase 2 (Q3 2026)
 - **Data Required:** Creator use case interviews, integration partner interest
 
 **Use Cases (If Built):**
@@ -4019,7 +4012,7 @@ Each deferred capability represents a **validated hypothesis** that we're willin
 2. Business case is clear (revenue > cost)
 3. Strategic timing is right (not premature optimization)
 
-This approach ensures we stay focused on Phase 1-2 core experience while remaining prepared to capitalize on validated opportunities as they emerge.
+This approach ensures we stay focused on Phase 1 core experience while remaining prepared to capitalize on validated opportunities as they emerge.
 
 ---
 
