@@ -13,9 +13,9 @@
 | **Date** | December 21, 2025 |
 | **Status** | Living Document - Technical Design Foundation |
 | **Owner** | Engineering / Architecture |
-| **Review Cycle** | Weekly (Phase 0-1), Bi-weekly (Phase 2+) |
+| **Review Cycle** | Weekly (Phase 0), Bi-weekly (Phase 1+) |
 | **Classification** | Internal - Technical |
-| **Scope** | Phase 0-2 (detailed), Phase 3-4 (directional) |
+| **Scope** | Phase 0-1 (detailed), Phase 2-3 (directional) |
 
 **Change Log**:
 - v1.0 (Dec 24, 2025): Privacy terminology alignment (pseudonymized identifiers; aggregated analytics) to match SRS + Data & Intelligence Framework
@@ -761,7 +761,7 @@ Visualization: D3.js v7 + Canvas API
 ├─ D3.js: Force simulation, interactions
 ├─ SVG: <1K nodes (crisp, interactive)
 ├─ Canvas: 1K-5K nodes (performance)
-└─ WebGL (future): >5K nodes (Phase 3+)
+└─ WebGL (future): >5K nodes (Phase 2+)
 
 Heavy Computation: Web Workers
 ├─ Parsers: TwitterParser, InstagramParser, LinkedInParser, FacebookParser, TikTokParser
@@ -2369,7 +2369,7 @@ module.exports = {
   i18n: {
     defaultLocale: 'en',
     locales: ['en'], // Phase 1: English only
-    // Future locales (Phase 3+): ['en', 'es', 'fr', 'pt-BR', 'ja', 'de']
+    // Future locales (Phase 1+): ['en', 'es', 'fr', 'pt-BR', 'ja', 'de']
     localeDetection: true,
   },
   localePath: './public/locales',
@@ -2531,7 +2531,7 @@ export function LanguageSwitcher() {
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
-    // Future (Phase 3+):
+    // Future (Phase 1+):
     // { code: 'es', name: 'Español', flag: '🇪🇸' },
     // { code: 'fr', name: 'Français', flag: '🇫🇷' },
     // { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
@@ -2597,7 +2597,7 @@ export function detectUserLocale(): string {
 }
 ```
 
-**Translation Workflow (Phase 3+):**
+**Translation Workflow (Phase 1+):**
 
 ```bash
 # 1. Extract translatable strings
@@ -4541,7 +4541,7 @@ Visualization (FPS Targets):
 4. Database Cache (PostgreSQL)
 ├─ Query result cache: Built-in (shared_buffers)
 ├─ Indexes: All foreign keys, commonly queried columns
-└─ Materialized views: None (Phase 0-2, add Phase 3+ if needed)
+└─ Materialized views: None (Phase 0-1, add Phase 1+ if needed)
 
 Cache Invalidation Rules:
 ├─ Graph updated → Invalidate graph:*:metrics, graph:*:insights
@@ -4737,7 +4737,7 @@ jobs:
 
 ## **10. Deployment Architecture**
 
-### **10.1 Infrastructure Diagram (Phase 2 - Production)**
+### **10.1 Infrastructure Diagram (Phase 1 - Production)**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -4811,7 +4811,7 @@ jobs:
               │ ┌────────────┐ │      │ ┌─────────────┐ │
               │ │ Read       │ │      │ │  Replica 1  │ │
               │ │ Replica    │ │      │ │  (Read)     │ │
-              │ │ (Phase 3+) │ │      │ └─────────────┘ │
+              │ │ (Phase 1+) │ │      │ └─────────────┘ │
               │ └────────────┘ │      │       │         │
               │                │      │       ▼         │
               │ Connection:    │      │ ┌─────────────┐ │
@@ -4828,7 +4828,7 @@ jobs:
 
 ### **10.2 Scaling Patterns by Phase**
 
-**Phase 0-1: Minimal (0-100 users)**
+**Phase 0: Minimal (0-100 users)**
 ```
 Frontend: Vercel Hobby (free)
 └─ Serverless functions (auto-scale)
@@ -4855,7 +4855,7 @@ Cost: ~$18/month
 Bottleneck: Single backend instance (acceptable for beta)
 ```
 
-**Phase 2: Production (100-1,000 users)**
+**Phase 1: Production (100-1,000 users)**
 ```
 Frontend: Vercel Pro
 ├─ Unlimited bandwidth
@@ -4887,7 +4887,7 @@ Database: PostgreSQL (Railway Pro or AWS RDS)
 │  ├─ Slow query log (>1s)
 │  ├─ Connection count alerts
 │  └─ Disk usage (>80% = alert)
-└─ Future: Read replica (Phase 3+)
+└─ Future: Read replica (Phase 1+)
 
 Redis: Railway Pro or AWS ElastiCache
 ├─ Cluster mode (3 nodes)
@@ -4909,7 +4909,7 @@ Bottleneck: Database connections (mitigated by pooling)
 Scaling headroom: 5x current capacity
 ```
 
-**Phase 3: Scale (1,000-10,000 users)**
+**Phase 2: Scale (1,000-10,000 users)**
 ```
 Frontend: Vercel Pro + Incremental Static Regeneration
 ├─ ISR for static pages (blog, docs)
@@ -4948,7 +4948,7 @@ Database: AWS RDS Multi-AZ
 │  ├─ Enhanced monitoring (OS metrics)
 │  └─ CloudWatch alarms (CPU, IOPS, connections)
 └─ Disaster recovery:
-   ├─ Cross-region replica (future, Phase 4)
+   ├─ Cross-region replica (future, Phase 2)
    └─ Automated failover (<5 minutes)
 
 Redis: AWS ElastiCache (cluster mode)
@@ -4983,7 +4983,7 @@ Observability:
 Cost: ~$1,000-2,000/month
 Bottleneck: Insight Engine CPU (algorithm computation)
 Scaling headroom: 10x current capacity
-Next bottleneck: Database write throughput (Phase 4: sharding)
+Next bottleneck: Database write throughput (Phase 1: sharding)
 ```
 
 ---
@@ -5302,7 +5302,7 @@ export class UploadService {
 │  └──────────────────────────────────┘ │  │  │  Backend API Instances (Stateless)│ │
 │                                        │  │  │  Node.js 20 + Express + TypeScript│ │
 │  Deployment:                           │  │  │                                    │ │
-│  ├─ Auto-deploy: main branch          │  │  │  Phase 2-3 Horizontal Scaling:    │ │
+│  ├─ Auto-deploy: main branch          │  │  │  Phase 1-2 Horizontal Scaling:    │ │
 │  ├─ Preview: Every PR                  │  │  │  ┌──────────────┬──────────────┐  │ │
 │  ├─ Rollback: Instant (Git revert)    │  │  │  │  Instance 1  │  Instance 2  │  │ │
 │  └─ CDN: 300+ global edge locations   │  │  │  │  (Primary)   │  (Replica)   │  │ │
@@ -5359,12 +5359,12 @@ export class UploadService {
 │  │  ├─ Indexes: All FKs     │ │  │  │  ├─ Insights: 15min      │  │  │  Lifecycle:         │
 │  │  └─ Query timeout: 30s   │ │  │  │  └─ Rate limits: Sliding │  │  │  ├─ Auto-cleanup   │
 │  │                           │ │  │  │                           │  │  │  ├─ Versioning     │
-│  │  Scaling (Phase 3):       │ │  │  │  Scaling (Phase 3):       │  │  │  └─ Multi-region  │
+│  │  Scaling (Phase 1):       │ │  │  │  Scaling (Phase 1):       │  │  │  └─ Multi-region  │
 │  │  ├─ Read replicas: 1-2   │ │  │  │  ├─ Cluster mode         │  │  │                     │
 │  │  ├─ Connection pooler    │ │  │  │  ├─ Multi-AZ replica     │  │  │  Cost Model:        │
 │  │  │  (PgBouncer)          │ │  │  │  └─ Memory: 4-8GB        │  │  │  ├─ $0.015/GB/mo   │
 │  │  └─ Partitioning: by    │ │  │  │                           │  │  │  ├─ $0.005/10K ops │
-│  │     user_id (Phase 4+)   │ │  │  │  Cost (Phase 3):          │  │  │  └─ $0 egress ⭐  │
+│  │     user_id (Phase 1+)   │ │  │  │  Cost (Phase 1):          │  │  │  └─ $0 egress ⭐  │
 │  │                           │ │  │  │  └─ $50-80/month         │  │  │                     │
 │  │  High Availability:       │ │  │  └──────────────────────────┘  │  └─────────────────────┘
 │  │  ├─ Auto-failover (30s)  │ │
@@ -5523,7 +5523,7 @@ router.get('/health', async (req, res) => {
 **Load Balancer Configuration:**
 
 ```yaml
-# railway.json (Phase 2)
+# railway.json (Phase 1)
 {
   "build": {
     "builder": "DOCKERFILE"
@@ -5536,7 +5536,7 @@ router.get('/health', async (req, res) => {
   }
 }
 
-# AWS ALB Target Group (Phase 3)
+# AWS ALB Target Group (Phase 1)
 HealthCheck:
   Path: /health
   Protocol: HTTP
@@ -6530,7 +6530,7 @@ LAYER 2: LOGS (Why did it happen?)
 
 LAYER 3: TRACES (How did it happen?)
 ├─ Tool: Sentry Performance (or Datadog APM)
-├─ Sampling: 100% (Phase 0-2), 10% (Phase 3+)
+├─ Sampling: 100% (Phase 0-1), 10% (Phase 1+)
 ├─ Retention: 7 days (full traces), 90 days (aggregated)
 └─ Visualization: Waterfall charts, flame graphs
 
@@ -6544,7 +6544,7 @@ LAYER 5: UPTIME (Is it accessible?)
 ├─ Tool: UptimeRobot
 ├─ Checks: 1-minute interval, 5 global locations
 ├─ Status page: Public (status.visualsocialgraph.com)
-└─ SLA tracking: 99.9% uptime target (Phase 3+)
+└─ SLA tracking: 99.9% uptime target (Phase 1+)
 ```
 
 ---
@@ -7033,13 +7033,13 @@ Logs:
 ├─ Format: Structured JSON (Winston/Pino)
 ├─ Levels: ERROR, WARN, INFO, DEBUG
 ├─ Retention: 30 days hot, 90 days archive
-└─ Search: Sentry breadcrumbs (Phase 0-2), Elasticsearch (Phase 3+)
+└─ Search: Sentry breadcrumbs (Phase 0-1), Elasticsearch (Phase 1+)
 
 Uptime Monitoring:
 ├─ Tool: UptimeRobot
 ├─ Frequency: 1-minute checks (5 locations)
 ├─ Alerts: >5 minute outage → PagerDuty
-└─ Status page: Public (Phase 2+)
+└─ Status page: Public (Phase 1+)
 
 Real User Monitoring (RUM):
 ├─ Tool: Vercel Analytics + Sentry
@@ -7262,7 +7262,7 @@ import * as Sentry from '@sentry/node';
 export function initializeTracing() {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0, // 100% during Phase 0-2, reduce to 0.1 (10%) at scale
+    tracesSampleRate: 1.0, // 100% during Phase 0-1, reduce to 0.1 (10%) at scale
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
       new Sentry.Integrations.Express({ app }),
@@ -7600,7 +7600,7 @@ logger.error('Graph analysis failed', {
 
 ### **12.1 Scaling Roadmap**
 
-**Phase 0-1 (0-100 users):**
+**Phase 0 (0-100 users):**
 ```
 Infrastructure:
 ├─ Frontend: Vercel Hobby (free)
@@ -7618,7 +7618,7 @@ Limitations:
 Sufficient for: Technical validation, early beta
 ```
 
-**Phase 2 (100-1,000 users):**
+**Phase 1 (100-1,000 users):**
 ```
 Infrastructure:
 ├─ Frontend: Vercel Pro ($20/month)
@@ -7642,7 +7642,7 @@ Enhancements:
 Sufficient for: Public launch, growth to 1K users
 ```
 
-**Phase 3 (1,000-10,000 users):**
+**Phase 2 (1,000-10,000 users):**
 ```
 Infrastructure:
 ├─ Frontend: Vercel Pro + Edge Functions
@@ -7719,7 +7719,7 @@ Debt Prevention:
    - Background processing (async, queue-based)
    - Separate scaling needs
 
-3. **Parser Service** (optional, Phase 4+)
+3. **Parser Service** (optional, Phase 1+)
    - If server-side parsing becomes common
    - Isolate parser version management
 
@@ -7750,7 +7750,7 @@ Debt Prevention:
 **Status:** Living Document - Technical Design Foundation
 **Owner:** Engineering / Architecture
 **Next Review:** End of Phase 0 (Week 3, January 2026)
-**Confidence:** 95% (Phase 0-2 detailed, Phase 3-4 directional)
+**Confidence:** 95% (Phase 0-1 detailed, Phase 2+ directional)
 **Completeness:** Implementation-ready for Phase 0-1
 
 ---
@@ -7765,7 +7765,7 @@ Debt Prevention:
 2. **Architecture Validation** (Ongoing):
    - Code review: Ensure alignment with this document
    - Performance testing: Validate assumptions (parsing <60s, viz 60 FPS)
-   - Security audit: Penetration testing (Phase 2)
+   - Security audit: Penetration testing (Phase 1)
 
 3. **Documentation Maintenance**:
    - Update as architecture evolves

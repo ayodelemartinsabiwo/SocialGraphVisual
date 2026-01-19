@@ -871,21 +871,11 @@ Time on landing page
 
 **Traffic Source Mix:**
 ```
-Phase 1 (Months 1-3):
-├─ Organic search: 10% (SEO just starting)
-├─ Social (organic): 40% (Twitter, Reddit, HN)
-├─ Referral: 20% (Product Hunt, tech blogs)
-├─ Direct: 20% (word-of-mouth, returning visitors)
-└─ Paid: 10% (if testing acquisition channels)
+Phase 1 (Months 1-6):
+├─ Weeks 1-12 (Foundation): 10% organic search (SEO starting), 40% social (Twitter/Reddit/HN), 20% referral (Product Hunt/blogs), 20% direct (word-of-mouth), 10% paid (if testing)
+├─ Weeks 13-24 (Enhancement): 25% organic search (SEO maturing), 30% social (viral loops), 25% referral (partnerships), 15% direct (brand), 5% paid (if LTV:CAC >3:1)
 
-Phase 2 (Months 4-6):
-├─ Organic search: 25% (SEO maturing)
-├─ Social (organic): 30% (viral loops kicking in)
-├─ Referral: 25% (partnerships, integrations)
-├─ Direct: 15% (brand recognition)
-└─ Paid: 5% (only if LTV:CAC >3:1)
-
-Phase 3 (Months 7-12):
+Phase 2 (Months 7-12):
 ├─ Organic search: 40% (SEO dominance)
 ├─ Social (organic): 20% (sustainable virality)
 ├─ Referral: 20% (ecosystem growth)
@@ -940,8 +930,7 @@ Channels (test in order):
 ```
 Target: >3:1 (industry standard for healthy SaaS)
 ├─ Phase 1: Don't optimize (focus on product, not paid growth)
-├─ Phase 2: Test at small scale ($500/month budget)
-├─ Phase 3: Scale if LTV:CAC >3:1, otherwise stay organic
+├─ Phase 2: Scale if LTV:CAC >3:1, otherwise stay organic
 └─ Failure signal: <1.5:1 LTV:CAC (burning cash, unsustainable)
 
 Payback Period:
@@ -1117,7 +1106,7 @@ Target: 10% of Pro users upgrade to Creator ($29/month)
 ├─ Timing: After 6 months on Pro
 ├─ Triggers: Team features needed, white-label desired, API access requested
 ├─ Use case: Professionals, agencies, power users
-└─ Phase 3 focus (don't optimize early)
+└─ Phase 2 focus (don't optimize early)
 ```
 
 **Conversion Funnel Summary:**
@@ -1139,18 +1128,18 @@ Over 12 months:
 
 **Monthly Recurring Revenue (MRR):**
 ```
-Phase 1 (Months 1-3): $0 → $2,000 MRR
-├─ Focus: Product validation, not monetization
-├─ Pro tier gating in place but not aggressively promoted
-└─ Goal: Prove users will pay, not optimize revenue
+Phase 1 (Months 1-6): $0 → $10,000 MRR
+├─ Months 1-3 (Foundation): $0 → $2,000 MRR
+│  ├─ Focus: Product validation, not monetization
+│  ├─ Pro tier gating in place but not aggressively promoted
+│  └─ Goal: Prove users will pay, not optimize revenue
+├─ Months 4-6 (Enhancement): $2,000 → $10,000 MRR
+│  ├─ Growth rate target: 50% month-over-month
+│  ├─ New MRR: From free → paid conversions
+│  ├─ Expansion MRR: Minimal (few Pro → Creator upgrades)
+│  └─ Goal: Prove conversion model works
 
-Phase 2 (Months 4-6): $2,000 → $10,000 MRR
-├─ Growth rate target: 50% month-over-month
-├─ New MRR: From free → paid conversions
-├─ Expansion MRR: Minimal (few Pro → Creator upgrades)
-└─ Goal: Prove conversion model works
-
-Phase 3 (Months 7-12): $10,000 → $34,000 MRR
+Phase 2 (Months 7-12): $10,000 → $34,000 MRR
 ├─ Growth rate target: 20-30% month-over-month
 ├─ New MRR: 70% from conversions, 30% from expansion
 ├─ Optimization: Pricing experiments, feature gating, upgrade flows
@@ -1185,9 +1174,9 @@ Blended ARPU (all users):
 Target: $8-10/month
 ├─ Calculation: Total MRR / Total active users
 ├─ Includes: Free users (ARPU = $0), Paid users (ARPU = $12-29)
-├─ Phase 1: Low (85% free, 15% paid) → ~$2 ARPU
-├─ Phase 2: Growing (80% free, 20% paid) → ~$4 ARPU
-└─ Phase 3: Maturing (75% free, 25% paid) → ~$8 ARPU
+├─ Phase 1 (early): Low (85% free, 15% paid) → ~$2 ARPU
+├─ Phase 1 (late): Growing (80% free, 20% paid) → ~$4 ARPU
+└─ Phase 2: Maturing (75% free, 25% paid) → ~$8 ARPU
 
 Paid ARPU (paid users only):
 Target: $13-15/month
@@ -1511,7 +1500,7 @@ Target: 30% of users share at least once
 Share Types:
 ├─ Visualization card: "Here's my network visualization" (Twitter, LinkedIn, Instagram)
 ├─ Insight card: "I just learned I'm in an echo chamber" (insight-specific share)
-├─ Comparison card: "My network vs. average creator" (Phase 3 feature)
+├─ Comparison card: "My network vs. average creator" (Phase 2 feature)
 └─ Public gallery: Publish visualization to VSG gallery (discoverability)
 
 Tracking:
@@ -1569,9 +1558,10 @@ Calculation:
 
 **Targets:**
 ```
-Phase 1 (Months 1-3): NPS >30 (acceptable for early product)
-Phase 2 (Months 4-6): NPS >40 (good product-market fit)
-Phase 3 (Months 7-12): NPS >50 (excellent, strong advocacy)
+Phase 1 (Months 1-6): NPS >30-40 (acceptable early → good product-market fit)
+├─ Months 1-3: NPS >30 (acceptable for early product)
+└─ Months 4-6: NPS >40 (good product-market fit)
+Phase 2 (Months 7-12): NPS >50 (excellent, strong advocacy)
 
 Benchmarks:
 ├─ NPS <0: Crisis (more detractors than promoters)
@@ -1694,11 +1684,11 @@ End of Week 2 Decision Document:
 
 ---
 
-### **4.2 Phase 1: Foundation (Months 1-3)**
+### **4.2 Phase 1: Complete Product Launch (Months 1-6)**
 
-**Timeline:** February-April 2026 (12 weeks)
+**Timeline:** February-July 2026 (24 weeks, combining Foundation and Enhancement)
 
-**Objective:** Launch beta to 50 users, validate product-market fit hypothesis, achieve 40% North Star metric.
+**Objective:** Launch beta to 50 users (Weeks 1-12), scale to 1,000 users (Weeks 13-24), validate freemium conversion, achieve 40%+ North Star metric, Product Hunt launch.
 
 **Success Criteria:**
 
@@ -1776,20 +1766,20 @@ Failure signal: <30 users (activation funnel broken, value prop unclear)
    └─ Decision: Product positioning (ongoing tool vs. quarterly checkup)
 ```
 
-**GO/NO-GO Decision (End of Month 3):**
+**Checkpoint: End of Month 3 (Foundation Phase Complete)**
 ```
-GO to Phase 2 (Enhancement):
+GO to Enhancement Phase (Weeks 13-24):
 ├─ North Star: ≥30% (close to 40% target, trending up)
 ├─ Upload completion: ≥50% (friction acceptable)
 ├─ User feedback: Majority positive ("I'd pay for this", "I'll return")
-├─ Decision: Proceed to Phase 2 (all 5 insight views, Pro tier, Product Hunt launch)
+├─ Decision: Proceed to enhancement & Product Hunt launch (all 5 insight views, Pro tier)
 
 PIVOT:
 ├─ North Star: 20-30% (below target but users engage)
 ├─ Upload completion: 30-50% (friction too high)
 ├─ Pivot options: Browser extension (reduce friction), better onboarding, or adjust target segment
 ├─ Timeline: 4 weeks to implement pivot, retest
-└─ Re-evaluate: GO/NO-GO after pivot
+└─ Re-evaluate before Month 4
 
 NO-GO (Stop):
 ├─ North Star: <20% (users don't feel value)
@@ -1798,120 +1788,9 @@ NO-GO (Stop):
 ├─ Decision: Product-market fit not achieved, stop or major pivot (different product)
 ```
 
----
-
-### **4.3 Phase 2: Enhancement & Launch (Months 4-6)**
-
-**Timeline:** May-July 2026 (12 weeks)
-
-**Objective:** Product Hunt launch, reach 1,000 users, validate freemium conversion (3-5% free → paid).
-
-**Success Criteria:**
-
-**Acquisition:**
+**Checkpoint: End of Month 6 (Phase 1 Complete)**
 ```
-✅ 1,000 Total Users (10x growth from Phase 1)
-├─ Product Hunt: 500 users (Day 1-3 launch surge)
-├─ Organic social: 300 users (viral loops, sharing)
-├─ SEO/content: 100 users (articles, search traffic)
-├─ Referral: 100 users (word-of-mouth from beta users)
-└─ Failure: <500 users (launch didn't resonate, limited virality)
-
-✅ Product Hunt Top 5 Launch
-├─ Upvotes: 500+ (indicates strong interest)
-├─ Comments: 100+ (community engagement)
-├─ Ranking: Top 5 for the day (visibility)
-├─ Traffic: 2,000+ landing page visitors on launch day
-└─ Failure: <300 upvotes, not Top 10 (messaging didn't resonate)
-
-✅ Landing → Signup: 15%+
-├─ Current: Unknown (validate in Phase 2)
-├─ Optimization: A/B test headlines, hero images, value props
-└─ Failure: <10% (value prop unclear, messaging needs work)
-```
-
-**Activation:**
-```
-✅ North Star Sustained: 40%+ achieve aha moment within 7 days
-├─ Validation: Phase 1 target now must hold at scale
-├─ Cohort tracking: Week-over-week consistency
-├─ Segment analysis: Which acquisition sources drive highest North Star?
-└─ Failure: <30% (quality of users dropped, onboarding degraded at scale)
-
-✅ Upload Completion: 60%+ (maintain from Phase 1)
-├─ At scale validation: Does it hold with 1,000 users?
-├─ Platform mix: Track by platform (Twitter higher than TikTok?)
-└─ Failure: <50% (scale introduced friction, optimize)
-```
-
-**Revenue (NEW - Freemium Validation):**
-```
-✅ Free → Paid Conversion: 3-5%
-├─ Target: 30-50 paid users out of 1,000 free
-├─ MRR: $360-$600 (30 × $12 to 50 × $12)
-├─ Timing: Within 30-60 days of signup (don't rush)
-├─ Triggers: Hit free limits, want multi-platform, need historical tracking
-└─ Failure: <1% (<10 paid users) (pricing wrong, value prop weak, or free tier too generous)
-
-✅ One-Time Report Sales: 5%+ of free users
-├─ Target: 50 one-time purchases (50 × $12 = $600 one-time revenue)
-├─ Timing: Within first 7 days (while value fresh)
-├─ Bridge to subscription: 15-20% should upgrade to Pro within 90 days
-└─ Failure: <2% (pricing wrong, export feature too good in free tier)
-
-✅ Monthly Churn (Paid): <7%
-├─ Early days: Expect higher churn (users testing)
-├─ Acceptable: 5-7% monthly churn
-├─ Warning: 7-10% churn (investigate reasons)
-└─ Failure: >10% churn (value not sustained, users canceling quickly)
-```
-
-**Engagement:**
-```
-✅ Day 30 Retention: 15%+
-├─ Benchmark: Consumer SaaS average is 8-12%
-├─ Validation: Users return for data refresh, new insights
-└─ Failure: <10% (one-and-done behavior, no ongoing value)
-
-✅ Viral Coefficient: 0.3-0.5
-├─ Calculation: (Shares per user) × (Conversion rate)
-├─ Target: Each user brings 0.3-0.5 new users (sustainable virality)
-├─ Tracking: Social shares, referral links, word-of-mouth survey
-└─ Failure: <0.2 (weak virality, need to optimize sharing features)
-
-✅ NPS: 40+
-├─ Survey: 30-day users ("How likely to recommend?")
-├─ Target: NPS >40 (good product-market fit)
-├─ Segment: Power users should be >60
-└─ Failure: NPS <20 (users not satisfied, won't recommend)
-```
-
-**Learning Objectives:**
-```
-1. Which features justify Pro pricing?
-   ├─ Hypothesis: Multi-platform, historical tracking, export quality
-   ├─ Method: Feature adoption tracking, upgrade surveys
-   └─ Decision: Feature roadmap prioritization for Phase 3
-
-2. Is freemium model working?
-   ├─ Hypothesis: 3-5% convert free → paid (viable)
-   ├─ Method: Conversion funnel analysis, pricing experiments
-   └─ Decision: Adjust free tier limits or pricing if needed
-
-3. What drives virality?
-   ├─ Hypothesis: Social sharing of visualization cards
-   ├─ Method: Track shares, viral loops, referral sources
-   └─ Decision: Optimize sharing features, viral loops
-
-4. Do users refresh data monthly?
-   ├─ Hypothesis: 40% refresh monthly (ongoing value)
-   ├─ Method: Track upload frequency, survey "when will you update?"
-   └─ Decision: Product positioning (monthly tool or quarterly checkup)
-```
-
-**GO/NO-GO Decision (End of Month 6):**
-```
-GO to Phase 3 (Scale & Monetization):
+GO to Phase 2 (Scale & Monetization):
 ├─ Users: ≥750 (close to 1,000 target)
 ├─ North Star: ≥35% (sustaining)
 ├─ Conversion: ≥2% (proving willingness to pay)
@@ -1933,7 +1812,7 @@ NO-GO:
 
 ---
 
-### **4.4 Phase 3: Scale & Monetization (Months 7-12)**
+### **4.3 Phase 2: Scale & Monetization (Months 7-12)**
 
 **Timeline:** August 2026 - January 2027 (24 weeks)
 
@@ -1943,7 +1822,7 @@ NO-GO:
 
 **Acquisition:**
 ```
-✅ 10,000 Total Users (10x growth from Phase 2)
+✅ 10,000 Total Users (10x growth from Phase 1)
 ├─ Monthly growth: 1,000-1,500 new users/month
 ├─ Organic mix: 60% organic (SEO, social, referral), 40% other
 ├─ CAC: <$30 per user (if using paid acquisition)
@@ -2097,9 +1976,8 @@ Every phase has learning objectives (Section 4):
 ```
 Each phase has GO/NO-GO checkpoint:
 ├─ Phase 0: 2 weeks (End of Week 2)
-├─ Phase 1: 3 months (End of Month 3)
-├─ Phase 2: 3 months (End of Month 6)
-├─ Phase 3: 6 months (End of Month 12)
+├─ Phase 1: 6 months (End of Month 6) - Merged Foundation + Enhancement phases
+├─ Phase 2: 6 months (End of Month 12)
 └─ No exceptions: Decide on schedule (data-driven, no emotions)
 ```
 
@@ -2701,9 +2579,8 @@ This means:
 
 **Future Amendments:**
 - Post-Phase 0 (February 2026): Validate technical assumptions, adjust targets if needed
-- Post-Phase 1 (April 2026): Update based on beta learnings, refine North Star definition if needed
-- Post-Phase 2 (July 2026): Adjust conversion targets based on actual data, pricing optimization
-- Post-Phase 3 (January 2027): PMF assessment, framework evolution for scale phase
+- Post-Phase 1 (July 2026): Update based on foundation & enhancement learnings, refine North Star definition and monetization targets if needed
+- Post-Phase 2 (January 2027): PMF assessment, framework evolution for scale phase beyond Month 12
 
 ---
 

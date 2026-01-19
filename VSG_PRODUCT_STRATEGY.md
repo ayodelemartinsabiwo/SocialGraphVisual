@@ -125,11 +125,11 @@ We use AI to design better, not to hold the system together. Core functionality 
 
 **Deliberately avoiding:**
 
-1. **Enterprise-first strategy** (Phase 1-2)
+1. **Enterprise-first strategy** (Phase 1)
    - Why: Longer sales cycles, different feature needs, distracts from core
-   - When: Phase 3+ after individual market proven
+   - When: Phase 2+ after individual market proven
 
-2. **Platform-agnostic real-time sync** (Phase 1-2)
+2. **Platform-agnostic real-time sync** (Phase 1)
    - Why: Violates privacy principle, high technical complexity, platform hostility
    - When: Only if user demand overwhelming AND privacy-preserving approach exists
 
@@ -212,7 +212,7 @@ Optimistic: 12,500 users at $15/mo = $188K MRR = $2.25M ARR
 | Community Managers | Multiple | Engagement, advocacy | Employment | Secondary |
 | Researchers | Multiple | Academic analysis | Non-monetary | Tertiary |
 
-**By Geography (Phase 1-2):**
+**By Geography (Phase 1):**
 
 | Region | Priority | Rationale |
 |--------|----------|-----------|
@@ -294,7 +294,7 @@ Optimistic: 12,500 users at $15/mo = $188K MRR = $2.25M ARR
 4. **Platform Partnerships**
    - Platforms may want official "network intelligence" features
    - Could license technology or white-label
-   - Opportunity: Enterprise deals (Phase 3+)
+   - Opportunity: Enterprise deals (Phase 2+)
 
 **Timing Assessment:**
 
@@ -1300,7 +1300,7 @@ Weaponization:
 ├─ Focus: One use case, done well
 └─ Brand: "For you" (not "for your team")
 
-What this eliminates (Phase 1-2):
+What this eliminates (Phase 1):
 ├─ Enterprise sales team
 ├─ Multi-user collaboration
 ├─ SSO, SAML, admin dashboards
@@ -1309,18 +1309,18 @@ What this eliminates (Phase 1-2):
 
 Decision filter:
 ├─ Revenue opportunity: "$100K enterprise deal, but need SSO"
-│  └─ Answer: DEFER (Phase 3+, not Phase 1-2)
+│  └─ Answer: DEFER (Phase 2+, not Phase 1)
 ├─ Feature request: "We need team collaboration"
 │  └─ Answer: DEFER (individuals first)
 └─ Investor pressure: "Go upmarket for higher ACV"
     └─ Answer: RESIST (proves individual market first)
 
-Durability: Strong (Phase 1-2), Flexible (Phase 3+)
+Durability: Strong (Phase 1), Flexible (Phase 2+)
 Changeability: 10% (can add enterprise tier later, but never abandon individuals)
 Review: Yearly (adjust based on market validation)
 ```
 
-**Note:** This constraint is strong but not permanent. We can add enterprise tier in Phase 3+, but only AFTER proving individual market. This prevents:
+**Note:** This constraint is strong but not permanent. We can add enterprise tier in Phase 2+, but only AFTER proving individual market. This prevents:
 - Distraction (enterprise deals derail product focus)
 - Dilution (enterprise features bloat individual product)
 - Dependency (reliance on few large customers)
@@ -1398,7 +1398,7 @@ What this enables:
 ├─ Algorithm-first optimization (WASM for 10K+ nodes offline)
 └─ Progressive enhancement (works everywhere, enhanced where possible)
 
-What this eliminates (Phase 1-2):
+What this eliminates (Phase 1):
 ├─ Native iOS app development (Swift, App Store submission)
 ├─ Native Android app development (Kotlin, Play Store submission)
 ├─ App store review delays (3-7 days per update)
@@ -1417,7 +1417,7 @@ Decision filter:
     └─ Answer: DEFER (wait until PWA shows real limitations)
 
 Native App Trigger (Strict - REAL Limitations Only):
-Only build native apps in Phase 4+ IF PWA demonstrates clear technical limitations:
+Only build native apps in Phase 3+ IF PWA demonstrates clear technical limitations:
 ├─ >30% users request Bluetooth sharing (PWA can't access Bluetooth API)
 ├─ >30% users request AR visualization (PWA has limited camera/AR APIs)
 ├─ >30% users request background auto-analysis (PWA background tasks limited on iOS)
@@ -1429,7 +1429,7 @@ NOT Valid Triggers (PWA Handles These):
 ├─ ❌ "Performance on mobile" → PWA + WASM is 90% as fast as native
 └─ ❌ "Works on iPhone" → PWA installable on iOS Safari 16.4+
 
-Durability: Permanent (Phase 1-2), Strong (Phase 3+)
+Durability: Permanent (Phase 1), Strong (Phase 2+)
 Changeability: 5% (can add native apps if REAL limitations found, but PWA remains primary)
 Review: Yearly (verify PWA continues to meet user needs)
 ```
@@ -1648,7 +1648,7 @@ Decision filter:
 └─ Growth plateau: "Friction limiting growth"
     └─ Answer: OPTIMIZE upload UX first, THEN consider alternatives
 
-Durability: Strong (Phase 1-2), Flexible (Phase 3+)
+Durability: Strong (Phase 1), Flexible (Phase 2+)
 Changeability: 50% (can add alternatives, but manual remains option)
 Review: Quarterly (measure upload completion rate, user feedback)
 ```
@@ -2032,7 +2032,7 @@ Before then, we're vulnerable to well-funded competitors. Strategy: move fast, b
 
 ### **7.1 User Segmentation Strategy**
 
-**Primary Segment (Phase 1-2): Micro-Influencers**
+**Primary Segment (Phase 1): Micro-Influencers**
 
 **Profile:**
 ```
@@ -2071,7 +2071,7 @@ Pain Points (ranked):
 - **Accessible:** Active on social, discoverable
 - **Vocal:** Will share if product is good
 
-**Secondary Segment (Phase 2-3): Personal Brand Builders**
+**Secondary Segment (Phase 1-2): Personal Brand Builders**
 
 **Profile:**
 ```
@@ -2113,7 +2113,9 @@ Pain Points (ranked):
 
 **Acquisition Channels (Prioritized):**
 
-**Phase 1 (Months 0-6): Founder-Led Growth**
+**Phase 1 (Weeks 3-14): Complete Product Launch**
+
+**Phase 1a (Weeks 3-8 / Months 0-1): Founder-Led Growth**
 
 **1. Product Hunt (Primary Launch Channel)**
 ```
@@ -2167,7 +2169,7 @@ Expected: 500-1000 signups per front page post
 Cost: $0 (organic, time investment)
 ```
 
-**Phase 2 (Months 6-12): Scaling Organic**
+**Phase 1b (Weeks 8-14 / Months 1-3.5): Scaling Organic**
 
 **5. Viral Loops (Primary Growth Driver)**
 ```
@@ -2212,7 +2214,7 @@ Expected: 50-100 signups per influencer mention
 Cost: Free accounts + development (affiliate system)
 ```
 
-**Phase 3 (Months 12+): Paid Acquisition (if economics work)**
+**Phase 2 (Weeks 15-20): Scale & Monetization**
 
 **8. Paid Social (Performance Marketing)**
 ```
@@ -3150,7 +3152,7 @@ Trust drives retention, advocacy, and category leadership.
 
 **Roadmap Principles:**
 
-1. **Validate before scale** (Phase 0 → Phase 1 → Phase 2 → Phase 3)
+1. **Validate before scale** (Phase 0 → Phase 1 → Phase 2 → Phase 3+)
 2. **Core before features** (perfect aha moment first)
 3. **Measure everything** (every feature = hypothesis test)
 4. **Listen but don't just build requests** (infer underlying needs)
@@ -3197,30 +3199,32 @@ Progressive Web App (PWA) deployment is elevated to **Tier 1 Constitutional Cons
 
 **Platform Deployment Roadmap:**
 
-**Phase 1 (Weeks 1-12): PWA Foundation**
-- Progressive Web App deployed on Vercel
+**Phase 0 (Weeks 1-2): PWA Foundation (Technical Spike)**
+- Progressive Web App initial setup on Vercel
+- Offline-first architecture foundations (service workers + IndexedDB)
+- Responsive design (320px mobile → 4K desktop)
+- **Success Metric:** PWA technical validation complete
+
+**Phase 1 (Weeks 3-14): PWA Foundation + Optimization**
+- Progressive Web App fully deployed on Vercel
 - Installable to home screen (iOS Safari 16.4+, Android Chrome)
 - Offline-first architecture (service workers + IndexedDB)
-- Responsive design (320px mobile → 4K desktop)
 - Lighthouse PWA score: >90
-- **Success Metric:** 40% of mobile users install to home screen within 7 days
-
-**Phase 2 (Months 3-12): PWA Optimization**
 - WebAssembly force simulation (Rust, handles 10K+ nodes offline)
 - Hierarchical Level-of-Detail rendering (cluster → sample → full detail)
 - Viewport culling + quadtree spatial indexing (60 FPS on 10K nodes)
 - Push notifications (engagement, insights ready)
 - Background sync (queue uploads when offline, sync when online)
-- **Success Metric:** 10K+ node graphs render <5s, 60 FPS pan/zoom
+- **Success Metrics:** 40% of mobile users install to home screen within 7 days; 10K+ node graphs render <5s, 60 FPS pan/zoom
 
-**Phase 3 (Year 2): Advanced PWA Features**
+**Phase 2 (Weeks 15-20+): Advanced PWA Features**
 - App shortcuts (quick actions from home screen)
 - Share target API (receive shares from other apps)
 - File handling API (open .csv/.json files directly in VSG)
 - Badging API (unread insights notification badge)
 - **Success Metric:** PWA feature adoption >60% on supported browsers
 
-**Phase 4+ (Year 3+): Native Apps - ONLY if PWA Shows REAL Limitations**
+**Phase 3+ (Year 3+): Native Apps - ONLY if PWA Shows REAL Limitations**
 
 **Decision Gate (Strict - Evidence Required):**
 
@@ -3245,7 +3249,7 @@ Native apps ONLY if one of these conditions met:
 
 **Platform Partnerships:**
 
-**Phase 3+ Strategy:**
+**Phase 2+ Strategy:**
 - Partner with platforms for **official API access** (e.g., LinkedIn Official Partner)
 - Maintain privacy promise (API access for real-time insights, but NO credential storage)
 - Requirement: Partnership must offer something PWA cannot (e.g., verified badge)
@@ -3253,7 +3257,7 @@ Native apps ONLY if one of these conditions met:
 
 **Desktop App:**
 
-**Phase 3+ (If Validated):**
+**Phase 2+ (If Validated):**
 - Electron wrapper for PWA (not separate codebase)
 - Use case: Power users analyzing 50K+ node networks
 - Triggers: >20% users work primarily on desktop, request offline desktop app
@@ -3830,22 +3834,21 @@ Phase 0 (Weeks 1-2): Technical Spike
 ├─ No strategy-grade metrics yet (product not live)
 └─ Focus: Technical validation only
 
-Phase 1 (Months 1-3): Foundation + Basic Metrics
+Phase 1 (Weeks 3-14): Complete Product Launch + Foundation Metrics
 ├─ Implement: Decision Confidence Increase
 ├─ Implement: Insight-Driven Action Rate
 ├─ Baseline: Network Intentionality (for future tracking)
-└─ Survey infrastructure: Onboarding + 30-day follow-up
+├─ Survey infrastructure: Onboarding + 30-day follow-up
+├─ Implement: Strategic Decision Outcome Score (mid-phase)
+├─ Implement: Relationship Quality Improvement (mid-phase)
+└─ Longitudinal tracking: 90-day cohorts (initiate)
 
-Phase 2 (Months 4-9): Expanded Metrics
-├─ Implement: Strategic Decision Outcome Score
-├─ Implement: Relationship Quality Improvement
-├─ Implement: Random Behavior Reduction
-└─ Longitudinal tracking: 90-day, 180-day cohorts
-
-Phase 3 (Months 10-24): Category Metrics
+Phase 2 (Weeks 15-20+): Scale & Monetization + Expanded Metrics
+├─ Implement: Random Behavior Reduction tracking
 ├─ Implement: Category Awareness Score
 ├─ Implement: "PNI Thinking" Adoption Rate
 ├─ Implement: Market Education Velocity
+├─ Longitudinal tracking: 180-day cohorts
 └─ Competitive analysis: Track category formation
 ```
 
@@ -4010,20 +4013,20 @@ Strategy-grade metrics keep us honest.
 
 ### **15.1 Go/No-Go Framework**
 
-**Phase 0 → Phase 1:**
+**Phase 0 → Phase 1 (Technical Validation → Complete Product Launch):**
 - GO if: Parser success >95%, performance <60s, 4/5 feel aha moment
 - PIVOT if: Aha moment 2/5, upload friction severe
 - NO-GO if: Parsers broken (<80%), no aha moment (0-1/5)
 
-**Phase 1 → Phase 2:**
-- GO if: 3 of 4 (upload >40%, aha >30%, NPS >40, conversion >1%)
-- PIVOT if: Metrics below targets but fixable
-- NO-GO if: Upload <20%, aha <20%, NPS <20
+**Phase 1 → Phase 2 (Complete Product Launch → Scale & Monetization):**
+- GO if: 3 of 4 (1K users, upload >40%, aha >30%, NPS >40, conversion >1%, viral coefficient >0.2, D30 retention >10%)
+- PIVOT if: Metrics below targets but show improvement trajectory
+- NO-GO if: Upload <20%, aha <20%, NPS <20, or can't reach 1K in 14 weeks
 
-**Phase 2 → Phase 3:**
-- GO if: 3 of 4 (1K users, viral coefficient >0.2, D30 retention >10%, conversion 3%+)
-- PIVOT if: Growth slow but improving
-- NO-GO if: Can't reach 1K in 6 months, no viral growth
+**Phase 2 → Phase 3+ (Scale & Monetization → Future Growth):**
+- GO if: 3 of 4 (10K+ users, viral coefficient >0.3, D30 retention >15%, conversion 3%+, $10K+ MRR)
+- PIVOT if: Growth slow but improving, economics emerging
+- NO-GO if: Can't reach 10K in 6 months, no viral growth, or unit economics unsustainable
 
 ### **15.2 Feature Prioritization Framework**
 

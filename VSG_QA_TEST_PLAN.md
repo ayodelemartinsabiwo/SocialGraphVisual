@@ -13,9 +13,9 @@
 | **Date** | December 28, 2025 |
 | **Status** | Living Document - Quality Foundation |
 | **Owner** | QA Engineering / Testing |
-| **Review Cycle** | Bi-weekly (Phase 0-2), Monthly (Phase 3+) |
+| **Review Cycle** | Bi-weekly (Phase 0-1), Monthly (Phase 2+) |
 | **Classification** | Internal - Technical |
-| **Scope** | Phase 0-4 (comprehensive coverage) |
+| **Scope** | Phase 0-3 (comprehensive coverage) |
 
 **Document Hierarchy:**
 ```
@@ -282,10 +282,9 @@ expect(response.headers['retry-after']).toBeDefined(); // Seconds until reset (p
 | Phase | Quality Target | Test Coverage | Defect Escape Rate | User-Facing Bugs | Uptime |
 |-------|----------------|---------------|-------------------|------------------|--------|
 | **Phase 0 (Prototype)** | 70% | Unit: >60%<br>Integration: >40%<br>E2E: Critical paths | <30% | Acceptable (5 users) | 95% |
-| **Phase 1 (MVP)** | 85% | Unit: >80%<br>Integration: >70%<br>E2E: All flows | <15% | Minor only | 98% |
-| **Phase 2 (Public)** | 95% | Unit: >85%<br>Integration: >80%<br>E2E: >90% | <5% | Critical: 0<br>High: <3 | 99.5% |
-| **Phase 3 (Scale)** | 99% | Unit: >90%<br>Integration: >85%<br>E2E: >95% | <2% | Critical: 0<br>High: <1 | 99.9% |
-| **Phase 4 (Leadership)** | 99.9% | Unit: >95%<br>Integration: >90%<br>E2E: >98% | <1% | Critical: 0<br>High: 0 | 99.99% |
+| **Phase 1 (Complete Product Launch)** | 95% | Unit: >85%<br>Integration: >80%<br>E2E: >90% | <5% | Critical: 0<br>High: <3 | 99.5% |
+| **Phase 2 (Scale & Monetization)** | 99% | Unit: >90%<br>Integration: >85%<br>E2E: >95% | <2% | Critical: 0<br>High: <1 | 99.9% |
+| **Phase 3 (Leadership)** | 99.9% | Unit: >95%<br>Integration: >90%<br>E2E: >98% | <1% | Critical: 0<br>High: 0 | 99.99% |
 
 **Definitions:**
 - **Quality Target**: Overall product quality (subjective + objective)
@@ -297,7 +296,7 @@ expect(response.headers['retry-after']).toBeDefined(); // Seconds until reset (p
 ### **2.2 Key Quality Metrics**
 
 **Test Health Metrics:**
-- **Test Pass Rate**: >98% (Phase 2+)
+- **Test Pass Rate**: >98% (Phase 1+)
 - **Test Flakiness**: <1% (no intermittent failures)
 - **Test Execution Time**: Unit <10s, Integration <60s, E2E <300s
 - **Code Coverage**: Line >80%, Branch >75%, Function >85%
@@ -305,7 +304,7 @@ expect(response.headers['retry-after']).toBeDefined(); // Seconds until reset (p
 **Defect Metrics:**
 - **Mean Time to Detect (MTTD)**: <24 hours (production defects)
 - **Mean Time to Resolve (MTTR)**: Critical <4h, High <24h, Medium <7d
-- **Defect Density**: <0.5 defects per 1000 lines of code (Phase 2+)
+- **Defect Density**: <0.5 defects per 1000 lines of code (Phase 1+)
 - **Reopen Rate**: <10% (defects reopened after fix)
 
 **Performance Metrics (see [Section 4.5](#45-performance-testing)):**
@@ -451,9 +450,8 @@ Production:
 - **Coverage**: Vitest coverage (c8/istanbul)
 
 **Coverage Requirements**:
-- **Phase 1**: >80% line coverage, >75% branch coverage
-- **Phase 2**: >85% line coverage, >80% branch coverage
-- **Phase 3**: >90% line coverage, >85% branch coverage
+- **Phase 1**: >85% line coverage, >80% branch coverage
+- **Phase 2**: >90% line coverage, >85% branch coverage
 - **Critical components**: 100% coverage (auth, pseudonymization, payment)
 
 **Best Practices**:
@@ -618,9 +616,8 @@ it('works', () => {
 - **Containers**: Docker Compose for local integration env
 
 **Coverage Requirements**:
-- **Phase 1**: >70% of API endpoints tested
-- **Phase 2**: >80% of API endpoints + database operations
-- **Phase 3**: >85% of all integration points
+- **Phase 1**: >80% of API endpoints + database operations
+- **Phase 2**: >85% of all integration points
 
 **Best Practices**:
 
@@ -819,9 +816,8 @@ describe('POST /api/v1/graphs', () => {
 - **Test Data**: Synthetic user accounts + fixture files
 
 **Coverage Requirements**:
-- **Phase 1**: All critical user journeys (auth, upload, visualize)
-- **Phase 2**: >90% of user-facing features
-- **Phase 3**: >95% including error paths and edge cases
+- **Phase 1**: >90% of user-facing features including critical journeys (auth, upload, visualize)
+- **Phase 2**: >95% including error paths and edge cases
 
 **Critical E2E Test Flows**:
 
@@ -1055,9 +1051,8 @@ test.describe('Critical User Journey: Upload → Visualize → Export', () => {
 ```
 
 **Browser Coverage**:
-- **Phase 1**: Chromium only (speed > coverage)
-- **Phase 2**: Chromium + Firefox + Safari (full coverage)
-- **Phase 3**: + Edge, mobile browsers (comprehensive)
+- **Phase 1**: Chromium + Firefox + Safari (full coverage)
+- **Phase 2**: + Edge, mobile browsers (comprehensive)
 
 **Performance Requirements**:
 - E2E test suite: <5 minutes (parallel execution)
@@ -1694,24 +1689,23 @@ jobs:
 - **Monitoring**: Vercel Analytics, Railway Metrics, Sentry Performance
 
 **Coverage Requirements**:
-- **Phase 1**: Lighthouse >80, API p95 <1s
-- **Phase 2**: Lighthouse >90, API p95 <500ms, Graph rendering 30 FPS
-- **Phase 3**: Lighthouse >95, API p95 <300ms, Graph rendering 60 FPS
+- **Phase 1**: Lighthouse >90, API p95 <500ms, Graph rendering 30 FPS
+- **Phase 2**: Lighthouse >95, API p95 <300ms, Graph rendering 60 FPS
 
 **Performance Budgets**:
 
 | Metric | Phase 1 | Phase 2 | Phase 3 | Measurement |
 |--------|---------|---------|---------|-------------|
-| **Lighthouse Performance** | >80 | >90 | >95 | CI on every commit |
-| **Largest Contentful Paint** | <4s | <2.5s | <1.5s | Core Web Vitals |
-| **First Input Delay** | <300ms | <100ms | <50ms | Core Web Vitals |
-| **Cumulative Layout Shift** | <0.25 | <0.1 | <0.05 | Core Web Vitals |
-| **Time to Interactive** | <6s | <3.5s | <2s | Lighthouse |
-| **Bundle Size (gzipped)** | <500KB | <300KB | <200KB | Webpack analyzer |
-| **API Response (p95)** | <1000ms | <500ms | <300ms | k6 load test |
-| **API Response (p99)** | <2000ms | <1000ms | <500ms | k6 load test |
-| **Graph Render (10K nodes)** | 15 FPS | 30 FPS | 60 FPS | Manual benchmark |
-| **Graph Render (50K nodes)** | N/A | 15 FPS | 30 FPS | Manual benchmark |
+| **Lighthouse Performance** | >90 | >95 | >98 | CI on every commit |
+| **Largest Contentful Paint** | <2.5s | <1.5s | <1s | Core Web Vitals |
+| **First Input Delay** | <100ms | <50ms | <30ms | Core Web Vitals |
+| **Cumulative Layout Shift** | <0.1 | <0.05 | <0.01 | Core Web Vitals |
+| **Time to Interactive** | <3.5s | <2s | <1.5s | Lighthouse |
+| **Bundle Size (gzipped)** | <300KB | <200KB | <150KB | Webpack analyzer |
+| **API Response (p95)** | <500ms | <300ms | <200ms | k6 load test |
+| **API Response (p99)** | <1000ms | <500ms | <300ms | k6 load test |
+| **Graph Render (10K nodes)** | 30 FPS | 60 FPS | 60+ FPS | Manual benchmark |
+| **Graph Render (50K nodes)** | 15 FPS | 30 FPS | 45+ FPS | Manual benchmark |
 
 **Performance Tests**:
 
@@ -2016,9 +2010,8 @@ Sentry.init({
 - **CI Integration**: axe-playwright, jest-axe
 
 **Coverage Requirements**:
-- **Phase 1**: Lighthouse Accessibility >85
-- **Phase 2**: Lighthouse Accessibility >90, WCAG AA compliance
-- **Phase 3**: Lighthouse Accessibility >95, WCAG AAA (where possible)
+- **Phase 1**: Lighthouse Accessibility >90, WCAG AA compliance
+- **Phase 2**: Lighthouse Accessibility >95, WCAG AAA (where possible)
 
 **Accessibility Tests**:
 
@@ -2165,9 +2158,8 @@ test.describe('WCAG 2.1 AA Compliance', () => {
 - **Storybook**: Chromatic (component-level testing)
 
 **Coverage Requirements**:
-- **Phase 1**: Critical pages (homepage, dashboard, graph view)
-- **Phase 2**: All pages + major components
-- **Phase 3**: Full coverage including responsive breakpoints
+- **Phase 1**: All pages + major components
+- **Phase 2**: Full coverage including responsive breakpoints
 
 **Visual Regression Tests**:
 
@@ -2695,9 +2687,8 @@ describe('POST /api/v1/graphs - Create Graph', () => {
 - **Load Testing**: k6 (covered in Section 4.5)
 
 **Coverage Requirements**:
-- **Phase 1**: >70% of API endpoints
-- **Phase 2**: >90% of API endpoints
-- **Phase 3**: 100% of API endpoints including error paths
+- **Phase 1**: >90% of API endpoints
+- **Phase 2**: 100% of API endpoints including error paths
 
 **API Test Structure**:
 
@@ -3143,9 +3134,8 @@ describe('OpenAPI Contract Validation', () => {
 - **Manual**: Physical device testing (iOS, Android)
 
 **Coverage Requirements**:
-- **Phase 1**: Chrome only (development speed)
-- **Phase 2**: Chrome, Firefox, Safari (desktop + mobile)
-- **Phase 3**: Full coverage including Edge, Samsung Internet
+- **Phase 1**: Chrome, Firefox, Safari (desktop + mobile)
+- **Phase 2**: Full coverage including Edge, Samsung Internet
 
 **Browser Support Matrix**:
 

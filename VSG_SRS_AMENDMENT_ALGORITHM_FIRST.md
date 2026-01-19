@@ -67,13 +67,12 @@ This document formalizes the replacement of external AI platform APIs (Anthropic
 1. [Philosophy & Rationale](#1-philosophy--rationale)
 2. [Architecture Changes](#2-architecture-changes)
 3. [Amended Section 4.5: Algorithm-Powered Recommendations](#3-amended-section-45-algorithm-powered-recommendations)
-4. [Phase 1: Core Algorithm Insights (MVP)](#4-phase-1-core-algorithm-insights-mvp)
-5. [Phase 2: Rich Template System (Enhancement)](#5-phase-2-rich-template-system-enhancement)
-6. [Phase 3: Optional Local Intelligence](#6-phase-3-optional-local-intelligence)
-7. [Template Library Architecture](#7-template-library-architecture)
-8. [Testing Strategy](#8-testing-strategy)
-9. [Technology Stack Amendment](#9-technology-stack-amendment)
-10. [Migration from SRS v1.1](#10-migration-from-srs-v11)
+4. [Phase 1: Complete Product Launch](#4-phase-1-complete-product-launch)
+5. [Phase 2: Scale & Monetization](#5-phase-2-scale--monetization)
+6. [Template Library Architecture](#6-template-library-architecture)
+7. [Testing Strategy](#7-testing-strategy)
+8. [Technology Stack Amendment](#8-technology-stack-amendment)
+9. [Migration from SRS v1.1](#9-migration-from-srs-v11)
 
 ---
 
@@ -292,7 +291,7 @@ Insight Engine Architecture:
 
 ```
 REQUIREMENT SRS-F5.1: Algorithm-Powered Insight Engine
-├─ Priority: P1 (high, Phase 2)
+├─ Priority: P1 (high, Phase 1)
 ├─ Description: Generate personalized recommendations using graph algorithms
 │  and template-based narrative synthesis (NO external AI APIs)
 ├─ Rationale:
@@ -344,7 +343,7 @@ REQUIREMENT SRS-F5.1: Algorithm-Powered Insight Engine
 
 ```
 REQUIREMENT SRS-F5.2: Bridge Account Detection & Recommendations
-├─ Priority: P1 (high, Phase 2)
+├─ Priority: P1 (high, Phase 1)
 ├─ Description: Identify and explain high-value bridge accounts
 │  using betweenness centrality and template narratives
 │
@@ -405,7 +404,7 @@ REQUIREMENT SRS-F5.2: Bridge Account Detection & Recommendations
 
 ```
 REQUIREMENT SRS-F5.3: Collaboration Potential Analysis
-├─ Priority: P2 (medium, Phase 2-3)
+├─ Priority: P2 (medium, Phase 1-2)
 ├─ Description: Identify high-synergy accounts for collaboration
 │  using audience overlap and engagement pattern analysis
 │
@@ -455,7 +454,7 @@ REQUIREMENT SRS-F5.3: Collaboration Potential Analysis
 
 ```
 REQUIREMENT SRS-F5.4: Growth Opportunity Detection
-├─ Priority: P1 (high, Phase 2)
+├─ Priority: P1 (high, Phase 1)
 ├─ Description: Identify untapped segments and growth opportunities
 │  using engagement analysis and network structure
 │
@@ -501,7 +500,7 @@ REQUIREMENT SRS-F5.4: Growth Opportunity Detection
 
 ```
 REQUIREMENT SRS-F5.5: Insight Engine Performance & Monitoring
-├─ Priority: P1 (high, Phase 2)
+├─ Priority: P1 (high, Phase 1)
 ├─ Description: Performance requirements and monitoring for algorithm-based
 │  insight generation (NO external API cost management needed)
 │
@@ -544,33 +543,43 @@ REQUIREMENT SRS-F5.5: Insight Engine Performance & Monitoring
 
 ---
 
-## **4. Phase 1: Core Algorithm Insights (MVP)**
+## **4. Phase 1: Complete Product Launch (Weeks 3-14)**
 
 ### **4.1 Scope**
 
 ```
-Phase 1 Focus: Foundation
-├─ Timeline: Weeks 5-26 (aligned with SRS Phase 1)
-├─ Goal: Prove algorithm-based insights deliver user value
-├─ Constraint: Minimal template variety (focus on accuracy)
+Phase 1 Focus: Complete Product Launch (Merged MVP + Enhancement)
+├─ Timeline: Weeks 3-14
+├─ Goal: Launch complete algorithm-based insight system with rich templates
+├─ Scope: Foundation + Richness combined for production-ready experience
 │
 ├─ Included:
-│  ├─ Community Detection (SRS-F4.1) - Louvain algorithm
-│  ├─ Engagement Circles (SRS-F4.2) - Statistical bucketing
-│  ├─ Key Connectors (SRS-F4.3) - Betweenness centrality
-│  ├─ Basic Confidence Levels (SRS-F4.5) - Statistical significance
-│  └─ Template Engine v1 - 30 core templates
-│
-├─ Deferred to Phase 2:
-│  ├─ Bridge Recommendations (SRS-F5.2) - Full narrative generation
+│  ├─ Core Algorithms:
+│  │  ├─ Community Detection (SRS-F4.1) - Louvain algorithm
+│  │  ├─ Engagement Circles (SRS-F4.2) - Statistical bucketing
+│  │  ├─ Key Connectors (SRS-F4.3) - Betweenness centrality
+│  │  ├─ Basic Confidence Levels (SRS-F4.5) - Statistical significance
+│  │  └─ Bridge Recommendations (SRS-F5.2) - Full narrative generation
+│  ├─ Template Engine:
+│  │  ├─ Template Engine v2 - 150+ templates
+│  │  ├─ Context-Aware Selection - Multi-factor matching
+│  │  └─ Action Generator - 50+ actionable suggestions
 │  ├─ Collaboration Suggestions (SRS-F5.3)
 │  ├─ Growth Opportunities (SRS-F5.4)
-│  └─ Rich Template Library (150+ templates)
+│  └─ Rich Template Library (150+ variants + 57 action templates)
+│
+├─ Deferred to Phase 2:
+│  ├─ Advanced Personalization (optional local intelligence)
+│  ├─ Enhanced Templates (500+ variants via composition)
+│  └─ Local NLP/LLM Enhancement (if needed)
 │
 └─ Success Criteria:
+   ├─ Recommendations indistinguishable from AI-generated
+   ├─ Users rate quality >4/5 stars
    ├─ Users understand insights (>80% comprehension)
    ├─ Insights match user intuition (>70% agreement)
-   └─ Performance <500ms for basic insights
+   ├─ Performance <500ms for full recommendation set
+   └─ <1% report "robotic" or "repetitive" feedback
 ```
 
 ### **4.2 Modularity Provider Pattern**
@@ -1219,10 +1228,10 @@ function computeEngagementTiers(graph: Graph) {
 }
 ```
 
-### **4.4 Phase 1 Template Set (30 Core Templates)**
+### **4.4 Phase 1 Template Sets (30 Core + 150+ Rich Templates)**
 
 ```typescript
-// Phase 1: Core Template Library
+// Phase 1: Template Library
 // File: src/lib/insights/templates/core.ts
 
 export const CORE_TEMPLATES = {
@@ -1278,66 +1287,47 @@ export const CORE_TEMPLATES = {
 ### **4.5 Phase 1 Acceptance Criteria**
 
 ```
-Phase 1 Validation:
+Phase 1 Validation (Complete Product Launch):
+
 ├─ Algorithm Accuracy:
 │  ├─ Community detection matches user intuition >80%
 │  ├─ Engagement tiers feel accurate >75%
-│  └─ Bridge accounts visually connect communities
+│  ├─ Bridge accounts visually connect communities
+│  └─ Collaboration suggestions feel relevant >70%
 │
 ├─ Template Quality:
 │  ├─ Narratives read naturally (user testing)
+│  ├─ Blind test: Users cannot distinguish from AI-generated
+│  ├─ Quality rating: >4/5 stars average
 │  ├─ No grammatical errors
 │  └─ Variables interpolate correctly
 │
+├─ Template Variety:
+│  ├─ Every insight type has 5+ variants minimum
+│  ├─ Every action type has 3+ variants
+│  ├─ <1% report "robotic" or "repetitive" feedback
+│  └─ Same user sees same template <10% of time
+│
 ├─ Performance:
 │  ├─ Core metrics computed <2s (5K nodes)
+│  ├─ Template selection <10ms
 │  ├─ Template rendering <50ms
 │  └─ Total insight generation <500ms
 │
 ├─ User Feedback:
-│  ├─ >70% find insights "helpful" or "very helpful"
+│  ├─ >75% find recommendations "helpful" or "very helpful"
 │  ├─ >80% understand what insights mean
+│  ├─ >5% of suggestions lead to actual outreach (tracked via export)
 │  └─ NPS contribution positive
 │
 └─ Technical:
    ├─ Unit test coverage >80%
-   ├─ No external API calls
+   ├─ Zero external API dependencies for recommendations
+   ├─ 99.9% availability (matches overall SLA)
    └─ Memory usage <100MB per request
 ```
 
----
-
-## **5. Phase 2: Rich Template System (Enhancement)**
-
-### **5.1 Scope**
-
-```
-Phase 2 Focus: Richness & Variety
-├─ Timeline: Months 4-6 (aligned with SRS Phase 2)
-├─ Goal: Production-quality recommendations matching AI output quality
-├─ Expansion: 30 templates → 150+ templates
-│
-├─ Included:
-│  ├─ Full Bridge Recommendations (SRS-F5.2)
-│  ├─ Collaboration Suggestions (SRS-F5.3)
-│  ├─ Growth Opportunities (SRS-F5.4)
-│  ├─ Rich Template Library (150+ templates)
-│  ├─ Context-Aware Selection (multi-factor matching)
-│  └─ Action Generator (50+ actionable suggestions)
-│
-├─ New Capabilities:
-│  ├─ Template variants for variety (avoid repetition)
-│  ├─ Tone adaptation (professional, casual, motivational)
-│  ├─ Platform-specific language (Twitter vs LinkedIn)
-│  └─ Seasonal/contextual awareness (optional)
-│
-└─ Success Criteria:
-   ├─ Recommendations indistinguishable from AI-generated
-   ├─ Users rate quality >4/5 stars
-   └─ <1% report "robotic" or "repetitive" feedback
-```
-
-### **5.2 Template Library Architecture**
+### **4.6 Phase 1 Template Library Architecture**
 
 ```
 Template Library Structure:
@@ -1377,7 +1367,7 @@ Template Library Structure:
 Total: 150+ template variants + 57 action templates
 ```
 
-### **5.3 Template Schema**
+### **4.7 Phase 1 Template Schema**
 
 ```typescript
 // Template Schema Definition
@@ -1428,7 +1418,7 @@ const bridgeHighValueTemplate: Template = {
 };
 ```
 
-### **5.4 Context-Aware Template Selection**
+### **4.8 Phase 1 Context-Aware Template Selection**
 
 ```typescript
 // Template Selection Engine
@@ -1491,39 +1481,9 @@ function computeRelevanceScore(template: Template, context: SelectionContext): n
 }
 ```
 
-### **5.5 Phase 2 Acceptance Criteria**
-
-```
-Phase 2 Validation:
-├─ Quality Parity with AI:
-│  ├─ Blind test: Users cannot distinguish from AI-generated
-│  ├─ Quality rating: >4/5 stars average
-│  └─ "Robotic" complaints: <1% of feedback
-│
-├─ Template Coverage:
-│  ├─ Every insight type has 5+ variants minimum
-│  ├─ Every action type has 3+ variants
-│  └─ No "template not found" errors
-│
-├─ Variety Metrics:
-│  ├─ Same user sees same template <10% of time
-│  ├─ Tone matches platform/user preference
-│  └─ Seasonal templates appear correctly
-│
-├─ Performance:
-│  ├─ Template selection <10ms
-│  ├─ Full recommendation <500ms (unchanged)
-│  └─ Template library loads <100ms at startup
-│
-└─ User Feedback:
-   ├─ >75% find recommendations "helpful" or "very helpful"
-   ├─ >90% understand recommendations
-   └─ Recommendation-driven actions tracked
-```
-
 ---
 
-## **6. Phase 3: Optional Local Intelligence**
+## **5. Phase 2: Scale & Monetization (Weeks 15-20)**
 
 ### **6.1 Scope (Optional Enhancement)**
 
