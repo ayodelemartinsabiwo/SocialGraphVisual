@@ -44,15 +44,14 @@ This roadmap translates strategic vision into executable milestones. It defines 
 1. [Roadmap Philosophy](#1-roadmap-philosophy)
 2. [Roadmap Structure & Principles](#2-roadmap-structure--principles)
 3. [Phase 0: Technical Validation Spike](#3-phase-0-technical-validation-spike)
-4. [Phase 1: Foundation](#4-phase-1-foundation)
-5. [Phase 2: Enhancement](#5-phase-2-enhancement)
-6. [Phase 3: Scale & Monetization](#6-phase-3-scale--monetization)
-7. [Phase 4: Market Leadership](#7-phase-4-market-leadership)
-8. [Feature Dependency Map](#8-feature-dependency-map)
-9. [Resource Planning](#9-resource-planning)
-10. [Risk Mitigation Timeline](#10-risk-mitigation-timeline)
-11. [Decision Gates & Pivot Points](#11-decision-gates--pivot-points)
-12. [Success Metrics by Phase](#12-success-metrics-by-phase)
+4. [Phase 1: Complete Product Launch](#4-phase-1-complete-product-launch)
+5. [Phase 2: Scale & Monetization](#5-phase-2-scale--monetization)
+6. [Phase 3: Market Leadership](#6-phase-3-market-leadership)
+7. [Feature Dependency Map](#7-feature-dependency-map)
+8. [Resource Planning](#8-resource-planning)
+9. [Risk Mitigation Timeline](#9-risk-mitigation-timeline)
+10. [Decision Gates & Pivot Points](#10-decision-gates--pivot-points)
+11. [Success Metrics by Phase](#11-success-metrics-by-phase)
 
 ---
 
@@ -272,22 +271,18 @@ Phase 0: Technical Validation Spike (2 weeks)
 ├─ Decision: Go/No-Go to Phase 1
 └─ Investment: Minimal (founder time only)
 
-Phase 1: Foundation (6 weeks)
-├─ Goal: Launch beta, validate aha moment
+Phase 1: Complete Product Launch (12 weeks)
+├─ Goal: Beta + public launch, validate product-market fit
+├─ Week 8 Checkpoint: Validate beta success before public launch
 ├─ Decision: Go/No-Go to Phase 2
-└─ Investment: Low (founder + contractor/co-founder)
+└─ Investment: Low to Medium (scaling from founder + contractor to 2-3 people)
 
-Phase 2: Enhancement (6 weeks)
-├─ Goal: Public launch, validate growth
-├─ Decision: Go/No-Go to Phase 3
-└─ Investment: Medium (small team, 2-3 people)
-
-Phase 3: Scale & Monetization (12 weeks)
+Phase 2: Scale & Monetization (12 weeks)
 ├─ Goal: Product-market fit, sustainable growth
 ├─ Decision: Go/Scale or Pivot
 └─ Investment: High (full team, 5-7 people)
 
-Phase 4: Market Leadership (12+ months)
+Phase 3: Market Leadership (12+ months)
 ├─ Goal: Category dominance
 ├─ Decision: Series A or bootstrap to profitability
 └─ Investment: Very High (scaling team, 10-20 people)
@@ -993,28 +988,30 @@ Store in: Project wiki, share with team/advisors
 
 ---
 
-## **4. Phase 1: Foundation**
+## **4. Phase 1: Complete Product Launch**
 
-**Timeline:** 6 weeks (Weeks 3-8, February-March 2026)
-**Team:** Founder + 1-2 (contractor/co-founder)
-**Budget:** $5K-15K (salaries, hosting, tools)
-**Goal:** Launch beta to 50 users, validate aha moment at scale
+**Timeline:** 12 weeks (Weeks 3-14, February-May 2026)
+**Team:** 2-3 people (founder + engineer + designer/marketer)
+**Budget:** $15K-30K/month (salaries, marketing, hosting, tools)
+**Goal:** Public launch, reach 1,000 users, validate product-market fit
 
 ### **4.1 Phase Overview**
 
 **Why this phase exists:**
 
 Phase 0 validated that the core idea works (technical feasibility + aha moment).
-Phase 1 validates that we can deliver this to real users at quality (product excellence).
+Phase 1 validates product excellence, market demand, and monetization viability.
 
 **Key questions to answer:**
 1. Can we maintain quality while adding features?
-2. Do 50 users have same aha moment as 5 users?
+2. Do users (beta and public) have the same aha moment as Phase 0?
 3. What's the upload completion rate? (need >60%)
-4. Do users return? (retention signal)
-5. What features are most valuable? (prioritization data)
+4. Can we acquire users organically? (Product Hunt, SEO, social)
+5. Which growth channels work best?
+6. What features drive upgrades? (monetization signals)
+7. Do users return? (retention beyond novelty)
 
-**Success = GO to Phase 2 (public launch)**
+**Success = GO to Phase 2 (scale & monetization)**
 
 ---
 
@@ -1512,14 +1509,14 @@ Slack feedback:
 
 ---
 
-### **4.5 Phase 1 Decision Gate**
+### **4.5 Week 8 Checkpoint: Beta Validation Gate**
 
-**End of Week 8: Go/No-Go Decision to Phase 2**
+**End of Week 8: Assess Beta Success Before Public Launch**
 
 **Decision framework:**
 
 ```
-GO to Phase 2 if 3 of 4:
+PROCEED to public launch (Weeks 9-14) if 3 of 4:
 ✅ Upload completion rate >40% (users willing to complete manual flow)
    ├─ Measured: (Uploads completed / Uploads started) × 100
    ├─ Current data: [from beta]
@@ -1540,7 +1537,7 @@ GO to Phase 2 if 3 of 4:
    ├─ Current data: [from beta survey]
    └─ Target: >5% (excellent), >1% (acceptable)
 
-Decision: GO (proceed to public launch)
+Decision: PROCEED to Weeks 9-14 (public launch phase)
 ```
 
 ```
@@ -1594,7 +1591,7 @@ If quantitative metrics pass but qualitative signals weak:
 - Beta users (advisory input via survey)
 - Advisors (if applicable)
 
-**If GO → Phase 2 starts Week 9 (Product Hunt launch preparation)**
+**If PROCEED → Continue to Weeks 9-14 (Product Hunt launch & public growth)**
 
 ---
 
@@ -1624,36 +1621,24 @@ If quantitative metrics pass but qualitative signals weak:
 - Qualitative insights (user interviews, feedback themes)
 
 **Decision:**
-- Go/No-Go document (evidence-based decision for Phase 2)
+- Beta validation checkpoint (evidence-based decision to proceed to public launch)
 
 ---
 
-## **5. Phase 2: Enhancement**
+### **4.7 Weeks 9-14: Public Launch & Growth**
 
-**Timeline:** 6 weeks (Weeks 9-14, April-May 2026)
-**Team:** 2-3 people (founder + engineer + designer/marketer)
-**Budget:** $15K-30K (salaries, marketing, tools)
-**Goal:** Public launch, reach 1,000 users, validate growth channels
+**This portion of Phase 1 focuses on public launch, growth validation, and monetization.**
 
-### **5.1 Phase Overview**
-
-**Why this phase exists:**
-
-Phase 1 validated that beta users (hand-picked, motivated) love the product.
-Phase 2 validates that strangers (cold audience) also find value.
-
-**Key questions to answer:**
-1. Can we acquire users organically? (Product Hunt, SEO, social)
-2. Do cold users have same aha moment as beta users?
-3. Which growth channels work best?
-4. What features drive upgrades? (monetization signals)
-5. Do users return? (retention beyond novelty)
-
-**Success = GO to Phase 3 (scale & monetization)**
+**Sub-goals for Weeks 9-14:**
+- Complete all 5 insight views
+- Launch on Product Hunt
+- Reach 1,000 users
+- Validate growth channels
+- Achieve first paying customers
 
 ---
 
-### **5.2 Week 9-10: Pre-Launch Enhancement**
+### **4.8 Week 9-10: Pre-Launch Enhancement**
 
 **Week 9: Feature Completion**
 
@@ -1927,7 +1912,7 @@ Capacity planning:
 
 ---
 
-### **5.3 Week 11-12: Public Launch & Growth**
+### **4.9 Week 11-12: Public Launch & Growth**
 
 **Week 11: Launch Week**
 
@@ -2120,7 +2105,7 @@ Based on launch week learnings:
 
 ---
 
-### **5.4 Week 13-14: Monetization Signals**
+### **4.10 Week 13-14: Monetization Signals**
 
 **Week 13: Pro Tier Implementation**
 
@@ -2260,14 +2245,14 @@ Qualitative feedback:
 
 ---
 
-### **5.5 Phase 2 Decision Gate**
+### **4.11 Phase 1 Decision Gate**
 
-**End of Week 14: Go/No-Go Decision to Phase 3**
+**End of Week 14: Go/No-Go Decision to Phase 2**
 
 **Decision framework:**
 
 ```
-GO to Phase 3 if 3 of 4:
+GO to Phase 2 if 3 of 4:
 ✅ 1,000+ users acquired (demand validated)
    ├─ Measured: Total users signed up
    ├─ Current data: [from launch + growth weeks]
@@ -2333,11 +2318,11 @@ Even if metrics pass, validate qualitatively:
 - Do users take strategic actions based on insights? (behavioral impact)
 - Are paid users seeing clear ROI? (willingness to renew)
 
-**If GO → Phase 3 starts Week 15 (focus on scale)**
+**If GO → Phase 2 starts Week 15 (focus on scale & monetization)**
 
 ---
 
-### **5.6 Phase 2 Deliverables Summary**
+### **4.12 Phase 1 Final Deliverables Summary**
 
 **Product:**
 - All 5 insight views (complete feature set)
@@ -2363,23 +2348,23 @@ Even if metrics pass, validate qualitatively:
 - Qualitative insights (interviews, NPS, feature requests)
 
 **Decision:**
-- Go/No-Go document for Phase 3 (evidence-based)
+- Go/No-Go document for Phase 2 (evidence-based)
 
 ---
 
-## **6. Phase 3: Scale & Monetization**
+## **5. Phase 2: Scale & Monetization**
 
 **Timeline:** 12 weeks (Weeks 15-26, June-August 2026)
 **Team:** 5-7 people (full product, eng, design, growth, support)
-**Budget:** $50K-100K (salaries, paid acquisition, infrastructure)
+**Budget:** $50K-100K/month (salaries, paid acquisition, infrastructure)
 **Goal:** 10,000 users, $10K MRR, product-market fit validated
 
-### **6.1 Phase Overview**
+### **5.1 Phase Overview**
 
 **Why this phase exists:**
 
-Phase 2 validated that the product works and people will pay.
-Phase 3 validates that we can scale predictably and sustainably.
+Phase 1 validated that the product works and people will pay.
+Phase 2 validates that we can scale predictably and sustainably.
 
 **Key questions to answer:**
 1. Can we scale to 10,000 users without breaking?
@@ -2388,11 +2373,11 @@ Phase 3 validates that we can scale predictably and sustainably.
 4. Is churn acceptable? (<5% monthly for paid users)
 5. Do we have product-market fit? (quantitative + qualitative signals)
 
-**Success = GO to Phase 4 (market leadership) OR Series A fundraising**
+**Success = GO to Phase 3 (market leadership) OR Series A fundraising**
 
 ---
 
-### **6.2 Week 15-18: Growth Acceleration**
+### **5.2 Week 15-18: Growth Acceleration**
 
 **Team expansion:**
 
@@ -2541,7 +2526,7 @@ Comparison features (network effects):
 
 ---
 
-### **6.3 Week 19-22: Retention & Monetization**
+### **5.3 Week 19-22: Retention & Monetization**
 
 **Retention optimization:**
 
@@ -2672,15 +2657,15 @@ Upgrade funnel optimization:
 └─ Measure: Conversion rate by segment, upgrade funnel drop-offs
 
 Revenue diversification (early exploration):
-├─ API access (Phase 4+):
+├─ API access (Phase 3+):
 │  ├─ Use case: Developers, researchers want programmatic access
 │  ├─ Pricing: $50/mo for limited calls, $200/mo for unlimited
 │  └─ Not now: Build only if validated demand (survey users)
-├─ Enterprise tier (Phase 4+):
+├─ Enterprise tier (Phase 3+):
 │  ├─ Use case: Agencies, platforms want white-label or team features
 │  ├─ Pricing: Custom (per-seat or flat fee)
 │  └─ Not now: Focus on individual market first
-├─ Platform partnerships (Phase 4+):
+├─ Platform partnerships (Phase 3+):
 │  ├─ Use case: LinkedIn, Twitter want to offer network intelligence natively
 │  ├─ Model: Revenue share or licensing fee
 │  └─ Not now: Need scale first (10K+ users)
@@ -2696,7 +2681,7 @@ Revenue diversification (early exploration):
 
 ---
 
-### **6.4 Week 23-26: Product-Market Fit Validation**
+### **5.4 Week 23-26: Product-Market Fit Validation**
 
 **Product-market fit checklist:**
 
@@ -2820,18 +2805,18 @@ Actions:
 
 ---
 
-### **6.5 Phase 3 Decision Gate**
+### **5.5 Phase 2 Decision Gate**
 
-**End of Week 26: Go/No-Go Decision to Phase 4**
+**End of Week 26: Go/No-Go Decision to Phase 3**
 
 **Decision framework:**
 
 ```
-GO to Phase 4 if ALL of:
+GO to Phase 3 if ALL of:
 ✅ 10,000 users reached (scale validated)
    ├─ Measured: Total users signed up
    ├─ Current: [from analytics]
-   └─ Target: >10,000 (Phase 3 goal achieved)
+   └─ Target: >10,000 (Phase 2 goal achieved)
 
 ✅ $10K MRR achieved (revenue goal met)
    ├─ Measured: Monthly recurring revenue (Stripe)
@@ -2915,14 +2900,14 @@ Week 28: Communication & execution
 ├─ Internal: Share decision with team (transparent about reasoning)
 ├─ External: Update investors, advisors (if applicable)
 ├─ Users: Communicate roadmap (what's next?)
-└─ Execute: Begin Phase 4 OR execute pivot OR wind down
+└─ Execute: Begin Phase 3 OR execute pivot OR wind down
 ```
 
-**If GO → Phase 4 starts Week 28 (market leadership push)**
+**If GO → Phase 3 starts Week 28 (market leadership push)**
 
 ---
 
-### **6.6 Phase 3 Deliverables Summary**
+### **5.6 Phase 2 Deliverables Summary**
 
 **Growth:**
 - 10,000 users (target achieved)
@@ -2948,26 +2933,26 @@ Week 28: Communication & execution
 - Culture defined (ultrathink, quality, user-first)
 
 **Decision:**
-- Go/No-Go document for Phase 4 (comprehensive assessment)
+- Go/No-Go document for Phase 3 (comprehensive assessment)
 
 ---
 
-## **7. Phase 4: Market Leadership**
+## **6. Phase 3: Market Leadership**
 
 **Timeline:** 12+ months (Week 28+, September 2026 onwards)
 **Team:** 10-20 people (scale team as revenue grows)
-**Budget:** $200K-500K+ (scale budget with revenue)
+**Budget:** $200K-500K+/month (scale budget with revenue)
 **Goal:** Category dominance, 100K-500K users, $1M-10M ARR
 
-### **7.1 Phase Overview**
+### **6.1 Phase Overview**
 
 **Why this phase exists:**
 
-Phase 3 validated product-market fit and sustainable growth.
-Phase 4 is about becoming the category leader in Personal Network Intelligence.
+Phase 2 validated product-market fit and sustainable growth.
+Phase 3 is about becoming the category leader in Personal Network Intelligence.
 
 **Key objectives:**
-1. Scale to 100K+ users (10x from Phase 3)
+1. Scale to 100K+ users (10x from Phase 2)
 2. Achieve $1M+ ARR (category-level revenue)
 3. Own "Personal Network Intelligence" category (mental dominance)
 4. Build defensible moats (brand, data, community, network effects)
@@ -2977,7 +2962,7 @@ Phase 4 is about becoming the category leader in Personal Network Intelligence.
 
 ---
 
-### **7.2 Strategic Priorities (Months 7-12)**
+### **6.2 Strategic Priorities (Months 7-12)**
 
 **Priority 1: Category Ownership**
 
@@ -3029,7 +3014,7 @@ Innovation:
 ├─ AI advancement: GPT-5 integration (when available)
 ├─ Visualization: 3D network graphs, VR/AR exploration
 ├─ Integrations: Notion, Obsidian, Roam (save insights)
-└─ Mobile: Native iOS/Android apps (Phase 4+ - ONLY if PWA shows limitations)
+└─ Mobile: Native iOS/Android apps (Phase 3+ - ONLY if PWA shows limitations)
 ```
 
 **Priority 3: Business Maturity**
@@ -3084,9 +3069,9 @@ Use case expansion:
 
 ---
 
-### **7.3 Strategic Options (Month 18-24)**
+### **6.3 Strategic Options (Month 18-24)**
 
-**By end of Phase 4, we'll have strategic optionality:**
+**By end of Phase 3, we'll have strategic optionality:**
 
 **Option 1: Series A (Venture Path)**
 
@@ -3185,11 +3170,11 @@ No wrong answer. Each path is valid. Align with personal goals and market condit
 
 ---
 
-### **7.4 Phase 4 Deliverables (Directional)**
+### **6.4 Phase 3 Deliverables (Directional)**
 
 **Growth:**
-- 100K-500K users (10-50x from Phase 3)
-- $1M-10M ARR (100x from Phase 3)
+- 100K-500K users (10-50x from Phase 2)
+- $1M-10M ARR (100x from Phase 2)
 - Category leadership established (top 3 recognition)
 
 **Product:**
@@ -3210,9 +3195,9 @@ No wrong answer. Each path is valid. Align with personal goals and market condit
 
 ---
 
-## **8. Feature Dependency Map**
+## **7. Feature Dependency Map**
 
-### **8.1 Core Features (Must-Have)**
+### **7.1 Core Features (Must-Have)**
 
 **These are non-negotiable. Without them, product doesn't work.**
 
@@ -3222,7 +3207,7 @@ Phase 0:
 ├─ File upload (chunked, resumable)
 └─ Basic graph visualization (D3.js force-directed)
 
-Phase 1:
+Phase 1 (Weeks 3-8 - Beta):
 ├─ User authentication (magic link + Google OAuth)
 ├─ Privacy-first architecture (80% client-side processing)
 ├─ Guided reveal sequence (progressive visualization)
@@ -3230,14 +3215,14 @@ Phase 1:
 ├─ Engagement circles (super fans, ghosts)
 └─ Basic insights (4 core insights)
 
-Phase 2:
+Phase 1 (Weeks 9-14 - Public Launch):
 ├─ All 5 insight views (network, positioning, engagement, content, growth)
 ├─ Export features (PDF, social cards, CSV/JSON)
 ├─ Sharing features (one-click to Twitter, LinkedIn)
 ├─ Pro tier (Stripe integration, feature gating)
 └─ Algorithm-powered recommendations (bridge accounts, collaborations)
 
-Phase 3:
+Phase 2:
 ├─ Retention systems (onboarding, email, in-app triggers)
 ├─ Churn prevention (early warning, cancel flow)
 ├─ Viral loops (sharing v2, comparison features)
@@ -3246,7 +3231,7 @@ Phase 3:
 
 ---
 
-### **8.2 Dependency Graph**
+### **7.2 Dependency Graph**
 
 **Visual representation of what must be built before what:**
 
@@ -3290,34 +3275,32 @@ Any delay in critical path delays everything downstream.
 
 ---
 
-## **9. Resource Planning**
+## **8. Resource Planning**
 
-### **9.1 Team Evolution**
+### **8.1 Team Evolution**
 
 ```
 Phase 0 (Weeks 1-2):
 └─ 1 person: Founder (solo or with co-founder)
 
-Phase 1 (Weeks 3-8):
-└─ 1-2 people: Founder + contractor/co-founder (technical)
+Phase 1 (Weeks 3-14):
+├─ Weeks 3-8: 1-2 people: Founder + contractor/co-founder (technical)
+└─ Weeks 9-14: 2-3 people: Founder + engineer + designer/marketer
 
-Phase 2 (Weeks 9-14):
-└─ 2-3 people: Founder + engineer + designer/marketer
-
-Phase 3 (Weeks 15-26):
+Phase 2 (Weeks 15-26):
 ├─ Week 15: +1 Full-stack engineer (total: 3-4)
 ├─ Week 16: +1 Growth marketer (total: 4-5)
 ├─ Week 17: +1 Product designer (total: 5-6)
 ├─ Week 18: +1 Customer success (total: 6-7)
 └─ End: 5-7 people
 
-Phase 4 (Week 28+):
+Phase 3 (Week 28+):
 ├─ Month 7-12: Grow to 10-15 people
 ├─ Month 13-24: Grow to 15-25 people
 └─ Roles: Eng (5-8), Product/Design (2-3), Growth (3-5), Ops (2-3), Sales (0-3)
 ```
 
-### **9.2 Budget Trajectory**
+### **8.2 Budget Trajectory**
 
 ```
 Phase 0: $0-500/month
@@ -3325,56 +3308,54 @@ Phase 0: $0-500/month
 ├─ Tools: Figma free, GitHub free, PostHog free tier
 └─ Total: ~$100/month
 
-Phase 1: $5K-15K/month
-├─ Team: Founder + 1 contractor ($5K-10K)
-├─ Hosting: Upgraded infrastructure ($500-1K)
-├─ Tools: Paid tiers (Figma, Sentry, etc.) ($200-500)
-└─ Total: $5.7K-11.5K/month
+Phase 1: $15K-30K/month (12 weeks total)
+├─ Weeks 3-8: $5K-15K/month
+│  ├─ Team: Founder + 1 contractor ($5K-10K)
+│  ├─ Hosting: Upgraded infrastructure ($500-1K)
+│  └─ Tools: Paid tiers (Figma, Sentry, etc.) ($200-500)
+├─ Weeks 9-14: $15K-30K/month
+│  ├─ Team: 2-3 people ($12K-20K)
+│  ├─ Hosting: Scaling infrastructure ($1K-3K)
+│  ├─ Tools: More seats, more tools ($500-1K)
+│  └─ Marketing: Content, ads testing ($2K-5K)
+└─ Total: $120K-270K (full 12 weeks)
 
-Phase 2: $15K-30K/month
-├─ Team: 2-3 people ($12K-20K)
-├─ Hosting: Scaling infrastructure ($1K-3K)
-├─ Tools: More seats, more tools ($500-1K)
-├─ Marketing: Content, ads testing ($2K-5K)
-└─ Total: $15.5K-29K/month
-
-Phase 3: $50K-100K/month
+Phase 2: $50K-100K/month
 ├─ Team: 5-7 people ($35K-60K)
 ├─ Hosting: High-scale infrastructure ($3K-10K)
 ├─ Tools: Full stack of SaaS tools ($2K-5K)
 ├─ Marketing: SEO, paid ads, community ($10K-25K)
 └─ Total: $50K-100K/month
 
-Phase 4: $150K-500K+/month
+Phase 3: $150K-500K+/month
 ├─ Team: 10-25 people ($120K-350K)
 ├─ Infrastructure: Enterprise-grade ($10K-50K)
 ├─ Marketing: Aggressive growth ($20K-100K)
 └─ Total: $150K-500K+/month
 ```
 
-### **9.3 Funding Requirements**
+### **8.3 Funding Requirements**
 
 ```
-Bootstrap path (Phase 0-3):
+Bootstrap path (Phase 0-2):
 ├─ Phase 0: $0 (founder time only)
-├─ Phase 1: $30K-90K (6 weeks × $5K-15K/month)
-├─ Phase 2: $90K-180K (6 weeks × $15K-30K/month)
-├─ Phase 3: $600K-1.2M (12 weeks × $50K-100K/month)
+├─ Phase 1: $120K-270K (12 weeks total)
+├─ Phase 2: $600K-1.2M (12 weeks × $50K-100K/month)
 └─ Total to PMF: $720K-1.5M (Months 0-6)
 
-Revenue offsets (Phase 3):
+Revenue offsets (Phase 2):
 ├─ Month 4: $5K MRR (starting to generate revenue)
 ├─ Month 5: $7.5K MRR (growing)
-├─ Month 6: $10K MRR (Phase 3 goal)
+├─ Month 6: $10K MRR (Phase 2 goal)
 └─ Total revenue (Months 4-6): ~$20K
 
-Net burn (Phase 0-3):
+Net burn (Phase 0-2):
 ├─ Total spend: $720K-1.5M
 ├─ Total revenue: ~$20K
 ├─ Net burn: $700K-1.48M
 └─ Funding needed: $700K-1.5M (seed round or bootstrap with savings)
 
-Series A path (Phase 4):
+Series A path (Phase 3):
 ├─ Raise: $10M-20M (Month 18-24)
 ├─ Use: Scale team, marketing, international
 ├─ Runway: 18-24 months
@@ -3383,9 +3364,9 @@ Series A path (Phase 4):
 
 ---
 
-## **10. Risk Mitigation Timeline**
+## **9. Risk Mitigation Timeline**
 
-### **10.1 Risk Timeline**
+### **9.1 Risk Timeline**
 
 **When risks emerge and how we address them:**
 
@@ -3420,7 +3401,7 @@ Phase 3 (Weeks 15-26):
 │  └─ Mitigation: Pricing experiments, upgrade optimization
 └─ Decision: Go/No-Go based on PMF validation
 
-Phase 4 (Week 28+):
+Phase 3 (Week 28+):
 ├─ Risk: Competition (well-funded competitor emerges)
 │  └─ Mitigation: Brand moat, community, execution excellence
 ├─ Risk: Platform restrictions (platforms make exports harder)
@@ -3430,9 +3411,9 @@ Phase 4 (Week 28+):
 
 ---
 
-## **11. Decision Gates & Pivot Points**
+## **10. Decision Gates & Pivot Points**
 
-### **11.1 All Decision Gates Summary**
+### **10.1 All Decision Gates Summary**
 
 ```
 Phase 0 → Phase 1:
@@ -3440,28 +3421,28 @@ Phase 0 → Phase 1:
 ├─ Timeline: End of Week 2
 ├─ Outcome: GO / PIVOT (iterate) / NO-GO (stop)
 
-Phase 1 → Phase 2:
+Week 8 Checkpoint (within Phase 1):
 ├─ Criteria: Upload completion >40%, aha moment >30%, NPS >40, conversion interest >1%
 ├─ Timeline: End of Week 8
+├─ Outcome: PROCEED to public launch / PIVOT (extend beta) / NO-GO (major pivot)
+
+Phase 1 → Phase 2:
+├─ Criteria: 1K users, viral coefficient >0.2, D30 retention >10%, conversion 3%+
+├─ Timeline: End of Week 14
 ├─ Outcome: GO / PIVOT (extend Phase 1) / NO-GO (major pivot)
 
 Phase 2 → Phase 3:
-├─ Criteria: 1K users, viral coefficient >0.2, D30 retention >10%, conversion 3%+
-├─ Timeline: End of Week 14
-├─ Outcome: GO / PIVOT (extend Phase 2) / NO-GO (major pivot)
-
-Phase 3 → Phase 4:
 ├─ Criteria: 10K users, $10K MRR, PMF validated, CAC <$30
 ├─ Timeline: End of Week 26
 ├─ Outcome: GO / CONDITIONAL GO / PIVOT / NO-GO
 
-Phase 4 → Strategic Options:
+Phase 3 → Strategic Options:
 ├─ Criteria: 100K+ users, $1M+ ARR, category leadership
 ├─ Timeline: Month 18-24
 ├─ Outcome: Series A / Profitability / Acquisition
 ```
 
-### **11.2 Pivot Playbook**
+### **10.2 Pivot Playbook**
 
 **If we need to pivot, here's the framework:**
 
@@ -3502,9 +3483,9 @@ Pivots are normal. Execute decisively and learn quickly.
 
 ---
 
-## **12. Success Metrics by Phase**
+## **11. Success Metrics by Phase**
 
-### **12.1 Metrics Dashboard (All Phases)**
+### **11.1 Metrics Dashboard (All Phases)**
 
 ```
 Phase 0 (Weeks 1-2):
@@ -3513,14 +3494,14 @@ Phase 0 (Weeks 1-2):
 ├─ Aha moment (5 users): 4/5 feel it ✓
 └─ Decision: GO/NO-GO
 
-Phase 1 (Weeks 3-8):
+Phase 1 - Beta (Weeks 3-8):
 ├─ Beta users onboarded: 50 ✓
 ├─ Upload completion rate: >60% (target), >40% (acceptable)
 ├─ Aha moment rate: >40% (target), >30% (acceptable)
 ├─ NPS: >50 (target), >40 (acceptable)
-└─ Decision: GO/NO-GO
+└─ Checkpoint: PROCEED/PIVOT/NO-GO
 
-Phase 2 (Weeks 9-14):
+Phase 1 - Public Launch (Weeks 9-14):
 ├─ Total users: 1,000 ✓
 ├─ Product Hunt ranking: Top 5 (target), Top 10 (acceptable)
 ├─ Viral coefficient: >0.3 (target), >0.2 (acceptable)
@@ -3528,17 +3509,17 @@ Phase 2 (Weeks 9-14):
 ├─ Free → paid conversion: >5% (target), >3% (acceptable)
 └─ Decision: GO/NO-GO
 
-Phase 3 (Weeks 15-26):
+Phase 2 (Weeks 15-26):
 ├─ Total users: 10,000 ✓
 ├─ MRR: $10K ✓
-├─ D30 retention: >20% (improved from Phase 2)
+├─ D30 retention: >20% (improved from Phase 1)
 ├─ NPS: >50 ✓
 ├─ Monthly churn (paid): <5% ✓
 ├─ LTV:CAC: >3:1 ✓
 ├─ Sean Ellis: >40% "very disappointed"
 └─ Decision: GO/PIVOT/NO-GO
 
-Phase 4 (Week 28+):
+Phase 3 (Week 28+):
 ├─ Total users: 100K-500K
 ├─ ARR: $1M-10M
 ├─ Category leadership: Top 3 recognition
@@ -3555,27 +3536,27 @@ Phase 4 (Week 28+):
 ```
 Month 1 (Weeks 1-4):
 ├─ Phase 0: Technical Spike (Weeks 1-2)
-└─ Phase 1: Foundation Begins (Weeks 3-4)
+└─ Phase 1: Beta Launch Begins (Weeks 3-4)
 
 Month 2 (Weeks 5-8):
-├─ Phase 1: Foundation (Weeks 5-8)
-└─ Decision Gate: GO to Phase 2
+├─ Phase 1: Beta Launch (Weeks 5-8)
+└─ Week 8 Checkpoint: Validate beta success
 
 Month 3 (Weeks 9-12):
-├─ Phase 2: Enhancement (Weeks 9-12)
+├─ Phase 1: Public Launch (Weeks 9-12)
 └─ Launch: Product Hunt (Week 11)
 
 Month 4 (Weeks 13-14):
-├─ Phase 2: Completes (Weeks 13-14)
-└─ Decision Gate: GO to Phase 3
+├─ Phase 1: Completes (Weeks 13-14)
+└─ Decision Gate: GO to Phase 2
 
 Months 5-6 (Weeks 15-26):
-├─ Phase 3: Scale & Monetization
+├─ Phase 2: Scale & Monetization
 ├─ Milestone: 10,000 users, $10K MRR
-└─ Decision Gate: GO to Phase 4
+└─ Decision Gate: GO to Phase 3
 
 Months 7-24+ (Week 28+):
-├─ Phase 4: Market Leadership
+├─ Phase 3: Market Leadership
 ├─ Milestone: 100K+ users, $1M+ ARR
 └─ Strategic Options: Series A, Profitability, or Acquisition
 ```
@@ -3616,7 +3597,7 @@ We will adjust based on evidence, but we will not compromise on quality or princ
 - **Status:** Living Document (update bi-weekly)
 - **Owner:** Product / Engineering
 - **Next Review:** End of Phase 0 (Week 2, January 2026)
-- **Confidence:** 85% (Phases 0-3 detailed, Phase 4 directional)
+- **Confidence:** 85% (Phases 0-2 detailed, Phase 3 directional)
 
 ---
 
