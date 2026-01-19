@@ -274,9 +274,13 @@
       position: relative;
       background-color: var(--vsg-bg-primary);
       overflow: hidden;
+      min-height: calc(100vh - 60px);
     }
 
     .graph-canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
       width: 100%;
       height: 100%;
       background:
@@ -284,6 +288,8 @@
         repeating-linear-gradient(0deg, transparent, transparent 39px, var(--vsg-border-light) 39px, var(--vsg-border-light) 40px),
         repeating-linear-gradient(90deg, transparent, transparent 39px, var(--vsg-border-light) 39px, var(--vsg-border-light) 40px);
     }
+
+    /* Temporary debug overlay (removed once sizing confirmed) */
 
     /* Canvas Controls */
     .canvas-controls {
@@ -901,12 +907,12 @@
     <!-- Main Canvas Area -->
     <main class="canvas-main">
       <!-- Graph SVG Canvas -->
-      <svg class="graph-svg" id="graphCanvas">
+      <svg class="graph-svg graph-canvas" id="graphCanvas">
         <!-- Graph will be rendered here -->
       </svg>
 
       <!-- Reveal Animation Overlay -->
-      <div class="reveal-overlay" id="revealOverlay">
+      <div class="reveal-overlay hidden" id="revealOverlay">
         <div class="reveal-stage" id="revealStage">
           <div class="reveal-icon">🔍</div>
           <h2 class="reveal-title" id="revealTitle">Discovering Your Network</h2>
@@ -1102,6 +1108,8 @@
 
       if (revealStage >= revealStages.length) {
         document.getElementById('revealOverlay').classList.add('hidden');
+        // Re-render after overlay is gone to ensure visible graph
+        requestAnimationFrame(renderGraph);
         return;
       }
 
@@ -1180,8 +1188,22 @@
     // Simple graph rendering (placeholder - would use D3.js in production)
     function renderGraph() {
       const svg = document.getElementById('graphCanvas');
-      const width = svg.clientWidth;
-      const height = svg.clientHeight;
+      if (!svg) return;
+      // Ensure we have usable dimensions even if layout is not ready yet
+      const parentRect = svg.parentElement?.getBoundingClientRect();
+      let width = Math.floor(svg.clientWidth || parentRect?.width || window.innerWidth * 0.75 || 1200);
+      let height = Math.floor(svg.clientHeight || parentRect?.height || window.innerHeight * 0.75 || 800);
+
+      // Fallback if layout hasn't resolved yet
+      if (width < 200) width = Math.max(window.innerWidth - 320, 800);
+      if (height < 200) height = Math.max(window.innerHeight - 140, 600);
+
+
+      // Set intrinsic sizing so the graph draws even before layout settles
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
       // Clear existing
       svg.innerHTML = '';
@@ -1252,14 +1274,33 @@
 
         svg.appendChild(g);
       });
+
     }
 
-    // Initial render
+    // Kick an immediate render (DOM is already parsed because script is at the end)
+    renderGraph();
+
+    // Initial render and responsive re-render
     window.addEventListener('load', () => {
-      setTimeout(renderGraph, 100);
+      // Multiple passes to handle late layout/visibility changes
+      let attempts = 0;
+      const kick = () => {
+        requestAnimationFrame(renderGraph);
+        attempts++;
+        if (attempts < 3) setTimeout(kick, 150);
+      };
+      kick();
     });
 
-    window.addEventListener('resize', renderGraph);
+    window.addEventListener('resize', () => {
+      requestAnimationFrame(renderGraph);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        requestAnimationFrame(renderGraph);
+      }
+    });
 
     // Search functionality
     document.getElementById('searchInput').addEventListener('input', (e) => {

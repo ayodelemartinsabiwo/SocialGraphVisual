@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <title>VSG · Upload</title>
+</head>
+<body class="page" id="page">
+  <header class="header">
+    <div class="brand">VSG</div>
+    <nav class="nav">
+      <a href="index.html">Landing</a>
+      <a class="active" href="upload.html">Upload</a>
+      <a href="canvas.html">Graph</a>
+      <a href="insights.html">Insights</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+    <div class="actions">
+      <button class="toggle" aria-label="Toggle theme" onclick="toggleTheme()">Light/Dark</button>
+      <a class="button secondary" href="canvas.html">View Sample</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="section">
+      <div class="panel">
+        <div class="tag">Privacy-first entry</div>
+        <h1>Choose how you want to proceed</h1>
+        <p class="muted">Standard upload for convenience, or Offline/Local-only for maximum control. We never connect to your accounts.</p>
+        <div class="selector-grid">
+          <div class="selector">
+            <div class="badge">Recommended</div>
+            <h3>Standard upload</h3>
+            <p>Client-first parsing with optional server assist for heavy jobs. Progress, pause, and resume.</p>
+            <a class="button" href="#upload-box">Continue</a>
+          </div>
+          <div class="selector">
+            <div class="badge">No cloud</div>
+            <h3>Offline / local-only</h3>
+            <p>Process entirely on your device. Exportable HTML bundle; no network calls.</p>
+            <a class="button secondary" href="canvas.html">Try sample network</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="upload-box" class="section">
+      <div class="panel">
+        <div class="tag">Platform exports</div>
+        <div class="selector-grid">
+          <div class="selector">
+            <strong>Twitter/X</strong>
+            <p class="muted">Settings → Your account → Download an archive</p>
+          </div>
+          <div class="selector">
+            <strong>Instagram</strong>
+            <p class="muted">Settings → Your information → Download data</p>
+          </div>
+          <div class="selector">
+            <strong>LinkedIn</strong>
+            <p class="muted">Data privacy → Get a copy of your data</p>
+          </div>
+          <div class="selector">
+            <strong>TikTok</strong>
+            <p class="muted">Settings → Privacy → Download your data</p>
+          </div>
+          <div class="selector">
+            <strong>Facebook</strong>
+            <p class="muted">Settings → Your information → Download profile info</p>
+          </div>
+          <div class="selector">
+            <strong>Other</strong>
+            <p class="muted">Upload CSV/JSON; we’ll map fields on the fly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel upload-dropzone">
+        <h3>Drag & drop your ZIP/JSON/CSV</h3>
+        <p class="muted">Up to 2 GB. We stay on-device by default. Add multiple sources for a richer graph.</p>
+        <div class="pills" style="justify-content:center;">
+          <div class="pill">Client-side parsing</div>
+          <div class="pill">Pseudonymized IDs</div>
+          <div class="pill">Deterministic metrics</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="badge">In progress</div>
+        <h3>Processing your uploads</h3>
+        <p class="muted">We’re building your graph. You can navigate a sample network while we finish.</p>
+        <div class="progress" aria-label="Upload progress"><div class="bar"></div></div>
+        <ul class="list" style="margin-top: var(--space-3);">
+          <li><span>twitter-archive.zip</span><span class="badge">62% parsing</span></li>
+          <li><span>instagram.json</span><span class="badge">Queued</span></li>
+          <li><span>linkedin-connections.csv</span><span class="badge">Mapped</span></li>
+        </ul>
+        <div class="actions" style="margin-top: var(--space-3);">
+          <a class="button secondary" href="canvas.html">View sample network</a>
+          <a class="button" href="canvas.html">Go to canvas</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    Offline-first. No OAuth. Your graph, your control.
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const body = document.getElementById('page');
+      body.classList.toggle('theme-dark');
+    }
+  </script>
+</body>
+</html>
