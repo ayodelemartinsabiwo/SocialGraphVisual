@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <title>VSG · Graph Canvas</title>
+</head>
+<body class="page" id="page">
+  <header class="header">
+    <div class="brand">VSG</div>
+    <nav class="nav">
+      <a href="index.html">Landing</a>
+      <a href="upload.html">Upload</a>
+      <a class="active" href="canvas.html">Graph</a>
+      <a href="insights.html">Insights</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+    <div class="actions">
+      <button class="toggle" aria-label="Toggle theme" onclick="toggleTheme()">Light/Dark</button>
+      <a class="button secondary" href="insights.html">View insights</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="section">
+      <div class="canvas-layout">
+        <aside class="sidebar">
+          <div>
+            <div class="tag">Filters</div>
+            <div class="chip-row">
+              <div class="filter-chip">Communities · 8</div>
+              <div class="filter-chip">Centrality: Top 10%</div>
+              <div class="filter-chip">Edge weight ≥ 0.35</div>
+              <div class="filter-chip">Platform: Twitter</div>
+            </div>
+          </div>
+          <div>
+            <h3>Community focus</h3>
+            <div class="list">
+              <div class="list" style="gap: var(--space-2);">
+                <div class="list" style="gap: var(--space-2);">
+                  <div class="filter-chip"><span class="dot" style="background: var(--color-community-1);"></span>Creators</div>
+                  <div class="filter-chip"><span class="dot" style="background: var(--color-community-2);"></span>Designers</div>
+                  <div class="filter-chip"><span class="dot" style="background: var(--color-community-3);"></span>Investors</div>
+                  <div class="filter-chip"><span class="dot" style="background: var(--color-community-4);"></span>Operators</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3>People spotlight</h3>
+            <ul class="list">
+              <li><span>Alex Chen</span><span class="badge">Betweenness 0.62</span></li>
+              <li><span>Samira Lee</span><span class="badge">Influence 0.58</span></li>
+              <li><span>Jordan Malik</span><span class="badge">Bridge score 0.54</span></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Graph controls</h3>
+            <div class="chip-row">
+              <div class="pill">Hide isolates</div>
+              <div class="pill">Show labels on hover</div>
+              <div class="pill">URL deep links</div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="canvas-panel">
+          <div class="callout">
+            <strong>Guided reveal</strong>: You → Inner circle → Full network → Spotlight insight → Controls unlocked. Total ~12s, interaction unlocks at the final step.
+          </div>
+          <div class="canvas-stage" aria-label="Graph canvas placeholder">
+            <div class="legend">
+              <span><span class="dot" style="background: var(--color-community-1);"></span>Creators</span>
+              <span><span class="dot" style="background: var(--color-community-2);"></span>Designers</span>
+              <span><span class="dot" style="background: var(--color-community-3);"></span>Investors</span>
+            </div>
+          </div>
+          <div class="bottom-bar">
+            <div class="pill">Zoom / Pan</div>
+            <div class="pill">Hover to highlight ego network</div>
+            <div class="pill">Click to open detail drawer</div>
+            <div class="pill">Cmd/Ctrl+C to copy deep link</div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel">
+        <h3>Detail drawer (example)</h3>
+        <div class="grid-3">
+          <div>
+            <div class="tag">Person</div>
+            <h3>Alex Chen</h3>
+            <p class="muted">Product design · Community 1</p>
+            <div class="pills">
+              <div class="pill">Betweenness 0.62</div>
+              <div class="pill">PageRank 0.41</div>
+              <div class="pill">Edges: 142</div>
+            </div>
+          </div>
+          <div>
+            <div class="tag">Connected clusters</div>
+            <p class="muted">Creators ↔ Designers ↔ Investors</p>
+            <p>Bridge score shows Alex links creators to investors. Recommended action: DM a joint invite.</p>
+          </div>
+          <div>
+            <div class="tag">Actions</div>
+            <ul class="list">
+              <li><span>Save to shortlist</span><span class="badge">Pinned</span></li>
+              <li><span>Copy profile link</span><span class="badge">Copied</span></li>
+              <li><span>Export ego graph</span><span class="badge">PNG</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    Canvas view · Deterministic, explainable, privacy-first.
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const body = document.getElementById('page');
+      body.classList.toggle('theme-dark');
+    }
+  </script>
+</body>
+</html>
