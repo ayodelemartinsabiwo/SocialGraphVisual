@@ -73,7 +73,7 @@ export async function generateInsights(
 
   // Step 3: Match templates to analysis results
   const matchedTemplates = matchTemplates(analysis, {
-    categories,
+    ...(categories ? { categories } : {}),
     minConfidence,
   });
 
@@ -137,7 +137,7 @@ export async function generateAndSaveInsights(
       type: insight.type,
       title: insight.title,
       description: insight.description,
-      data: insight.data as Record<string, unknown>,
+      data: JSON.parse(JSON.stringify(insight.data)),
       confidence: insight.confidence,
     })),
   });
@@ -165,7 +165,7 @@ export async function getStoredInsights(
   const insights = await prisma.insight.findMany({
     where,
     orderBy: { createdAt: 'desc' },
-    take: limit,
+    ...(limit !== undefined ? { take: limit } : {}),
   });
 
   return insights.map((i: { category: string; type: string; title: string; description: string; data: unknown; confidence: string }) => ({

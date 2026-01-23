@@ -16,7 +16,7 @@ import { prisma } from '../../config/database.js';
 const KEY_LENGTH = 32; // 256 bits
 const ENCRYPTION_ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
-const AUTH_TAG_LENGTH = 16;
+// AUTH_TAG_LENGTH is 16 bytes for AES-GCM (used implicitly by crypto module)
 
 // ============================================================
 // KEY GENERATION

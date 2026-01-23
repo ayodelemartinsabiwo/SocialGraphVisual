@@ -7,7 +7,7 @@
  */
 
 import crypto from 'crypto';
-import { getUserKey, ensureUserKey } from './keyManager.js';
+import { ensureUserKey } from './keyManager.js';
 
 // ============================================================
 // TYPES

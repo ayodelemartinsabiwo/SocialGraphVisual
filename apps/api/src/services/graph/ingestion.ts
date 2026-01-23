@@ -229,14 +229,20 @@ export async function updateGraphStatus(
   status: GraphStatus,
   statistics?: Record<string, unknown>
 ): Promise<void> {
-  const data: { status: GraphStatus; statistics?: unknown } = { status };
   if (statistics) {
-    data.statistics = JSON.parse(JSON.stringify(statistics));
+    await prisma.graph.update({
+      where: { id: graphId },
+      data: {
+        status,
+        statistics: JSON.parse(JSON.stringify(statistics)),
+      },
+    });
+  } else {
+    await prisma.graph.update({
+      where: { id: graphId },
+      data: { status },
+    });
   }
-  await prisma.graph.update({
-    where: { id: graphId },
-    data,
-  });
 }
 
 /**
