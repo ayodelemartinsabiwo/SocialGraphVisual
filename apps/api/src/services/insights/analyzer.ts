@@ -6,15 +6,26 @@
  * Uses graphology for algorithm execution.
  */
 
-import Graph from 'graphology';
-import louvain from 'graphology-communities-louvain';
-import pagerank from 'graphology-metrics/centrality/pagerank';
-import betweenness from 'graphology-metrics/centrality/betweenness';
-import density from 'graphology-metrics/graph/density';
+import GraphConstructor from 'graphology';
+import louvainFn from 'graphology-communities-louvain';
+import * as metrics from 'graphology-metrics';
 import type { StoredGraph } from '../graph/storage.js';
 
+// Use any for graphology to work around ESM/CJS interop issues
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Graph = GraphConstructor as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const louvain = louvainFn as any;
+
+// Extract metrics functions
+const { centrality, graph: graphMetrics } = metrics;
+const pagerank = centrality.pagerank;
+const betweenness = centrality.betweenness;
+const density = graphMetrics.density;
+
 // Type alias for graphology Graph instance
-type GraphInstance = Graph;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GraphInstance = any;
 
 // ============================================================
 // TYPES
@@ -72,7 +83,7 @@ export interface EngagementTier {
  * Build a graphology instance from stored graph data
  */
 function buildGraph(stored: StoredGraph): GraphInstance {
-  const graph = new Graph({ multi: false, type: 'directed', allowSelfLoops: false });
+  const graph: GraphInstance = new Graph({ multi: false, type: 'directed', allowSelfLoops: false });
 
   const nodes = stored.nodesData as Array<{ id: string; [key: string]: unknown }>;
   const edges = stored.edgesData as Array<{
@@ -168,7 +179,8 @@ function detectCommunities(
   }
 
   // Run Louvain - assign communities to nodes
-  louvain.assign(graph, { resolution: 1 });
+  // The louvain function returns community assignments and modifies the graph
+  louvain(graph, { resolution: 1 });
 
   // Count nodes per community
   const communityCounts = new Map<string, number>();
@@ -269,6 +281,7 @@ function calculateTopInfluencers(graph: GraphInstance, count: number = 10): Node
     alpha: 0.85,
     maxIterations: 100,
     tolerance: 1e-6,
+    getEdgeWeight: (edge: string) => graph.getEdgeAttribute(edge, 'weight') || 1,
   });
 
   return Object.entries(scores)
