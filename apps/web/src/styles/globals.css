@@ -1,0 +1,229 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Visual Social Graph - Global Styles
+ * Applied to all pages and components
+ */
+
+@layer base {
+  /* Root styles */
+  :root {
+    font-family: var(--vsg-font-sans);
+    font-size: 16px;
+    line-height: var(--vsg-line-height-normal);
+    color: var(--vsg-text-primary);
+    background-color: var(--vsg-bg-primary);
+
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+
+    /* Better text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* System dark mode preference (before JS loads) */
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+      color-scheme: dark;
+    }
+  }
+
+  /* Body reset */
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: var(--vsg-bg-primary);
+    color: var(--vsg-text-primary);
+    transition: background-color var(--vsg-duration-normal) var(--vsg-ease-out),
+                color var(--vsg-duration-normal) var(--vsg-ease-out);
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus visible for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid var(--vsg-color-primary);
+    outline-offset: 2px;
+    border-radius: var(--vsg-radius-xs);
+  }
+
+  /* Remove default focus outline for mouse users */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--vsg-font-weight-semibold);
+    line-height: var(--vsg-line-height-tight);
+    color: var(--vsg-text-primary);
+  }
+
+  h1 { font-size: var(--vsg-font-size-h1); }
+  h2 { font-size: var(--vsg-font-size-h2); }
+  h3 { font-size: var(--vsg-font-size-h3); }
+  h4 { font-size: var(--vsg-font-size-h4); }
+
+  /* Links */
+  a {
+    color: var(--vsg-text-link);
+    text-decoration: none;
+    transition: color var(--vsg-duration-fast) var(--vsg-ease-out);
+  }
+
+  a:hover {
+    color: var(--vsg-text-link-hover);
+  }
+
+  /* Code */
+  code, pre {
+    font-family: var(--vsg-font-mono);
+    font-size: var(--vsg-font-size-body-sm);
+  }
+
+  code {
+    background-color: var(--vsg-bg-tertiary);
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--vsg-radius-xs);
+  }
+
+  pre {
+    background-color: var(--vsg-bg-tertiary);
+    padding: var(--vsg-space-4);
+    border-radius: var(--vsg-radius-sm);
+    overflow-x: auto;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--vsg-color-orange-200);
+    color: var(--vsg-color-orange-900);
+  }
+
+  .dark ::selection {
+    background-color: var(--vsg-color-orange-800);
+    color: var(--vsg-color-orange-100);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--vsg-bg-secondary);
+    border-radius: var(--vsg-radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--vsg-border-medium);
+    border-radius: var(--vsg-radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--vsg-border-strong);
+  }
+}
+
+@layer components {
+  /* Container utility */
+  .vsg-container {
+    width: 100%;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--vsg-space-4);
+    padding-right: var(--vsg-space-4);
+  }
+
+  @media (min-width: 768px) {
+    .vsg-container {
+      padding-left: var(--vsg-space-6);
+      padding-right: var(--vsg-space-6);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vsg-container {
+      padding-left: var(--vsg-space-8);
+      padding-right: var(--vsg-space-8);
+    }
+  }
+
+  /* Card base */
+  .vsg-card {
+    background-color: var(--vsg-card-bg);
+    border: 1px solid var(--vsg-card-border);
+    border-radius: var(--vsg-card-radius);
+    box-shadow: var(--vsg-card-shadow);
+    transition: box-shadow var(--vsg-duration-fast) var(--vsg-ease-out);
+  }
+
+  .vsg-card:hover {
+    box-shadow: var(--vsg-card-shadow-hover);
+  }
+
+  /* Gradient text utility */
+  .vsg-gradient-text {
+    background: linear-gradient(135deg, var(--vsg-color-orange-500) 0%, var(--vsg-color-orange-600) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glass effect */
+  .vsg-glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .vsg-glass {
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar utility */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area padding for mobile */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}

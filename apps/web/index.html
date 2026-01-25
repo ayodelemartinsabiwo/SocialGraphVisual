@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F97316" />
+    <meta name="description" content="Visual Social Graph - Personal Network Intelligence. Transform your social connections into actionable insights. Privacy-first, no account access required." />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Visual Social Graph - Personal Network Intelligence" />
+    <meta property="og:description" content="Transform your social connections into actionable insights. Privacy-first, no account access required." />
+    <meta property="og:image" content="/og-image.png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Visual Social Graph" />
+    <meta name="twitter:description" content="Personal Network Intelligence - See your social graph like never before" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <title>Visual Social Graph - Personal Network Intelligence</title>
+
+    <!-- Inline critical CSS for dark mode flash prevention -->
+    <script>
+      (function() {
+        const stored = localStorage.getItem('vsg-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
