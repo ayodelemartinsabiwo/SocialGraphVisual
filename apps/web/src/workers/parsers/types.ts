@@ -185,6 +185,7 @@ export interface InteractionCount {
 // ============================================================
 
 export type WorkerMessageType =
+  | 'WORKER_READY'
   | 'PARSE_START'
   | 'PARSE_PROGRESS'
   | 'PARSE_COMPLETE'

@@ -1,23 +1,18 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 import { cn } from '@/lib/utils';
+import type { GraphNode as SharedGraphNode, GraphEdge as SharedGraphEdge } from '@vsg/shared';
 
-interface GraphNode {
-  id: string;
-  label: string;
-  community: number;
-  pageRank: number;
-  betweenness: number;
-  degree: number;
-  x?: number;
-  y?: number;
-  fx?: number | null;
-  fy?: number | null;
+// Internal D3 compatible types (extends shared with D3 simulation fields)
+interface D3GraphNode extends SharedGraphNode {
+  index?: number;
+  vx?: number;
+  vy?: number;
 }
 
-interface GraphEdge {
-  source: string | GraphNode;
-  target: string | GraphNode;
+interface D3GraphEdge {
+  source: string | D3GraphNode;
+  target: string | D3GraphNode;
   weight: number;
 }
 
@@ -27,6 +22,8 @@ interface GraphCanvasProps {
   searchQuery: string;
   selectedNode: string | null;
   onNodeSelect: (nodeId: string | null) => void;
+  nodes?: SharedGraphNode[];
+  edges?: SharedGraphEdge[];
 }
 
 /**
@@ -44,22 +41,24 @@ const communityColors = [
 ];
 
 /**
- * Generate mock graph data
+ * Generate mock graph data for development/fallback
  */
-function generateMockData(): { nodes: GraphNode[]; edges: GraphEdge[] } {
-  const nodes: GraphNode[] = [];
-  const edges: GraphEdge[] = [];
+function generateMockData(): { nodes: D3GraphNode[]; edges: D3GraphEdge[] } {
+  const nodes: D3GraphNode[] = [];
+  const edges: D3GraphEdge[] = [];
 
   // Create nodes with communities
   const numNodes = 100;
   const numCommunities = 5;
 
   for (let i = 0; i < numNodes; i++) {
-    const community = Math.floor(Math.random() * numCommunities);
+    const communityId = Math.floor(Math.random() * numCommunities);
     nodes.push({
       id: `node-${i}`,
-      label: `User ${i}`,
-      community,
+      type: 'USER',
+      displayName: `User ${i}`,
+      username: `user_${i}`,
+      communityId,
       pageRank: Math.random(),
       betweenness: Math.random() * 0.1,
       degree: 0,
@@ -75,7 +74,7 @@ function generateMockData(): { nodes: GraphNode[]; edges: GraphEdge[] } {
       if (Math.random() < 0.7) {
         // Find node in same community
         const sameCommNodes = nodes.filter(
-          (n, idx) => n.community === nodes[i].community && idx !== i
+          (n, idx) => n.communityId === nodes[i].communityId && idx !== i
         );
         if (sameCommNodes.length > 0) {
           const target = sameCommNodes[Math.floor(Math.random() * sameCommNodes.length)];
@@ -101,8 +100,8 @@ function generateMockData(): { nodes: GraphNode[]; edges: GraphEdge[] } {
             target: nodes[targetIdx].id,
             weight: Math.random() * 0.8 + 0.2,
           });
-          nodes[i].degree++;
-          nodes[targetIdx].degree++;
+          nodes[i].degree = (nodes[i].degree || 0) + 1;
+          nodes[targetIdx].degree = (nodes[targetIdx].degree || 0) + 1;
         }
       }
     }
@@ -128,12 +127,30 @@ function GraphCanvas({
   searchQuery,
   selectedNode,
   onNodeSelect,
+  nodes: propNodes,
+  edges: propEdges,
 }: GraphCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
-  const [graphData] = useState(() => generateMockData());
-  const simulationRef = useRef<d3.Simulation<GraphNode, GraphEdge> | null>(null);
+  const simulationRef = useRef<d3.Simulation<D3GraphNode, D3GraphEdge> | null>(null);
+
+  // Use provided data or fall back to mock data for development
+  const [mockData] = useState(() => generateMockData());
+
+  // Convert shared types to D3-compatible format
+  const graphData = useMemo(() => {
+    if (propNodes && propNodes.length > 0 && propEdges && propEdges.length > 0) {
+      const d3Nodes: D3GraphNode[] = propNodes.map((node) => ({ ...node }));
+      const d3Edges: D3GraphEdge[] = propEdges.map((edge) => ({
+        source: edge.source,
+        target: edge.target,
+        weight: edge.weight,
+      }));
+      return { nodes: d3Nodes, edges: d3Edges };
+    }
+    return mockData;
+  }, [propNodes, propEdges, mockData]);
 
   /**
    * Handle resize
@@ -183,11 +200,11 @@ function GraphCanvas({
 
     // Create simulation
     const simulation = d3
-      .forceSimulation<GraphNode>(graphData.nodes)
+      .forceSimulation<D3GraphNode>(graphData.nodes)
       .force(
         'link',
         d3
-          .forceLink<GraphNode, GraphEdge>(graphData.edges)
+          .forceLink<D3GraphNode, D3GraphEdge>(graphData.edges)
           .id((d) => d.id)
           .distance(80)
           .strength((d) => d.weight * 0.5)
@@ -216,8 +233,8 @@ function GraphCanvas({
       .selectAll('circle')
       .data(graphData.nodes)
       .join('circle')
-      .attr('r', (d) => Math.max(6, d.pageRank * 20 + 4))
-      .attr('fill', (d) => communityColors[d.community % communityColors.length])
+      .attr('r', (d) => Math.max(6, (d.pageRank || 0.5) * 20 + 4))
+      .attr('fill', (d) => communityColors[(d.communityId || 0) % communityColors.length])
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
       .attr('cursor', 'pointer')
@@ -254,7 +271,7 @@ function GraphCanvas({
       })
       .call(
         d3
-          .drag<SVGCircleElement, GraphNode>()
+          .drag<SVGCircleElement, D3GraphNode>()
           .on('start', (event, d) => {
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
@@ -268,7 +285,7 @@ function GraphCanvas({
             if (!event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
-          }) as unknown as (selection: d3.Selection<SVGCircleElement | d3.BaseType, GraphNode, SVGGElement, unknown>) => void
+          }) as unknown as (selection: d3.Selection<SVGCircleElement | d3.BaseType, D3GraphNode, SVGGElement, unknown>) => void
       );
 
     // Add labels for larger nodes
@@ -276,9 +293,9 @@ function GraphCanvas({
       .append('g')
       .attr('class', 'labels')
       .selectAll('text')
-      .data(graphData.nodes.filter((d) => d.pageRank > 0.7))
+      .data(graphData.nodes.filter((d) => (d.pageRank || 0) > 0.7))
       .join('text')
-      .text((d) => d.label)
+      .text((d) => d.displayName)
       .attr('font-size', 10)
       .attr('fill', '#374151')
       .attr('text-anchor', 'middle')
@@ -288,10 +305,10 @@ function GraphCanvas({
     // Update positions on simulation tick
     simulation.on('tick', () => {
       edges
-        .attr('x1', (d) => (d.source as GraphNode).x!)
-        .attr('y1', (d) => (d.source as GraphNode).y!)
-        .attr('x2', (d) => (d.target as GraphNode).x!)
-        .attr('y2', (d) => (d.target as GraphNode).y!);
+        .attr('x1', (d) => (d.source as D3GraphNode).x!)
+        .attr('y1', (d) => (d.source as D3GraphNode).y!)
+        .attr('x2', (d) => (d.target as D3GraphNode).x!)
+        .attr('y2', (d) => (d.target as D3GraphNode).y!);
 
       nodes
         .attr('cx', (d) => d.x!)
@@ -341,12 +358,12 @@ function GraphCanvas({
 
     if (query) {
       svg
-        .selectAll<SVGCircleElement, GraphNode>('circle')
+        .selectAll<SVGCircleElement, D3GraphNode>('circle')
         .attr('opacity', (d) =>
-          d.label.toLowerCase().includes(query) ? 1 : 0.2
+          d.displayName.toLowerCase().includes(query) || d.username.toLowerCase().includes(query) ? 1 : 0.2
         );
     } else {
-      svg.selectAll<SVGCircleElement, GraphNode>('circle').attr('opacity', 1);
+      svg.selectAll<SVGCircleElement, D3GraphNode>('circle').attr('opacity', 1);
     }
   }, [searchQuery]);
 
@@ -359,7 +376,7 @@ function GraphCanvas({
     const svg = d3.select(svgRef.current);
 
     svg
-      .selectAll<SVGCircleElement, GraphNode>('circle')
+      .selectAll<SVGCircleElement, D3GraphNode>('circle')
       .attr('stroke', (d) => (d.id === selectedNode ? '#F97316' : '#fff'))
       .attr('stroke-width', (d) => (d.id === selectedNode ? 4 : 2));
   }, [selectedNode]);

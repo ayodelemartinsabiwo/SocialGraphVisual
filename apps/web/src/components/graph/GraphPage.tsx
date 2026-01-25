@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   ZoomIn,
   ZoomOut,
@@ -12,14 +13,18 @@ import {
   Layers,
   Eye,
   EyeOff,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 import GraphCanvas from './GraphCanvas';
 import NodeDetails from './NodeDetails';
 import FilterPanel from './FilterPanel';
 import Legend from './Legend';
+import { useGraph, useGraphList } from '@/hooks/useGraph';
+import { useGraphStore } from '@/stores/graphStore';
 
 /**
  * View modes for the graph
@@ -38,6 +43,9 @@ type ViewMode = 'force' | 'radial' | 'hierarchical';
  * - Export options
  */
 function GraphPage() {
+  const { id: graphId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showLegend, setShowLegend] = useState(true);
@@ -45,12 +53,23 @@ function GraphPage() {
   const [zoom, setZoom] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock data - will be replaced with real graph data from store
+  // Fetch graph data using the useGraph hook
+  const { graph, isLoading, isError, error } = useGraph(graphId || null);
+  const { filteredNodes, filteredEdges, setCurrentGraph } = useGraphStore();
+
+  // Sync graph data to store when loaded
+  useEffect(() => {
+    if (graph) {
+      setCurrentGraph(graph);
+    }
+  }, [graph, setCurrentGraph]);
+
+  // Compute stats from real data or use defaults
   const graphStats = {
-    nodes: 247,
-    edges: 1832,
-    communities: 5,
-    density: 0.06,
+    nodes: graph?.nodes?.length ?? filteredNodes.length,
+    edges: graph?.edges?.length ?? filteredEdges.length,
+    communities: graph?.statistics?.communities?.count ?? 0,
+    density: graph?.statistics?.density ?? 0,
   };
 
   /**
@@ -82,6 +101,60 @@ function GraphPage() {
     // TODO: Implement export functionality
     console.log('Export graph');
   }, []);
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-vsg-orange-500 animate-spin mx-auto mb-4" />
+          <p className="text-body text-vsg-gray-500 dark:text-vsg-gray-400">
+            Loading graph...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-h3 font-semibold text-vsg-gray-900 dark:text-white mb-2">
+            Failed to Load Graph
+          </h2>
+          <p className="text-body text-vsg-gray-500 dark:text-vsg-gray-400 mb-4">
+            {error?.message || 'An unexpected error occurred'}
+          </p>
+          <Button variant="primary" onClick={() => navigate('/upload')}>
+            Upload New Graph
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state when no graph ID or data
+  if (!graphId || !graph) {
+    return (
+      <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <Users className="w-12 h-12 text-vsg-gray-400 mx-auto mb-4" />
+          <h2 className="text-h3 font-semibold text-vsg-gray-900 dark:text-white mb-2">
+            No Graph Selected
+          </h2>
+          <p className="text-body text-vsg-gray-500 dark:text-vsg-gray-400 mb-4">
+            Upload your social network data to visualize your connections.
+          </p>
+          <Button variant="primary" onClick={() => navigate('/upload')}>
+            Upload Data
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
@@ -163,6 +236,8 @@ function GraphPage() {
               searchQuery={searchQuery}
               selectedNode={selectedNode}
               onNodeSelect={handleNodeSelect}
+              nodes={filteredNodes}
+              edges={filteredEdges}
             />
 
             {/* Zoom controls */}
