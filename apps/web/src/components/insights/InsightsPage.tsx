@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   Lightbulb,
   Users,
@@ -15,25 +15,34 @@ import {
   CheckCircle2,
   Info,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
+import { useInsights, useRegenerateInsights } from '@/hooks/useInsights';
+import { useGraph } from '@/hooks/useGraph';
+import type { InsightCategory as SharedInsightCategory, Confidence, ListInsightsResponse } from '@vsg/shared';
 
 /**
- * Insight category types
+ * Summary insight type from the list API
+ */
+type InsightSummary = ListInsightsResponse['insights'][number];
+
+/**
+ * Insight category types for UI (includes 'all')
  */
 type InsightCategory = 'network' | 'community' | 'engagement' | 'growth' | 'all';
 
 /**
- * Insight confidence levels
+ * Insight confidence levels (lowercase for UI)
  */
 type ConfidenceLevel = 'high' | 'medium' | 'low';
 
 /**
- * Insight interface
+ * Display insight interface (mapped from shared type)
  */
-interface Insight {
+interface DisplayInsight {
   id: string;
   category: InsightCategory;
   title: string;
@@ -51,99 +60,46 @@ interface Insight {
 }
 
 /**
- * Mock insights data
+ * Map shared category to local category
  */
-const mockInsights: Insight[] = [
-  {
-    id: '1',
-    category: 'community',
-    title: 'You have 5 distinct communities in your network',
-    description:
-      'Your network naturally divides into 5 communities: Tech & Innovation (45), Creative Arts (38), Business & Finance (52), Lifestyle (31), and Entertainment (28). The Tech community has the strongest internal connections.',
-    confidence: 'high',
-    metric: {
-      value: '5',
-      label: 'Communities',
-    },
+function mapCategory(category: SharedInsightCategory): InsightCategory {
+  const mapping: Record<SharedInsightCategory, InsightCategory> = {
+    NETWORK: 'network',
+    COMMUNITY: 'community',
+    ENGAGEMENT: 'engagement',
+    GROWTH: 'growth',
+  };
+  return mapping[category] || 'network';
+}
+
+/**
+ * Map shared confidence to local confidence
+ */
+function mapConfidence(confidence: Confidence): ConfidenceLevel {
+  const mapping: Record<Confidence, ConfidenceLevel> = {
+    HIGH: 'high',
+    MEDIUM: 'medium',
+    LOW: 'low',
+  };
+  return mapping[confidence] || 'medium';
+}
+
+/**
+ * Convert insight summary to DisplayInsight
+ */
+function mapToDisplayInsight(insight: InsightSummary, graphId?: string): DisplayInsight {
+  return {
+    id: insight.id,
+    category: mapCategory(insight.category),
+    title: insight.title,
+    description: insight.description,
+    confidence: mapConfidence(insight.confidence),
     action: {
-      label: 'View Communities',
-      href: '/insights/positioning',
+      label: 'View Details',
+      href: graphId ? `/graph/${graphId}` : '/graph',
     },
-  },
-  {
-    id: '2',
-    category: 'network',
-    title: '12 accounts bridge your communities together',
-    description:
-      'These "bridge" accounts connect different parts of your network. They have high betweenness centrality, meaning they\'re essential for information flow. Losing connection with them could fragment your network.',
-    confidence: 'high',
-    metric: {
-      value: '12',
-      label: 'Bridge Accounts',
-      change: 2,
-    },
-    action: {
-      label: 'View Bridges',
-      href: '/graph',
-    },
-  },
-  {
-    id: '3',
-    category: 'engagement',
-    title: 'Your top 10% of connections drive 67% of your engagement',
-    description:
-      'A small group of 25 accounts generates most of your engagement. Consider nurturing these relationships while also diversifying your engagement sources to reduce dependency.',
-    confidence: 'medium',
-    metric: {
-      value: '67%',
-      label: 'Engagement from Top 10%',
-    },
-    action: {
-      label: 'View Top Connections',
-      href: '/insights/engagement',
-    },
-  },
-  {
-    id: '4',
-    category: 'growth',
-    title: 'Weak ties in Business & Finance offer growth opportunities',
-    description:
-      'You have 8 weak connections in the Business & Finance community that could unlock access to 150+ new connections. These are accounts you interact with rarely but who have large networks.',
-    confidence: 'medium',
-    metric: {
-      value: '8',
-      label: 'Growth Opportunities',
-    },
-    action: {
-      label: 'View Opportunities',
-      href: '/insights/growth',
-    },
-  },
-  {
-    id: '5',
-    category: 'network',
-    title: 'Your network shows moderate echo chamber characteristics',
-    description:
-      '72% of your connections share similar interests (homophily index: 0.72). While this creates strong bonds, consider expanding into adjacent interest areas for diverse perspectives.',
-    confidence: 'high',
-    metric: {
-      value: '72%',
-      label: 'Homophily',
-    },
-  },
-  {
-    id: '6',
-    category: 'engagement',
-    title: '34 dormant relationships detected',
-    description:
-      'You haven\'t interacted with 34 connections in the past 90 days. These accounts still follow you but engagement has dropped significantly. Consider re-engaging or evaluating their relevance.',
-    confidence: 'low',
-    metric: {
-      value: '34',
-      label: 'Dormant Connections',
-    },
-  },
-];
+  };
+}
 
 /**
  * Category configuration
@@ -166,12 +122,114 @@ const categories: { value: InsightCategory; label: string; icon: React.Component
  * - Export options
  */
 function InsightsPage() {
+  const { id: graphId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState<InsightCategory>('all');
 
-  const filteredInsights =
-    activeCategory === 'all'
-      ? mockInsights
-      : mockInsights.filter((i) => i.category === activeCategory);
+  // Fetch insights using the hook
+  const {
+    data: insightsData,
+    isLoading: insightsLoading,
+    isError: insightsError,
+    error: insightsErrorDetails,
+  } = useInsights(graphId || null);
+
+  // Fetch graph data for metrics
+  const {
+    graph,
+    isLoading: graphLoading,
+    isError: graphError,
+  } = useGraph(graphId || null);
+
+  // Regenerate insights mutation
+  const regenerateMutation = useRegenerateInsights();
+
+  // Map shared insights to display insights
+  const displayInsights = useMemo(() => {
+    if (!insightsData?.insights) return [];
+    return insightsData.insights.map((insight) => mapToDisplayInsight(insight, graphId));
+  }, [insightsData, graphId]);
+
+  // Filter insights by category
+  const filteredInsights = useMemo(() => {
+    if (activeCategory === 'all') return displayInsights;
+    return displayInsights.filter((i) => i.category === activeCategory);
+  }, [displayInsights, activeCategory]);
+
+  // Graph stats for metric cards
+  const graphStats = {
+    totalConnections: graph?.nodes?.length ?? 0,
+    communities: graph?.statistics?.communities?.count ?? 0,
+    avgInfluence: graph?.statistics?.centrality?.pageRank?.selfPercentile
+      ? (graph.statistics.centrality.pageRank.selfPercentile / 100).toFixed(2)
+      : '0.00',
+    engagementRate: graph?.statistics?.engagement?.activePercentage
+      ? `${graph.statistics.engagement.activePercentage.toFixed(1)}%`
+      : '0%',
+  };
+
+  // Show loading state
+  const isLoading = insightsLoading || graphLoading;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-vsg-orange-500 animate-spin mx-auto mb-4" />
+          <p className="text-body text-vsg-gray-500 dark:text-vsg-gray-400">
+            Loading insights...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (insightsError || graphError) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <AlertTriangle className="w-12 h-12 text-vsg-warning-500 mx-auto mb-4" />
+          <h2 className="text-h3 font-semibold text-vsg-gray-900 dark:text-white mb-2">
+            Failed to Load Insights
+          </h2>
+          <p className="text-body text-vsg-gray-500 dark:text-vsg-gray-400 mb-4">
+            {insightsErrorDetails?.message || 'An unexpected error occurred'}
+          </p>
+          <Button variant="primary" onClick={() => navigate('/upload')}>
+            Upload New Graph
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state when no graph ID
+  if (!graphId) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <Lightbulb className="w-12 h-12 text-vsg-gray-400 mx-auto mb-4" />
+          <h2 className="text-h3 font-semibold text-vsg-gray-900 dark:text-white mb-2">
+            No Graph Selected
+          </h2>
+          <p className="text-body text-vsg-gray-500 dark:text-vsg-gray-400 mb-4">
+            Upload your social network data to generate insights.
+          </p>
+          <Button variant="primary" onClick={() => navigate('/upload')}>
+            Upload Data
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle refresh
+  const handleRefresh = () => {
+    if (graphId) {
+      regenerateMutation.mutate(graphId);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -186,9 +244,14 @@ function InsightsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={regenerateMutation.isPending}
+          >
+            <RefreshCw className={cn('w-4 h-4 mr-2', regenerateMutation.isPending && 'animate-spin')} />
+            {regenerateMutation.isPending ? 'Refreshing...' : 'Refresh'}
           </Button>
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-2" />
@@ -206,28 +269,26 @@ function InsightsPage() {
         <MetricCard
           icon={Users}
           label="Total Connections"
-          value="247"
-          change={12}
-          changeLabel="vs. last month"
+          value={graphStats.totalConnections.toString()}
+          description="Nodes in network"
         />
         <MetricCard
           icon={Network}
           label="Communities"
-          value="5"
+          value={graphStats.communities.toString()}
           description="Distinct groups"
         />
         <MetricCard
           icon={TrendingUp}
           label="Avg. Influence"
-          value="0.42"
+          value={graphStats.avgInfluence}
           description="PageRank score"
         />
         <MetricCard
           icon={BarChart3}
           label="Engagement Rate"
-          value="8.2%"
-          change={-0.5}
-          changeLabel="vs. last month"
+          value={graphStats.engagementRate}
+          description="Active connections"
         />
       </div>
 
@@ -400,7 +461,7 @@ function QuickViewCard({
 /**
  * Insight card component
  */
-function InsightCard({ insight }: { insight: Insight }) {
+function InsightCard({ insight }: { insight: DisplayInsight }) {
   const confidenceConfig = {
     high: {
       icon: CheckCircle2,

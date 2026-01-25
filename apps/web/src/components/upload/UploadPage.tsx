@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Upload,
@@ -15,6 +15,9 @@ import { cn } from '@/lib/utils';
 import UploadZone from './UploadZone';
 import PlatformSelector from './PlatformSelector';
 import ParsingProgress from './ParsingProgress';
+import { useUpload, type ParsedGraphData } from '@/hooks/useUpload';
+import { useParser } from '@/hooks/useParser';
+import { Platform as SharedPlatform } from '@vsg/shared';
 
 /**
  * Upload page state machine
@@ -107,14 +110,52 @@ export const platformConfig: Record<Platform, {
  * 3. Parse data (with progress)
  * 4. Complete / Error
  */
+/**
+ * Map local platform type to shared platform type
+ */
+const platformToShared: Record<Platform, SharedPlatform> = {
+  twitter: 'TWITTER',
+  instagram: 'INSTAGRAM',
+  linkedin: 'LINKEDIN',
+  facebook: 'FACEBOOK',
+  tiktok: 'TIKTOK',
+};
+
 function UploadPage() {
   const navigate = useNavigate();
   const [state, setState] = useState<UploadState>('select-platform');
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [parseProgress, setParseProgress] = useState(0);
-  const [parseStep, setParseStep] = useState('');
-  const [error, setError] = useState<string | null>(null);
+
+  // Use the upload and parser hooks
+  const { parseFile: parseWithWorker, progress: parserProgress, error: parserError } = useParser();
+  const {
+    upload,
+    step: uploadStep,
+    progress: uploadProgress,
+    message: uploadMessage,
+    error: uploadError,
+    result: uploadResult,
+    isComplete,
+    isError,
+    reset: resetUpload,
+  } = useUpload();
+
+  // Sync upload state changes to component state
+  useEffect(() => {
+    if (uploadStep === 'complete' && isComplete) {
+      setState('complete');
+    } else if (uploadStep === 'error' || isError) {
+      setState('error');
+    } else if (uploadStep === 'parsing' || uploadStep === 'uploading' || uploadStep === 'processing') {
+      setState('parsing');
+    }
+  }, [uploadStep, isComplete, isError]);
+
+  // Compute display progress and message
+  const parseProgress = parserProgress?.percentage ?? uploadProgress;
+  const parseStep = parserProgress?.message ?? uploadMessage;
+  const error = parserError ?? uploadError;
 
   /**
    * Handle platform selection
@@ -125,53 +166,55 @@ function UploadPage() {
   }, []);
 
   /**
+   * Parse file using Web Worker wrapper
+   */
+  const createParseFile = useCallback(
+    (platform: Platform) => {
+      return async (file: File): Promise<ParsedGraphData> => {
+        const sharedPlatform = platformToShared[platform];
+        return parseWithWorker(file, sharedPlatform);
+      };
+    },
+    [parseWithWorker]
+  );
+
+  /**
    * Handle file upload
    */
   const handleFileUpload = useCallback(async (file: File) => {
+    if (!selectedPlatform) return;
+
     setUploadedFile(file);
     setState('parsing');
-    setError(null);
 
-    try {
-      // Simulate parsing progress (will be replaced with actual Web Worker)
-      const steps = [
-        'Extracting archive...',
-        'Detecting platform format...',
-        'Parsing connections...',
-        'Building graph structure...',
-        'Computing communities...',
-        'Calculating influence scores...',
-        'Generating insights...',
-      ];
-
-      for (let i = 0; i < steps.length; i++) {
-        setParseStep(steps[i]);
-        setParseProgress(((i + 1) / steps.length) * 100);
-        await new Promise((resolve) => setTimeout(resolve, 800));
-      }
-
-      setState('complete');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during parsing');
-      setState('error');
-    }
-  }, []);
+    // Use the upload hook with the Web Worker parser
+    upload({
+      file,
+      platform: platformToShared[selectedPlatform],
+      parseFile: createParseFile(selectedPlatform),
+    });
+  }, [selectedPlatform, upload, createParseFile]);
 
   /**
    * Handle navigation to graph
    */
   const handleViewGraph = useCallback(() => {
-    navigate('/graph');
-  }, [navigate]);
+    // Navigate to the specific graph if we have a result
+    if (uploadResult?.graphId) {
+      navigate(`/graph/${uploadResult.graphId}`);
+    } else {
+      navigate('/graph');
+    }
+  }, [navigate, uploadResult]);
 
   /**
    * Handle retry
    */
   const handleRetry = useCallback(() => {
-    setError(null);
+    resetUpload();
     setUploadedFile(null);
     setState('upload');
-  }, []);
+  }, [resetUpload]);
 
   /**
    * Handle back navigation
@@ -182,9 +225,9 @@ function UploadPage() {
       setSelectedPlatform(null);
     } else if (state === 'error') {
       setState('upload');
-      setError(null);
+      resetUpload();
     }
-  }, [state]);
+  }, [state, resetUpload]);
 
   return (
     <div className="min-h-[calc(100vh-8rem)] flex flex-col">
@@ -337,18 +380,18 @@ function UploadPage() {
                 </p>
 
                 {/* Stats preview */}
-                <div className="grid grid-cols-3 gap-4 mb-8 p-4 bg-vsg-gray-50 dark:bg-vsg-gray-800 rounded-lg">
+                <div className="grid grid-cols-2 gap-4 mb-8 p-4 bg-vsg-gray-50 dark:bg-vsg-gray-800 rounded-lg">
                   <div>
-                    <p className="text-h3 font-bold text-vsg-orange-500">247</p>
+                    <p className="text-h3 font-bold text-vsg-orange-500">
+                      {uploadResult?.nodeCount ?? 0}
+                    </p>
                     <p className="text-caption text-vsg-gray-500">Connections</p>
                   </div>
                   <div>
-                    <p className="text-h3 font-bold text-vsg-community-blue">5</p>
-                    <p className="text-caption text-vsg-gray-500">Communities</p>
-                  </div>
-                  <div>
-                    <p className="text-h3 font-bold text-vsg-community-purple">12</p>
-                    <p className="text-caption text-vsg-gray-500">Bridges</p>
+                    <p className="text-h3 font-bold text-vsg-community-blue">
+                      {uploadResult?.edgeCount ?? 0}
+                    </p>
+                    <p className="text-caption text-vsg-gray-500">Relationships</p>
                   </div>
                 </div>
 
@@ -356,7 +399,11 @@ function UploadPage() {
                   <Button size="lg" onClick={handleViewGraph}>
                     View Network Graph
                   </Button>
-                  <Button variant="outline" size="lg" onClick={() => navigate('/insights')}>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => navigate(uploadResult?.graphId ? `/insights/${uploadResult.graphId}` : '/insights')}
+                  >
                     See Insights
                   </Button>
                 </div>
