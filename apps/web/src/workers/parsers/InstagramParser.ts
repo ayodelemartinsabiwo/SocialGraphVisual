@@ -1,0 +1,304 @@
+/**
+ * Instagram Parser
+ * @module workers/parsers/InstagramParser
+ *
+ * Parses Instagram data export files.
+ * Handles followers.json and following.json files.
+ */
+
+import { Platform, NodeType, EdgeType } from '@vsg/shared';
+import { BaseParser } from './BaseParser';
+import type {
+  ParsedResult,
+  ParsingProgress,
+  InstagramFollower,
+  InstagramFollowing,
+} from './types';
+
+// ============================================================
+// INSTAGRAM PARSER
+// ============================================================
+
+export class InstagramParser extends BaseParser {
+  platform = Platform.INSTAGRAM;
+  version = 'instagram_v1.0';
+  supportedFiles = [
+    'followers_and_following/followers.json',
+    'followers_and_following/following.json',
+    'followers_1.json',
+    'following.json',
+  ];
+
+  /**
+   * Validate that required files exist
+   */
+  validateFiles(files: Map<string, ArrayBuffer>): {
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+  } {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    // Check for followers file
+    const hasFollowers = this.findFile(files, 'followers') !== null;
+    // Check for following file
+    const hasFollowing = this.findFile(files, 'following') !== null;
+
+    if (!hasFollowers && !hasFollowing) {
+      errors.push('Missing required files: followers.json or following.json');
+    }
+
+    if (!hasFollowers) {
+      warnings.push('followers.json not found - follower data will be limited');
+    }
+
+    if (!hasFollowing) {
+      warnings.push('following.json not found - following data will be limited');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings,
+    };
+  }
+
+  /**
+   * Parse Instagram data
+   */
+  async parse(
+    files: Map<string, ArrayBuffer>,
+    onProgress: (progress: ParsingProgress) => void
+  ): Promise<ParsedResult> {
+    this.reset();
+
+    const fileName = 'instagram_export.zip';
+    let totalFileSize = 0;
+    for (const buffer of files.values()) {
+      totalFileSize += buffer.byteLength;
+    }
+
+    // Phase 1: Validate
+    onProgress({
+      phase: 'validating',
+      current: 0,
+      total: 100,
+      percentage: 5,
+      message: 'Validating file structure...',
+    });
+
+    // Create self node
+    const selfNode = this.createNode({
+      id: 'self',
+      username: 'me',
+      displayName: 'You',
+      type: 'SELF' as NodeType,
+    });
+    selfNode.displayName = 'You';
+    selfNode.username = '@you';
+    this.nodeMap.set('self', selfNode);
+
+    // Phase 2: Parse following
+    onProgress({
+      phase: 'parsing-following',
+      current: 10,
+      total: 100,
+      percentage: 25,
+      message: 'Parsing following list...',
+    });
+
+    const followingFile = this.findFile(files, 'following');
+    if (followingFile) {
+      await this.parseFollowing(files.get(followingFile)!);
+    }
+
+    // Phase 3: Parse followers
+    onProgress({
+      phase: 'parsing-followers',
+      current: 40,
+      total: 100,
+      percentage: 50,
+      message: 'Parsing followers list...',
+    });
+
+    const followersFile = this.findFile(files, 'followers');
+    if (followersFile) {
+      await this.parseFollowers(files.get(followersFile)!);
+    }
+
+    // Phase 4: Build graph
+    onProgress({
+      phase: 'building-graph',
+      current: 70,
+      total: 100,
+      percentage: 75,
+      message: 'Building relationship graph...',
+    });
+
+    // Detect mutual relationships
+    this.detectMutualRelationships();
+
+    // Phase 5: Calculate weights
+    onProgress({
+      phase: 'calculating-weights',
+      current: 85,
+      total: 100,
+      percentage: 90,
+      message: 'Calculating edge weights...',
+    });
+
+    this.calculateEdgeWeights();
+    this.calculateDegrees();
+
+    // Update self node counts
+    const self = this.nodeMap.get('self');
+    if (self) {
+      self.followingCount = self.outDegree;
+      self.followerCount = self.inDegree;
+    }
+
+    // Phase 6: Finalize
+    onProgress({
+      phase: 'finalizing',
+      current: 95,
+      total: 100,
+      percentage: 98,
+      message: 'Finalizing graph data...',
+    });
+
+    const result: ParsedResult = {
+      nodes: Array.from(this.nodeMap.values()),
+      edges: Array.from(this.edgeMap.values()),
+      metadata: {
+        parseVersion: this.version,
+        parsingErrors: this.errors,
+        sourceFileInfo: {
+          fileName,
+          fileSize: totalFileSize,
+          checksum: this.calculateChecksum(
+            files.values().next().value || new ArrayBuffer(0)
+          ),
+        },
+      },
+    };
+
+    onProgress({
+      phase: 'finalizing',
+      current: 100,
+      total: 100,
+      percentage: 100,
+      message: `Parsed ${result.nodes.length} nodes and ${result.edges.length} edges`,
+    });
+
+    return result;
+  }
+
+  // ============================================================
+  // PRIVATE PARSING METHODS
+  // ============================================================
+
+  /**
+   * Parse following file
+   */
+  private async parseFollowing(buffer: ArrayBuffer): Promise<void> {
+    const data = this.parseJson<InstagramFollowing[] | { relationships_following: InstagramFollowing[] }>(buffer);
+    if (!data) return;
+
+    // Handle different Instagram export formats
+    const followingList = Array.isArray(data)
+      ? data
+      : data.relationships_following || [];
+
+    for (const item of followingList) {
+      const stringData = item.string_list_data;
+      if (!stringData || stringData.length === 0) continue;
+
+      const username = stringData[0]?.value;
+      if (!username) continue;
+
+      const userId = this.generateUserId(username);
+
+      // Create node for followed user if not exists
+      if (!this.nodeMap.has(userId)) {
+        const node = this.createNode({
+          id: userId,
+          username: username,
+          displayName: username,
+          type: 'USER' as NodeType,
+        });
+        this.nodeMap.set(userId, node);
+      }
+
+      // Create edge: self follows this user
+      this.createOrUpdateEdge('self', userId, 'FOLLOWS' as EdgeType);
+    }
+  }
+
+  /**
+   * Parse followers file
+   */
+  private async parseFollowers(buffer: ArrayBuffer): Promise<void> {
+    const data = this.parseJson<InstagramFollower[] | { relationships_followers: InstagramFollower[] }>(buffer);
+    if (!data) return;
+
+    // Handle different Instagram export formats
+    const followersList = Array.isArray(data)
+      ? data
+      : data.relationships_followers || [];
+
+    for (const item of followersList) {
+      const stringData = item.string_list_data;
+      if (!stringData || stringData.length === 0) continue;
+
+      const username = stringData[0]?.value;
+      if (!username) continue;
+
+      const userId = this.generateUserId(username);
+
+      // Create node for follower if not exists
+      if (!this.nodeMap.has(userId)) {
+        const node = this.createNode({
+          id: userId,
+          username: username,
+          displayName: username,
+          type: 'USER' as NodeType,
+        });
+        this.nodeMap.set(userId, node);
+      }
+
+      // Create edge: this user follows self
+      this.createOrUpdateEdge(userId, 'self', 'FOLLOWED_BY' as EdgeType);
+    }
+  }
+
+  /**
+   * Generate a consistent user ID from username
+   */
+  private generateUserId(username: string): string {
+    let hash = 0;
+    for (let i = 0; i < username.length; i++) {
+      const char = username.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return `ig_${Math.abs(hash).toString(16)}`;
+  }
+
+  /**
+   * Find a file in the map (case-insensitive, supports paths)
+   */
+  private findFile(files: Map<string, ArrayBuffer>, targetName: string): string | null {
+    for (const fileName of files.keys()) {
+      const normalizedFileName = fileName.toLowerCase();
+      const normalizedTarget = targetName.toLowerCase();
+
+      if (normalizedFileName.includes(normalizedTarget)) {
+        return fileName;
+      }
+    }
+    return null;
+  }
+}
+
+export default InstagramParser;

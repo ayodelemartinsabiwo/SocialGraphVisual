@@ -1,0 +1,341 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USERS & AUTHENTICATION
+// ============================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  googleId  String?  @unique
+  tier      UserTier @default(FREE)
+  secretKey String?  // Encrypted per-user key for pseudonymization
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete for GDPR compliance
+
+  // Relations
+  graphs        Graph[]
+  uploads       Upload[]
+  exports       Export[]
+  subscription  Subscription?
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([googleId])
+  @@index([tier])
+}
+
+enum UserTier {
+  FREE
+  PRO
+  CREATOR
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model MagicLink {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  email     String
+
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([token])
+  @@index([email])
+  @@index([expiresAt])
+}
+
+// ============================================================
+// GRAPHS & NETWORK DATA
+// ============================================================
+
+model Graph {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  platform  Platform
+  version   Int         @default(1)
+  isLatest  Boolean     @default(true)
+  status    GraphStatus @default(PROCESSING)
+
+  // Graph structure stored as JSONB for flexibility
+  // Array of GraphNode objects
+  nodesData Json
+  // Array of GraphEdge objects
+  edgesData Json
+  // GraphMetadata object (parsing info, source file, errors)
+  metadata  Json
+
+  // Computed statistics (cached, nullable until processing completes)
+  // GraphStatistics object
+  statistics Json?
+
+  // Processing error message if status is ERROR
+  errorMsg   String?
+
+  // Relations
+  insights   Insight[]
+  exports    Export[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, platform, version])
+  @@index([userId])
+  @@index([platform])
+  @@index([isLatest])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum Platform {
+  TWITTER
+  INSTAGRAM
+  LINKEDIN
+  FACEBOOK
+  TIKTOK
+}
+
+enum GraphStatus {
+  PROCESSING
+  READY
+  ERROR
+}
+
+// ============================================================
+// UPLOADS
+// ============================================================
+
+model Upload {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  platform  Platform
+  fileName  String
+  fileSize  Int          // bytes
+  checksum  String?      // SHA-256 hash
+
+  // Tus upload URL (for resumable uploads)
+  uploadUrl String?
+
+  status    UploadStatus @default(PENDING)
+  errorMsg  String?
+
+  // Upload expires if not completed
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+enum UploadStatus {
+  PENDING
+  UPLOADING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+// ============================================================
+// INSIGHTS
+// ============================================================
+
+model Insight {
+  id        String          @id @default(cuid())
+  graphId   String
+  graph     Graph           @relation(fields: [graphId], references: [id], onDelete: Cascade)
+
+  category  InsightCategory
+  type      String          // Specific insight type identifier
+
+  title       String
+  description String        @db.Text
+
+  // Insight-specific computed data as JSONB
+  data        Json
+  confidence  Confidence    @default(MEDIUM)
+
+  // Actions as JSONB array
+  actions     Json?
+
+  // Visual annotations for graph highlighting
+  visualAnnotations Json?
+
+  // Display priority (higher = more important)
+  priority      Int         @default(0)
+  isHighlighted Boolean     @default(false)
+
+  // Template tracking for A/B testing
+  templateId    String?
+  templateVersion String?
+
+  createdAt DateTime @default(now())
+
+  @@index([graphId])
+  @@index([category])
+  @@index([type])
+  @@index([priority])
+}
+
+enum InsightCategory {
+  NETWORK
+  COMMUNITY
+  ENGAGEMENT
+  GROWTH
+}
+
+enum Confidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+// ============================================================
+// EXPORTS
+// ============================================================
+
+model Export {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  graphId   String
+  graph     Graph        @relation(fields: [graphId], references: [id], onDelete: Cascade)
+
+  type      ExportType
+  format    ExportFormat
+  status    ExportStatus @default(PENDING)
+
+  // File info (populated when completed)
+  fileUrl   String?
+  fileSize  Int?         // bytes
+  fileName  String?
+
+  // Export options as JSONB
+  options   Json?
+
+  // Error message if failed
+  errorMsg  String?
+
+  // Download link expiration
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+  completedAt DateTime?
+
+  @@index([userId])
+  @@index([graphId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ExportType {
+  PDF_REPORT
+  SOCIAL_CARD
+  DATA_CSV
+  DATA_JSON
+}
+
+enum ExportFormat {
+  PDF
+  PNG
+  JPG
+  CSV
+  JSON
+}
+
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// ============================================================
+// SUBSCRIPTIONS & BILLING
+// ============================================================
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  stripeCustomerId     String             @unique
+  stripeSubscriptionId String?            @unique
+  stripePriceId        String?
+
+  status               SubscriptionStatus @default(INACTIVE)
+
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  canceledAt           DateTime?
+
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
+// ============================================================
+// ANALYTICS & TRACKING (Optional - for usage metrics)
+// ============================================================
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?  // Nullable for anonymous events
+
+  event     String   // Event name (e.g., "graph_created", "export_downloaded")
+  properties Json?   // Event-specific data
+
+  sessionId String?
+  ipHash    String?  // Hashed IP for privacy
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([event])
+  @@index([createdAt])
+}
