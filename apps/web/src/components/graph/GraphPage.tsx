@@ -210,8 +210,8 @@ function GraphPage() {
           </Button>
 
           {/* Export */}
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
+          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+            <Download className="w-4 h-4" />
             Export
           </Button>
         </div>
@@ -287,19 +287,20 @@ function GraphPage() {
                 { mode: 'radial' as ViewMode, icon: Layers, label: 'Radial' },
                 { mode: 'hierarchical' as ViewMode, icon: Settings2, label: 'Tree' },
               ].map(({ mode, icon: Icon, label }) => (
-                <button
+                <Button
                   key={mode}
+                  variant={viewMode === mode ? 'primary' : 'ghost'}
+                  size="sm"
                   onClick={() => setViewMode(mode)}
-                  className={cn(
-                    'px-3 py-1.5 rounded text-body-sm font-medium transition-colors',
-                    viewMode === mode
-                      ? 'bg-vsg-orange-500 text-white'
-                      : 'text-vsg-gray-600 dark:text-vsg-gray-400 hover:bg-vsg-gray-100 dark:hover:bg-vsg-gray-800'
-                  )}
                   aria-label={label}
+                  className={cn(
+                    'h-8 px-2', // Override default small padding for compact fit
+                    viewMode !== mode && 'text-vsg-gray-600 dark:text-vsg-gray-400'
+                  )}
                 >
-                  <Icon className="w-4 h-4" />
-                </button>
+                  <Icon className="w-4 h-4 mr-1" />
+                  {label}
+                </Button>
               ))}
             </div>
 

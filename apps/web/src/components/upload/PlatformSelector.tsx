@@ -46,6 +46,17 @@ const PlatformIcons: Record<Platform, React.FC<{ className?: string }>> = {
 function PlatformSelector({ onSelect }: PlatformSelectorProps) {
   const platforms: Platform[] = ['twitter', 'instagram', 'linkedin', 'facebook', 'tiktok'];
 
+  /**
+   * Get icon color based on platform and dark mode background
+   * Twitter and TikTok have white bg in dark mode, so icon should be black
+   */
+  const getIconColor = (platform: Platform): string => {
+    if (platform === 'twitter' || platform === 'tiktok') {
+      return 'text-white dark:text-black';
+    }
+    return 'text-white';
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {platforms.map((platform) => {
@@ -69,7 +80,7 @@ function PlatformSelector({ onSelect }: PlatformSelectorProps) {
                   config.bgColor
                 )}
               >
-                <Icon className="w-8 h-8 text-white" />
+                <Icon className={cn('w-8 h-8', getIconColor(platform))} />
               </div>
 
               {/* Platform name */}

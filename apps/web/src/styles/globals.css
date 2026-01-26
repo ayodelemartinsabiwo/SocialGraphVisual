@@ -187,7 +187,7 @@
 
   /* Gradient text utility */
   .vsg-gradient-text {
-    background: linear-gradient(135deg, var(--vsg-color-orange-500) 0%, var(--vsg-color-orange-600) 100%);
+    background: linear-gradient(135deg, var(--vsg-color-orange-700) 0%, var(--vsg-color-orange-800) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

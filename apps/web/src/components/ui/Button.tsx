@@ -40,10 +40,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
  */
 const variantStyles: Record<ButtonVariant, string> = {
   primary: `
-    bg-vsg-orange-500 text-white
-    hover:bg-vsg-orange-600
-    active:bg-vsg-orange-700
-    focus-visible:ring-vsg-orange-500
+    bg-vsg-orange-600 text-white
+    hover:bg-vsg-orange-700
+    active:bg-vsg-orange-800
+    focus-visible:ring-vsg-orange-600
     disabled:bg-vsg-gray-300 disabled:text-vsg-gray-500
   `,
   secondary: `
@@ -74,10 +74,10 @@ const variantStyles: Record<ButtonVariant, string> = {
     disabled:text-vsg-gray-400
   `,
   link: `
-    bg-transparent text-vsg-orange-500 underline-offset-4
-    hover:underline hover:text-vsg-orange-600
-    active:text-vsg-orange-700
-    focus-visible:ring-vsg-orange-500
+    bg-transparent text-vsg-orange-700 underline-offset-4
+    hover:underline hover:text-vsg-orange-800
+    active:text-vsg-orange-900
+    focus-visible:ring-vsg-orange-700
     disabled:text-vsg-gray-400 disabled:no-underline
   `,
   destructive: `
@@ -143,7 +143,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const buttonClasses = cn(
       // Base styles
       'inline-flex items-center justify-center',
-      'font-medium whitespace-nowrap',
+      'font-semibold whitespace-nowrap',
       'transition-all duration-fast ease-out',
       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
       'disabled:cursor-not-allowed disabled:opacity-60',

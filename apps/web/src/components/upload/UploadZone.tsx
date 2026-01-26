@@ -231,8 +231,10 @@ function UploadZone({ platform, onUpload }: UploadZoneProps) {
 
             {/* Upload button */}
             <Button size="lg" onClick={handleUpload} className="w-full sm:w-auto">
-              <Upload className="w-5 h-5 mr-2" />
-              Start Analysis
+              <span className="inline-flex items-center justify-center gap-2">
+                <Upload className="w-5 h-5" />
+                <span>Start Analysis</span>
+              </span>
             </Button>
           </div>
         )}
