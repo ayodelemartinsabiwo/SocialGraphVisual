@@ -14,7 +14,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import ConstellationBackground from '@/components/ui/ConstellationBackground';
 import { cn } from '@/lib/utils';
+import LandingHeader from './LandingHeader';
 
 /**
  * Platform icons configuration
@@ -153,25 +155,49 @@ const pricingTiers = [
 function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-vsg-gray-950">
+      {/* Landing Header */}
+      <LandingHeader />
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Background gradient */}
+      <section id="hero" className="relative overflow-hidden min-h-[90vh]">
+        {/* Background gradient with orange texture */}
         <div className="absolute inset-0 bg-gradient-to-br from-vsg-orange-50 via-white to-vsg-gray-50 dark:from-vsg-gray-900 dark:via-vsg-gray-950 dark:to-vsg-gray-900" />
+        
+        {/* Spread orange gradient overlays across the hero */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_20%,_rgba(249,115,22,0.06)_0%,_transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_30%,_rgba(249,115,22,0.05)_0%,_transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_30%_80%,_rgba(249,115,22,0.04)_0%,_transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_70%_70%,_rgba(249,115,22,0.05)_0%,_transparent_45%)]" />
 
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-vsg-orange-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-vsg-orange-500/5 rounded-full blur-3xl" />
+        {/* Animated constellation background - more visible */}
+        <ConstellationBackground
+          nodeCount={50}
+          opacity={0.5}
+          colorTheme="orange"
+          connectionDistance={150}
+          showGlow={true}
+          speedMultiplier={0.5}
+          mouseDistance={200}
+          enableColorShift={true}
+          className="z-[1]"
+        />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 sm:pt-32 sm:pb-32">
+        {/* Decorative blur elements - spread across */}
+        <div className="absolute top-16 left-[5%] w-64 h-64 bg-vsg-orange-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-[10%] w-48 h-48 bg-vsg-orange-500/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-24 left-1/3 w-56 h-56 bg-vsg-orange-500/6 rounded-full blur-3xl" />
+        <div className="absolute bottom-16 right-[15%] w-72 h-72 bg-vsg-orange-500/8 rounded-full blur-3xl" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-24 sm:pt-36 sm:pb-32">
           <div className="text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-vsg-orange-100 dark:bg-vsg-orange-500/20 text-vsg-orange-600 dark:text-vsg-orange-400 text-body-sm font-medium mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-vsg-orange-100 dark:bg-vsg-orange-900/40 text-vsg-orange-800 dark:text-vsg-orange-200 text-body-sm font-medium mb-8">
               <Lock className="w-4 h-4" />
               Privacy-First Network Intelligence
             </div>
 
-            {/* Headline */}
-            <h1 className="text-h1 sm:text-display font-bold text-vsg-gray-900 dark:text-white max-w-4xl mx-auto leading-tight">
+            {/* Headline - larger font */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-vsg-gray-900 dark:text-white max-w-5xl mx-auto leading-[1.1]">
               Understand Your{' '}
               <span className="vsg-gradient-text">Digital Identity</span>{' '}
               Through Network Science
@@ -185,17 +211,17 @@ function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" asChild>
-                <Link to="/upload">
-                  <Upload className="w-5 h-5 mr-2" />
+              <Button size="lg" asChild className="gap-2">
+                <Link to="/upload" className="text-white">
+                  <Upload className="w-5 h-5" />
                   Analyze My Network
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="#how-it-works">
+              <Button variant="outline" size="lg" asChild className="gap-2">
+                <a href="#how-it-works">
                   See How It Works
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
+                  <ArrowRight className="w-5 h-5" />
+                </a>
               </Button>
             </div>
 
@@ -208,8 +234,12 @@ function LandingPage() {
                 <span
                   key={platform.name}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-caption font-medium text-white',
-                    platform.color
+                    'px-3 py-1.5 rounded-full text-caption font-medium',
+                    platform.color,
+                    // Twitter/X and TikTok have white bg in dark mode, so text should be black
+                    platform.name === 'Twitter/X' || platform.name === 'TikTok'
+                      ? 'text-white dark:text-black'
+                      : 'text-white'
                   )}
                 >
                   {platform.name}
@@ -221,7 +251,7 @@ function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-vsg-gray-50 dark:bg-vsg-gray-900">
+      <section id="features" className="py-24 bg-vsg-gray-50 dark:bg-vsg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-h2 font-bold text-vsg-gray-900 dark:text-white">
@@ -328,17 +358,22 @@ function LandingPage() {
             </div>
 
             <div className="relative">
-              {/* Decorative graph illustration */}
-              <div className="aspect-square rounded-2xl bg-vsg-gray-800 border border-vsg-gray-700 p-8 relative overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Globe className="w-48 h-48 text-vsg-gray-700" />
+              {/* Decorative graph illustration with constellation */}
+              <div className="aspect-square rounded-2xl bg-vsg-gray-800 border border-vsg-gray-700 relative overflow-hidden">
+                {/* Constellation background in the illustration box */}
+                <ConstellationBackground
+                  nodeCount={30}
+                  opacity={0.6}
+                  colorTheme="mixed"
+                  connectionDistance={100}
+                  showGlow={true}
+                  speedMultiplier={0.4}
+                  mouseDistance={120}
+                />
+                {/* Center globe icon */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <Globe className="w-32 h-32 text-vsg-gray-700/30" />
                 </div>
-                {/* Animated nodes */}
-                <div className="absolute top-1/4 left-1/4 w-4 h-4 rounded-full bg-vsg-orange-500 animate-pulse" />
-                <div className="absolute top-1/3 right-1/3 w-3 h-3 rounded-full bg-vsg-community-blue animate-pulse delay-100" />
-                <div className="absolute bottom-1/4 left-1/3 w-3 h-3 rounded-full bg-vsg-community-purple animate-pulse delay-200" />
-                <div className="absolute bottom-1/3 right-1/4 w-4 h-4 rounded-full bg-vsg-community-green animate-pulse delay-300" />
-                <div className="absolute top-1/2 left-1/2 w-5 h-5 rounded-full bg-vsg-orange-500 animate-pulse delay-500" />
               </div>
             </div>
           </div>
@@ -346,7 +381,7 @@ function LandingPage() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-24 bg-vsg-gray-50 dark:bg-vsg-gray-900">
+      <section id="pricing" className="py-24 bg-vsg-gray-50 dark:bg-vsg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-h2 font-bold text-vsg-gray-900 dark:text-white">
@@ -402,7 +437,15 @@ function LandingPage() {
                     variant={tier.highlighted ? 'primary' : 'outline'}
                     asChild
                   >
-                    <Link to="/upload">{tier.cta}</Link>
+                    <Link
+                      to="/upload"
+                      className={cn(
+                        tier.highlighted && 'text-white',
+                        tier.name === 'Free' && 'text-vsg-orange-600'
+                      )}
+                    >
+                      {tier.cta}
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -412,8 +455,19 @@ function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-vsg-orange-500 to-vsg-orange-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative py-24 bg-gradient-to-br from-vsg-orange-500 to-vsg-orange-600 overflow-hidden">
+        {/* Subtle constellation overlay */}
+        <ConstellationBackground
+          nodeCount={30}
+          opacity={0.35}
+          colorTheme="orange"
+          connectionDistance={130}
+          showGlow={false}
+          speedMultiplier={0.4}
+          mouseDistance={180}
+          className="z-0"
+        />
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-h2 font-bold text-white mb-6">
             Ready to See Your Network?
           </h2>
@@ -423,11 +477,11 @@ function LandingPage() {
           </p>
           <Button
             size="lg"
-            className="bg-white text-vsg-orange-600 hover:bg-vsg-gray-100"
+            className="bg-white text-vsg-orange-700 hover:bg-vsg-gray-100 gap-2"
             asChild
           >
             <Link to="/upload">
-              <Upload className="w-5 h-5 mr-2" />
+              <Upload className="w-5 h-5" />
               Start Free Analysis
             </Link>
           </Button>
@@ -435,8 +489,19 @@ function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-vsg-gray-900 dark:bg-black py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="relative bg-vsg-gray-900 dark:bg-black py-12 overflow-hidden">
+        {/* Subtle constellation in footer */}
+        <ConstellationBackground
+          nodeCount={25}
+          opacity={0.4}
+          colorTheme="orange"
+          connectionDistance={140}
+          showGlow={true}
+          speedMultiplier={0.25}
+          mouseDistance={160}
+          className="z-0"
+        />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             {/* Logo */}
             <div className="flex items-center gap-2 text-white">

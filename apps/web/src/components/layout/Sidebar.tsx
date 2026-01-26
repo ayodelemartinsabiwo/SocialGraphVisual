@@ -119,7 +119,7 @@ function Sidebar() {
           </p>
           <Link
             to="/pricing"
-            className="inline-block mt-3 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded text-caption font-medium transition-colors"
+            className="inline-block mt-3 px-3 py-1.5 bg-white text-vsg-orange-700 hover:bg-vsg-gray-50 rounded-sm text-caption font-semibold transition-colors shadow-sm"
           >
             Learn more
           </Link>

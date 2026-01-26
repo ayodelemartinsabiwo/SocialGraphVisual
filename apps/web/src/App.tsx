@@ -65,46 +65,14 @@ function App() {
 
         {/* App routes with layout - protected by auth guard */}
         <Route element={<Layout />}>
-          <Route
-            path="/upload"
-            element={
-              <RequireAuth>
-                <UploadPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/graph"
-            element={
-              <RequireAuth>
-                <GraphPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/graph/:id"
-            element={
-              <RequireAuth>
-                <GraphPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/insights"
-            element={
-              <RequireAuth>
-                <InsightsPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/insights/:id"
-            element={
-              <RequireAuth>
-                <InsightsPage />
-              </RequireAuth>
-            }
-          />
+          {/* Upload is accessible without auth for demo/preview */}
+          <Route path="/upload" element={<UploadPage />} />
+          {/* Graph routes accessible without auth for demo/preview */}
+          <Route path="/graph" element={<GraphPage />} />
+          <Route path="/graph/:id" element={<GraphPage />} />
+          {/* Insights routes accessible without auth for demo/preview */}
+          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/insights/:id" element={<InsightsPage />} />
           <Route
             path="/settings"
             element={

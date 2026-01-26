@@ -144,7 +144,7 @@ function Header() {
             </div>
           ) : (
             <Button variant="primary" size="sm" asChild>
-              <Link to="/upload">Get Started</Link>
+              <Link to="/upload" className="text-white">Get Started</Link>
             </Button>
           )}
 
