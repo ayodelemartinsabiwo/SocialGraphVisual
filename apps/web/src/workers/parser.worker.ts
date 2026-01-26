@@ -188,7 +188,18 @@ async function extractZip(
   }
 
   console.log('[Parser Worker] Extracted', extracted, 'files successfully');
-  console.log('[Parser Worker] File names in map:', Array.from(files.keys()).slice(0, 10));
+
+  // Log ALL file names to help diagnose issues
+  const allFileNames = Array.from(files.keys());
+  console.log('[Parser Worker] Total files in map:', allFileNames.length);
+  console.log('[Parser Worker] ALL file names:', JSON.stringify(allFileNames, null, 2));
+
+  // Specifically look for connections or followers_and_following folders
+  const connectionFiles = allFileNames.filter(f =>
+    f.toLowerCase().includes('connection') ||
+    f.toLowerCase().includes('followers_and_following')
+  );
+  console.log('[Parser Worker] Files in connections/followers_and_following:', connectionFiles);
 
   return files;
 }
