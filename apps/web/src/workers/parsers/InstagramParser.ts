@@ -21,8 +21,10 @@ import type {
 
 export class InstagramParser extends BaseParser {
   platform = Platform.INSTAGRAM;
-  version = 'instagram_v1.0';
+  version = 'instagram_v1.2';
   supportedFiles = [
+    'connections/followers_and_following/followers_1.json',
+    'connections/followers_and_following/following.json',
     'followers_and_following/followers.json',
     'followers_and_following/following.json',
     'followers_1.json',
@@ -31,6 +33,7 @@ export class InstagramParser extends BaseParser {
 
   /**
    * Validate that required files exist
+   * Checks for actual Instagram followers/following data
    */
   validateFiles(files: Map<string, ArrayBuffer>): {
     isValid: boolean;
@@ -40,17 +43,21 @@ export class InstagramParser extends BaseParser {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Check for followers file
+    // Check for followers file (excluding Threads data)
     const hasFollowers = this.findFile(files, 'followers') !== null;
-    // Check for following file
+    // Check for following file (excluding Threads data)
     const hasFollowing = this.findFile(files, 'following') !== null;
 
     if (!hasFollowers && !hasFollowing) {
-      errors.push('Missing required files: followers.json or following.json');
+      errors.push(
+        'Instagram followers/following data not found. ' +
+        'Please ensure your data export includes the "connections" folder with followers_1.json and following.json. ' +
+        'Tip: Place the ZIP file in a short path (e.g., C:\\Users\\YourName\\Documents\\) to avoid Windows path length issues.'
+      );
     }
 
     if (!hasFollowers) {
-      warnings.push('followers.json not found - follower data will be limited');
+      warnings.push('followers_1.json not found - follower data will be limited');
     }
 
     if (!hasFollowing) {
@@ -150,6 +157,12 @@ export class InstagramParser extends BaseParser {
 
     this.calculateEdgeWeights();
     this.calculateDegrees();
+    
+    // Validate edges to ensure all referenced nodes exist
+    const edgeValidation = this.validateEdges();
+    if (edgeValidation.invalid > 0) {
+      console.log(`[InstagramParser] Removed ${edgeValidation.invalid} invalid edges (node not found)`);
+    }
 
     // Update self node counts
     const self = this.nodeMap.get('self');
@@ -301,12 +314,11 @@ export class InstagramParser extends BaseParser {
 
   /**
    * Find a file in the map (case-insensitive, supports paths)
-   * Prioritizes files in followers_and_following directory over threads directory
+   * Prioritizes the CORRECT files: followers_1.json/followers.json and following.json
    */
   private findFile(files: Map<string, ArrayBuffer>, targetName: string): string | null {
     console.log(`[InstagramParser] Searching for file containing: "${targetName}"`);
-    console.log(`[InstagramParser] Available files:`, Array.from(files.keys()));
-
+    
     const candidates: string[] = [];
 
     for (const fileName of files.keys()) {
@@ -325,37 +337,67 @@ export class InstagramParser extends BaseParser {
       return null;
     }
 
-    // Priority 1: files in followers_and_following directory (the main Instagram data)
-    const followersAndFollowingMatch = candidates.find(f =>
-      f.toLowerCase().includes('followers_and_following') ||
-      f.toLowerCase().includes('connections/followers_and_following')
-    );
-    if (followersAndFollowingMatch) {
-      console.log(`[InstagramParser] Found primary match (followers_and_following): "${followersAndFollowingMatch}"`);
-      return followersAndFollowingMatch;
+    // Priority 1: EXACT file matches for followers_1.json or following.json in connections/ folder
+    // This is the CORRECT Instagram data format
+    if (targetName.toLowerCase() === 'followers') {
+      // Look for followers_1.json or followers.json specifically (NOT recent_follow_requests.json, etc)
+      const exactFollowersMatch = candidates.find(f => {
+        const baseName = f.split('/').pop()?.toLowerCase() || '';
+        return (baseName === 'followers_1.json' || baseName === 'followers.json') && 
+               !f.toLowerCase().includes('/threads/');
+      });
+      if (exactFollowersMatch) {
+        console.log(`[InstagramParser] Found exact followers match: "${exactFollowersMatch}"`);
+        return exactFollowersMatch;
+      }
+    }
+
+    if (targetName.toLowerCase() === 'following') {
+      // Look for following.json specifically (NOT recent_follow_requests.json, etc)
+      const exactFollowingMatch = candidates.find(f => {
+        const baseName = f.split('/').pop()?.toLowerCase() || '';
+        return baseName === 'following.json' && 
+               !f.toLowerCase().includes('/threads/');
+      });
+      if (exactFollowingMatch) {
+        console.log(`[InstagramParser] Found exact following match: "${exactFollowingMatch}"`);
+        return exactFollowingMatch;
+      }
     }
 
     // Priority 2: files directly named followers_1.json or following.json (numbered format)
     const numberedMatch = candidates.find(f => {
       const baseName = f.split('/').pop()?.toLowerCase() || '';
-      return baseName.match(/^followers_\d+\.json$/) || baseName.match(/^following\.json$/);
+      return (baseName.match(/^followers_\d+\.json$/) || baseName.match(/^following\.json$/)) &&
+             !f.toLowerCase().includes('/threads/');
     });
     if (numberedMatch) {
       console.log(`[InstagramParser] Found numbered match: "${numberedMatch}"`);
       return numberedMatch;
     }
 
-    // Priority 3: AVOID threads directory (that's Threads app data, not Instagram)
+    // Priority 3: Any file in followers_and_following that isn't in threads
+    const followersAndFollowingMatch = candidates.find(f =>
+      (f.toLowerCase().includes('followers_and_following') ||
+       f.toLowerCase().includes('connections/followers_and_following')) &&
+      !f.toLowerCase().includes('/threads/')
+    );
+    if (followersAndFollowingMatch) {
+      console.log(`[InstagramParser] Found followers_and_following match: "${followersAndFollowingMatch}"`);
+      return followersAndFollowingMatch;
+    }
+
+    // Priority 4: AVOID threads directory (that's Threads app data, not Instagram)
     const nonThreadsMatch = candidates.find(f => !f.toLowerCase().includes('/threads/'));
     if (nonThreadsMatch) {
       console.log(`[InstagramParser] Found non-threads match: "${nonThreadsMatch}"`);
       return nonThreadsMatch;
     }
 
-    // Last resort: use any match, but warn about it
-    console.warn(`[InstagramParser] Only found Threads data, which may not contain Instagram followers/following`);
-    console.log(`[InstagramParser] Using fallback match: "${candidates[0]}"`);
-    return candidates[0];
+    // STRICT: NEVER use threads directory data as Instagram followers/following
+    console.warn(`[InstagramParser] Only found Threads data for "${targetName}". This is NOT Instagram data.`);
+    console.log(`[InstagramParser] Threads data will be ignored. Instagram followers/following not found.`);
+    return null;
   }
 }
 

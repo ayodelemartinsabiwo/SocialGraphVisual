@@ -137,6 +137,8 @@ const rateLimiterOptions = {
     ));
   },
   skip: (req: Request) => {
+    // Skip rate limiting in development mode for easier testing
+    if (env.NODE_ENV === 'development') return true;
     // Skip rate limiting for health checks
     return req.path === '/health';
   },

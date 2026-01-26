@@ -3,6 +3,8 @@ import * as d3 from 'd3';
 import { cn } from '@/lib/utils';
 import type { GraphNode as SharedGraphNode, GraphEdge as SharedGraphEdge } from '@vsg/shared';
 
+// Force Vite recompile - timestamp: 2026-01-26T15:57
+
 // Internal D3 compatible types (extends shared with D3 simulation fields)
 interface D3GraphNode extends SharedGraphNode {
   index?: number;
@@ -138,17 +140,37 @@ function GraphCanvas({
   // Use provided data or fall back to mock data for development
   const [mockData] = useState(() => generateMockData());
 
-  // Convert shared types to D3-compatible format
+  // Convert shared types to D3-compatible format and validate edges
   const graphData = useMemo(() => {
-    if (propNodes && propNodes.length > 0 && propEdges && propEdges.length > 0) {
+    // Only use real data if we have nodes - edges may be 0 for isolated nodes
+    if (propNodes && propNodes.length > 0) {
       const d3Nodes: D3GraphNode[] = propNodes.map((node) => ({ ...node }));
-      const d3Edges: D3GraphEdge[] = propEdges.map((edge) => ({
-        source: edge.source,
-        target: edge.target,
-        weight: edge.weight,
-      }));
+      
+      // Create a set of valid node IDs for O(1) lookup
+      const nodeIds = new Set(d3Nodes.map(n => n.id));
+      
+      // Filter edges to only include those referencing existing nodes
+      // This prevents D3.js "node not found" errors
+      const d3Edges: D3GraphEdge[] = (propEdges || [])
+        .filter((edge) => {
+          const sourceValid = nodeIds.has(edge.source);
+          const targetValid = nodeIds.has(edge.target);
+          if (!sourceValid || !targetValid) {
+            console.warn(`[GraphCanvas] Filtering invalid edge: ${edge.source} -> ${edge.target}`);
+            return false;
+          }
+          return true;
+        })
+        .map((edge) => ({
+          source: edge.source,
+          target: edge.target,
+          weight: edge.weight,
+        }));
+      
+      console.log(`[GraphCanvas] Loaded ${d3Nodes.length} nodes, ${d3Edges.length} valid edges`);
       return { nodes: d3Nodes, edges: d3Edges };
     }
+    console.log('[GraphCanvas] No nodes provided, using mock data');
     return mockData;
   }, [propNodes, propEdges, mockData]);
 

@@ -1,0 +1,94 @@
+{
+  "text_post_app_text_post_app_profile": [
+    {
+      "title": "",
+      "media_map_data": {
+        "Profile photo": {
+          "uri": "media/other/18043724968465277.jpg",
+          "creation_timestamp": 1688620825,
+          "media_metadata": {
+            "camera_metadata": {
+              "has_camera_metadata": false
+            }
+          },
+          "title": "",
+          "cross_post_source": {
+            "source_app": "FB"
+          },
+          "text_app_post": {
+            "reply_control": "everyone",
+            "geo_gated_country_list": "",
+            "is_reply": false
+          }
+        }
+      },
+      "string_map_data": {
+        "Email address": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Phone number": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Phone number confirmed": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Phone confirmation method": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Username": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Name": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Bio": {
+          "href": "",
+          "value": "Creative! Let tomorrow meet the better version of you!",
+          "timestamp": 0
+        },
+        "Date of birth": {
+          "href": "",
+          "value": "",
+          "timestamp": 0
+        },
+        "Private account": {
+          "href": "",
+          "value": "False",
+          "timestamp": 0
+        },
+        "Links": {
+          "href": "",
+          "value": "http://www.ayodelemartinsabiwo.com/",
+          "timestamp": 0
+        },
+        "Onboarding time": {
+          "href": "",
+          "value": "",
+          "timestamp": 1688620824
+        },
+        "Is eligible for profile activation badge": {
+          "href": "",
+          "value": "False",
+          "timestamp": 0
+        },
+        "Profile shows activation badge": {
+          "href": "",
+          "value": "False",
+          "timestamp": 0
+        }
+      }
+    }
+  ]
+}

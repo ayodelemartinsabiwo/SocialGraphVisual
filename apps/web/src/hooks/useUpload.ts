@@ -8,7 +8,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { initiateUpload, uploadFile, createGraph, cancelUpload } from '../services/api';
+import { initiateUpload, createGraph, cancelUpload } from '../services/api';
 import { graphKeys } from './useGraph';
 import type { Platform, CreateGraphBody } from '@vsg/shared';
 
@@ -114,20 +114,17 @@ export function useUpload() {
       // Step 2: Initiate upload
       updateProgress('uploading', 40, 'Initiating upload...');
 
-      const { uploadId, uploadUrl } = await initiateUpload(platform, file.name, file.size);
+      const { uploadId } = await initiateUpload(platform, file.name, file.size);
       uploadIdRef.current = uploadId;
 
       if (abortRef.current) throw new Error('Upload cancelled');
-      updateProgress('uploading', 50, 'Uploading file...');
+      updateProgress('uploading', 60, 'Preparing graph data...');
 
-      // Step 3: Upload file to presigned URL
-      await uploadFile(uploadUrl, file);
+      // NOTE: Skip raw file upload - not implemented yet (cloud storage integration pending)
+      // The parsed data is sent directly to createGraph instead
 
-      if (abortRef.current) throw new Error('Upload cancelled');
-      updateProgress('uploading', 70, 'File uploaded');
-
-      // Step 4: Create graph
-      updateProgress('processing', 80, 'Processing graph...');
+      // Step 3: Create graph
+      updateProgress('processing', 70, 'Creating graph...');
 
       const graphData: CreateGraphBody = {
         uploadId,
@@ -140,9 +137,9 @@ export function useUpload() {
       const graphResponse = await createGraph(graphData);
 
       if (abortRef.current) throw new Error('Upload cancelled');
-      updateProgress('processing', 90, 'Analyzing network...');
+      updateProgress('processing', 90, 'Finalizing...');
 
-      // Step 5: Complete
+      // Step 4: Complete
       updateProgress('complete', 100, 'Upload complete!');
 
       const uploadResult: UploadResult = {

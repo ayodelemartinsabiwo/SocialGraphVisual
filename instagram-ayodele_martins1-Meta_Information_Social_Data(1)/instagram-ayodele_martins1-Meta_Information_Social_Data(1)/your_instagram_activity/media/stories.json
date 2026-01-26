@@ -1,0 +1,90 @@
+{
+  "ig_stories": [
+    {
+      "uri": "media/stories/202507/18002940038628608.mp4",
+      "creation_timestamp": 1752345193,
+      "media_metadata": {
+        "video_metadata": {
+          "exif_data": [
+            {
+              "device_id": "android-a8caf0d9591b8ff7",
+              "camera_position": "unknown",
+              "source_type": "feed_reshare"
+            }
+          ]
+        },
+        "camera_metadata": {
+          "has_camera_metadata": false
+        }
+      },
+      "title": "",
+      "cross_post_source": {
+        "source_app": "FB"
+      },
+      "dubbing_info": [
+        
+      ],
+      "media_variants": [
+        
+      ]
+    },
+    {
+      "uri": "media/stories/202505/17905418049053466.mp4",
+      "creation_timestamp": 1747672364,
+      "media_metadata": {
+        "video_metadata": {
+          "exif_data": [
+            {
+              "device_id": "android-a8caf0d9591b8ff7",
+              "camera_position": "unknown",
+              "date_time_original": "20250519T163206.000Z",
+              "source_type": "6"
+            }
+          ]
+        },
+        "camera_metadata": {
+          "has_camera_metadata": false
+        }
+      },
+      "title": "",
+      "cross_post_source": {
+        "source_app": "FB"
+      },
+      "dubbing_info": [
+        
+      ],
+      "media_variants": [
+        
+      ]
+    },
+    {
+      "uri": "media/stories/202503/17904190908039352.mp4",
+      "creation_timestamp": 1742739980,
+      "media_metadata": {
+        "video_metadata": {
+          "exif_data": [
+            {
+              "device_id": "android-f30aae61d897481f",
+              "camera_position": "unknown",
+              "date_time_original": "19040101T000000.000Z",
+              "source_type": "feed_reshare"
+            }
+          ]
+        },
+        "camera_metadata": {
+          "has_camera_metadata": false
+        }
+      },
+      "title": "",
+      "cross_post_source": {
+        "source_app": "FB"
+      },
+      "dubbing_info": [
+        
+      ],
+      "media_variants": [
+        
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "devices_devices": [
+    {
+      "title": "",
+      "media_map_data": {
+        
+      },
+      "string_map_data": {
+        "Last login": {
+          "href": "",
+          "value": "",
+          "timestamp": 1769272262
+        },
+        "User agent": {
+          "href": "",
+          "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+          "timestamp": 0
+        }
+      }
+    },
+    {
+      "title": "",
+      "media_map_data": {
+        
+      },
+      "string_map_data": {
+        "Last login": {
+          "href": "",
+          "value": "",
+          "timestamp": 1747148646
+        },
+        "User agent": {
+          "href": "",
+          "value": "Instagram 372.0.0.48.60 Android (35/15; 420dpi; 1080x2340; samsung; SM-A566B; a56x; s5e8855; en_GB; 709818019)",
+          "timestamp": 0
+        }
+      }
+    },
+    {
+      "title": "",
+      "media_map_data": {
+        
+      },
+      "string_map_data": {
+        "Last login": {
+          "href": "",
+          "value": "",
+          "timestamp": 1746533822
+        },
+        "User agent": {
+          "href": "",
+          "value": "Instagram 372.0.0.48.60 Android (35/15; 420dpi; 1080x2340; samsung; SM-A566B; a56x; s5e8855; en_GB; 709818019)",
+          "timestamp": 0
+        }
+      }
+    }
+  ]
+}

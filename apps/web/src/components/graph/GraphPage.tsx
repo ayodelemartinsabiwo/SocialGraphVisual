@@ -236,8 +236,8 @@ function GraphPage() {
               searchQuery={searchQuery}
               selectedNode={selectedNode}
               onNodeSelect={handleNodeSelect}
-              nodes={filteredNodes}
-              edges={filteredEdges}
+              nodes={graph?.nodes || filteredNodes}
+              edges={graph?.edges || filteredEdges}
             />
 
             {/* Zoom controls */}
