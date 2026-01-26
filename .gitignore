@@ -17,3 +17,6 @@ Thumbs.db
 
 # null files
 *nul
+
+# dev Images
+image_errors/

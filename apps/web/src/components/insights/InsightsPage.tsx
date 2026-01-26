@@ -296,20 +296,20 @@ function InsightsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <QuickViewCard
           title="Positioning Map"
-          description="See where you stand among peers"
-          href="/insights/positioning"
+          description="See where you stand among peers (Coming Soon)"
+          href={graphId ? `/graph/${graphId}` : '/graph'}
           icon={Users}
         />
         <QuickViewCard
           title="Engagement Circles"
-          description="Visualize engagement intensity"
-          href="/insights/engagement"
+          description="Visualize engagement intensity (Coming Soon)"
+          href={graphId ? `/graph/${graphId}` : '/graph'}
           icon={BarChart3}
         />
         <QuickViewCard
           title="Growth Opportunities"
-          description="Discover expansion paths"
-          href="/insights/growth"
+          description="Discover expansion paths (Coming Soon)"
+          href={graphId ? `/graph/${graphId}` : '/graph'}
           icon={TrendingUp}
         />
       </div>

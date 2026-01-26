@@ -350,6 +350,39 @@ export abstract class BaseParser implements PlatformParser {
   }
 
   /**
+   * Validate and filter edges to only include those with existing nodes
+   * This prevents D3.js "node not found" errors
+   */
+  protected validateEdges(): { valid: number; invalid: number } {
+    const invalidEdges: string[] = [];
+    
+    for (const [edgeId, edge] of this.edgeMap.entries()) {
+      const sourceExists = this.nodeMap.has(edge.source);
+      const targetExists = this.nodeMap.has(edge.target);
+      
+      if (!sourceExists || !targetExists) {
+        invalidEdges.push(edgeId);
+        if (!sourceExists) {
+          this.addWarning(`Edge ${edgeId} references non-existent source node: ${edge.source}`);
+        }
+        if (!targetExists) {
+          this.addWarning(`Edge ${edgeId} references non-existent target node: ${edge.target}`);
+        }
+      }
+    }
+    
+    // Remove invalid edges
+    for (const edgeId of invalidEdges) {
+      this.edgeMap.delete(edgeId);
+    }
+    
+    return {
+      valid: this.edgeMap.size,
+      invalid: invalidEdges.length,
+    };
+  }
+
+  /**
    * Reset parser state
    */
   protected reset(): void {

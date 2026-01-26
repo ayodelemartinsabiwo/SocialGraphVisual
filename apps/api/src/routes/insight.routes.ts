@@ -5,7 +5,7 @@
 
 import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, devAuth } from '../middleware/auth.js';
 import { validateBody, validateQuery, validateParams, insightCategorySchema, paginationSchema, idParamSchema } from '../middleware/validation.js';
 import { prisma } from '../config/database.js';
 import { NotFoundError, ForbiddenError } from '../middleware/errorHandler.js';
@@ -39,7 +39,7 @@ const generateInsightsSchema = z.object({
  */
 router.get(
   '/',
-  requireAuth,
+  devAuth,
   validateQuery(listInsightsSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -119,7 +119,7 @@ router.get(
  */
 router.get(
   '/:id',
-  requireAuth,
+  devAuth,
   validateParams(idParamSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -179,7 +179,7 @@ router.get(
  */
 router.post(
   '/generate',
-  requireAuth,
+  devAuth,
   validateBody(generateInsightsSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
