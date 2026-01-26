@@ -23,10 +23,17 @@ export class InstagramParser extends BaseParser {
   platform = Platform.INSTAGRAM;
   version = 'instagram_v1.0';
   supportedFiles = [
+    // Newer Meta export format (2024+)
+    'connections/followers_and_following/followers_1.json',
+    'connections/followers_and_following/following.json',
+    // Older Instagram export format
     'followers_and_following/followers.json',
     'followers_and_following/following.json',
+    'followers_and_following/followers_1.json',
+    // Direct files (some exports)
     'followers_1.json',
     'following.json',
+    'followers.json',
   ];
 
   /**
@@ -40,21 +47,49 @@ export class InstagramParser extends BaseParser {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    // Check for followers file
-    const hasFollowers = this.findFile(files, 'followers') !== null;
-    // Check for following file
-    const hasFollowing = this.findFile(files, 'following') !== null;
+    // Log all available files for debugging
+    const allFiles = Array.from(files.keys());
+    console.log(`[InstagramParser] Validating ${allFiles.length} files`);
+
+    // Check for connections folder (newer Meta export)
+    const hasConnectionsFolder = allFiles.some(f =>
+      f.toLowerCase().includes('connections/')
+    );
+    console.log(`[InstagramParser] Has connections folder: ${hasConnectionsFolder}`);
+
+    // Check for followers_and_following folder
+    const hasFollowersAndFollowingFolder = allFiles.some(f =>
+      f.toLowerCase().includes('followers_and_following')
+    );
+    console.log(`[InstagramParser] Has followers_and_following folder: ${hasFollowersAndFollowingFolder}`);
+
+    // Check for followers file (excluding threads)
+    const followersFile = this.findFile(files, 'followers');
+    const hasFollowers = followersFile !== null && !followersFile.toLowerCase().includes('/threads/');
+
+    // Check for following file (excluding threads)
+    const followingFile = this.findFile(files, 'following');
+    const hasFollowing = followingFile !== null && !followingFile.toLowerCase().includes('/threads/');
+
+    console.log(`[InstagramParser] Has followers (non-threads): ${hasFollowers}, file: ${followersFile}`);
+    console.log(`[InstagramParser] Has following (non-threads): ${hasFollowing}, file: ${followingFile}`);
 
     if (!hasFollowers && !hasFollowing) {
-      errors.push('Missing required files: followers.json or following.json');
+      // Check if we only have Threads data
+      const hasThreadsData = allFiles.some(f => f.toLowerCase().includes('/threads/'));
+      if (hasThreadsData) {
+        errors.push('This export only contains Threads data, not Instagram followers/following. Please request a new export that includes "Connections" or "Followers and Following" data.');
+      } else {
+        errors.push('Missing required files: Could not find followers.json or following.json in connections/followers_and_following folder');
+      }
     }
 
     if (!hasFollowers) {
-      warnings.push('followers.json not found - follower data will be limited');
+      warnings.push('followers.json not found in Instagram data - follower data will be limited');
     }
 
     if (!hasFollowing) {
-      warnings.push('following.json not found - following data will be limited');
+      warnings.push('following.json not found in Instagram data - following data will be limited');
     }
 
     return {
@@ -301,59 +336,83 @@ export class InstagramParser extends BaseParser {
 
   /**
    * Find a file in the map (case-insensitive, supports paths)
-   * Prioritizes files in followers_and_following directory over threads directory
+   * Matches based on FILENAME, not directory path
+   *
+   * For "followers": matches followers.json, followers_1.json, followers_2.json, etc.
+   * For "following": matches following.json
    */
   private findFile(files: Map<string, ArrayBuffer>, targetName: string): string | null {
-    console.log(`[InstagramParser] Searching for file containing: "${targetName}"`);
-    console.log(`[InstagramParser] Available files:`, Array.from(files.keys()));
+    const allFiles = Array.from(files.keys());
+    const normalizedTarget = targetName.toLowerCase();
 
+    console.log(`[InstagramParser] Searching for file type: "${targetName}"`);
+    console.log(`[InstagramParser] Total files to search: ${allFiles.length}`);
+
+    // Define filename patterns based on target
+    // IMPORTANT: Match on FILENAME only, not directory names
+    const getFilenamePattern = (target: string): RegExp => {
+      if (target === 'followers') {
+        // Match: followers.json, followers_1.json, followers_2.json, etc.
+        return /^followers(_\d+)?\.json$/i;
+      } else if (target === 'following') {
+        // Match: following.json only
+        return /^following\.json$/i;
+      }
+      // Generic fallback
+      return new RegExp(`^${target}.*\\.json$`, 'i');
+    };
+
+    const pattern = getFilenamePattern(normalizedTarget);
+    console.log(`[InstagramParser] Using filename pattern: ${pattern}`);
+
+    // Collect candidates where the FILENAME (not path) matches the pattern
     const candidates: string[] = [];
-
-    for (const fileName of files.keys()) {
-      const normalizedFileName = fileName.toLowerCase();
-      const normalizedTarget = targetName.toLowerCase();
-
-      if (normalizedFileName.includes(normalizedTarget)) {
-        candidates.push(fileName);
+    for (const filePath of allFiles) {
+      // Extract just the filename from the path
+      const fileName = filePath.split('/').pop() || filePath;
+      if (pattern.test(fileName)) {
+        candidates.push(filePath);
       }
     }
 
-    console.log(`[InstagramParser] Found ${candidates.length} candidates:`, candidates);
+    console.log(`[InstagramParser] Found ${candidates.length} filename matches for "${targetName}":`);
+    candidates.forEach((c, i) => console.log(`  [${i}] ${c}`));
 
     if (candidates.length === 0) {
-      console.log(`[InstagramParser] No file found containing: "${targetName}"`);
+      console.log(`[InstagramParser] No file found matching pattern for: "${targetName}"`);
       return null;
     }
 
-    // Priority 1: files in followers_and_following directory (the main Instagram data)
-    const followersAndFollowingMatch = candidates.find(f =>
-      f.toLowerCase().includes('followers_and_following') ||
-      f.toLowerCase().includes('connections/followers_and_following')
+    // Priority 1: files in connections/followers_and_following directory (newer Meta export format)
+    // EXCLUDE Threads directory
+    let match = candidates.find(f =>
+      f.toLowerCase().includes('connections/followers_and_following') &&
+      !f.toLowerCase().includes('/threads/')
     );
-    if (followersAndFollowingMatch) {
-      console.log(`[InstagramParser] Found primary match (followers_and_following): "${followersAndFollowingMatch}"`);
-      return followersAndFollowingMatch;
+    if (match) {
+      console.log(`[InstagramParser] Found PRIMARY match (connections/followers_and_following): "${match}"`);
+      return match;
     }
 
-    // Priority 2: files directly named followers_1.json or following.json (numbered format)
-    const numberedMatch = candidates.find(f => {
-      const baseName = f.split('/').pop()?.toLowerCase() || '';
-      return baseName.match(/^followers_\d+\.json$/) || baseName.match(/^following\.json$/);
-    });
-    if (numberedMatch) {
-      console.log(`[InstagramParser] Found numbered match: "${numberedMatch}"`);
-      return numberedMatch;
+    // Priority 2: files in followers_and_following directory (older format)
+    match = candidates.find(f =>
+      f.toLowerCase().includes('followers_and_following') &&
+      !f.toLowerCase().includes('/threads/')
+    );
+    if (match) {
+      console.log(`[InstagramParser] Found match (followers_and_following): "${match}"`);
+      return match;
     }
 
-    // Priority 3: AVOID threads directory (that's Threads app data, not Instagram)
-    const nonThreadsMatch = candidates.find(f => !f.toLowerCase().includes('/threads/'));
-    if (nonThreadsMatch) {
-      console.log(`[InstagramParser] Found non-threads match: "${nonThreadsMatch}"`);
-      return nonThreadsMatch;
+    // Priority 3: any file NOT in threads directory
+    match = candidates.find(f => !f.toLowerCase().includes('/threads/'));
+    if (match) {
+      console.log(`[InstagramParser] Found non-threads match: "${match}"`);
+      return match;
     }
 
-    // Last resort: use any match, but warn about it
-    console.warn(`[InstagramParser] Only found Threads data, which may not contain Instagram followers/following`);
+    // Last resort: use any match, but warn about it (likely Threads data)
+    console.warn(`[InstagramParser] WARNING: Only found Threads data for "${targetName}". This may not contain Instagram followers/following.`);
     console.log(`[InstagramParser] Using fallback match: "${candidates[0]}"`);
     return candidates[0];
   }

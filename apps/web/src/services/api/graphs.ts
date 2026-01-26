@@ -41,20 +41,73 @@ export async function initiateUpload(
 }
 
 /**
- * Upload file to the presigned URL
+ * Upload file to the server
+ * Uses fetch with authentication headers from the auth store
  */
 export async function uploadFile(uploadUrl: string, file: File): Promise<void> {
-  const response = await fetch(uploadUrl, {
+  // Import auth store dynamically to avoid circular dependencies
+  const { useAuthStore } = await import('../../stores/authStore');
+
+  // Resolve relative URLs to the API base URL
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+  let resolvedUrl = uploadUrl;
+
+  // If the URL is relative (starts with /), prepend the API base
+  if (uploadUrl.startsWith('/')) {
+    // Determine the correct base URL
+    const apiBasePath = API_BASE.replace(/\/$/, ''); // Remove trailing slash
+    if (apiBasePath.endsWith('/api/v1') && uploadUrl.startsWith('/api/v1')) {
+      // If both have /api/v1, just use the base without /api/v1
+      const baseWithoutVersion = apiBasePath.replace(/\/api\/v1$/, '');
+      resolvedUrl = `${baseWithoutVersion}${uploadUrl}`;
+    } else if (apiBasePath.endsWith('/api/v1')) {
+      // API_BASE has /api/v1 but uploadUrl doesn't start with it
+      resolvedUrl = `${apiBasePath}${uploadUrl}`;
+    } else {
+      // Neither has /api/v1
+      resolvedUrl = `${apiBasePath}${uploadUrl}`;
+    }
+  }
+
+  console.log(`[uploadFile] Uploading to: ${resolvedUrl}`);
+
+  // Get auth token from store
+  const authStore = useAuthStore.getState();
+  const accessToken = authStore.getAccessToken();
+
+  // Build headers
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/octet-stream',
+  };
+
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  // Get CSRF token from cookie
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === 'csrf_token') {
+      headers['X-CSRF-Token'] = decodeURIComponent(value);
+      break;
+    }
+  }
+
+  const response = await fetch(resolvedUrl, {
     method: 'PUT',
     body: file,
-    headers: {
-      'Content-Type': 'application/octet-stream',
-    },
+    headers,
+    credentials: 'include',
   });
 
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[uploadFile] Upload failed: ${response.status} ${response.statusText}`, errorText);
     throw new Error(`Upload failed: ${response.statusText}`);
   }
+
+  console.log('[uploadFile] Upload successful');
 }
 
 /**

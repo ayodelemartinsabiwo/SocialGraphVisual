@@ -142,11 +142,30 @@ function GraphCanvas({
   const graphData = useMemo(() => {
     if (propNodes && propNodes.length > 0 && propEdges && propEdges.length > 0) {
       const d3Nodes: D3GraphNode[] = propNodes.map((node) => ({ ...node }));
-      const d3Edges: D3GraphEdge[] = propEdges.map((edge) => ({
-        source: edge.source,
-        target: edge.target,
-        weight: edge.weight,
-      }));
+
+      // Create a set of valid node IDs for fast lookup
+      const validNodeIds = new Set(d3Nodes.map((n) => n.id));
+
+      // Filter edges to only include those where both source and target exist
+      const d3Edges: D3GraphEdge[] = propEdges
+        .filter((edge) => {
+          const sourceValid = validNodeIds.has(edge.source);
+          const targetValid = validNodeIds.has(edge.target);
+          if (!sourceValid || !targetValid) {
+            console.warn(
+              `[GraphCanvas] Filtering out invalid edge: ${edge.source} -> ${edge.target}`,
+              { sourceValid, targetValid }
+            );
+          }
+          return sourceValid && targetValid;
+        })
+        .map((edge) => ({
+          source: edge.source,
+          target: edge.target,
+          weight: edge.weight,
+        }));
+
+      console.log(`[GraphCanvas] Loaded ${d3Nodes.length} nodes, ${d3Edges.length} valid edges`);
       return { nodes: d3Nodes, edges: d3Edges };
     }
     return mockData;

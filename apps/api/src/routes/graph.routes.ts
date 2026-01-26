@@ -103,7 +103,7 @@ router.post(
         },
       });
 
-      // TODO: Generate Tus upload URL
+      // Return the upload endpoint URL
       const uploadUrl = `/api/v1/graphs/upload/${upload.id}`;
 
       res.status(201).json({
@@ -112,6 +112,53 @@ router.post(
           uploadId: upload.id,
           uploadUrl,
           expiresAt: upload.expiresAt.toISOString(),
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+/**
+ * PUT /graphs/upload/:id
+ * Receive the uploaded file
+ * Note: In client-side parsing mode, we don't actually need to store the raw file
+ * since the frontend parses and sends the graph data directly to POST /graphs
+ * This endpoint just marks the upload as received.
+ */
+router.put(
+  '/upload/:id',
+  devAuth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user!.id;
+      const uploadId = req.params.id as string;
+
+      // Find and validate the upload
+      const upload = await prisma.upload.findUnique({
+        where: { id: uploadId },
+      });
+
+      if (!upload) {
+        throw new NotFoundError('Upload not found');
+      }
+
+      if (upload.userId !== userId) {
+        throw new ForbiddenError('You do not have access to this upload');
+      }
+
+      // Update upload status to uploaded
+      await prisma.upload.update({
+        where: { id: uploadId },
+        data: { status: 'UPLOADED' },
+      });
+
+      res.status(200).json({
+        success: true,
+        data: {
+          uploadId,
+          message: 'File received successfully',
         },
       });
     } catch (error) {

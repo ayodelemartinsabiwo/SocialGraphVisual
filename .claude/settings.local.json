@@ -44,7 +44,11 @@
       "Bash(curl:*)",
       "Bash(ACCESS_TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWt1enN2ZDQwMDA4MTFlMzB6dXA5NzBsIiwiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsInRpZXIiOiJGUkVFIiwiaWF0IjoxNzY5NDIxMzc1LCJleHAiOjE3Njk0MjIyNzV9.Bxodjo0Qy7IplEK_UVKHTwA9jr9D9L0zAWmx_LY0LJQ\")",
       "Bash(unzip:*)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(tasklist:*)",
+      "Bash(netstat:*)",
+      "Bash(pnpm --filter @vsg/api run dev:*)",
+      "Bash(pnpm --filter @vsg/web run dev:*)"
     ]
   }
 }
