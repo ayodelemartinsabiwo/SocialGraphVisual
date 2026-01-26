@@ -211,10 +211,17 @@ export class InstagramParser extends BaseParser {
       : data.relationships_following || [];
 
     for (const item of followingList) {
+      // Try to get username from different possible locations:
+      // 1. string_list_data[0].value (older format)
+      // 2. title field (newer format)
       const stringData = item.string_list_data;
-      if (!stringData || stringData.length === 0) continue;
+      let username = stringData?.[0]?.value;
 
-      const username = stringData[0]?.value;
+      // Fall back to title if value not present
+      if (!username && item.title) {
+        username = item.title;
+      }
+
       if (!username) continue;
 
       const userId = this.generateUserId(username);
@@ -248,10 +255,17 @@ export class InstagramParser extends BaseParser {
       : data.relationships_followers || [];
 
     for (const item of followersList) {
+      // Try to get username from different possible locations:
+      // 1. string_list_data[0].value (older format)
+      // 2. title field (newer format)
       const stringData = item.string_list_data;
-      if (!stringData || stringData.length === 0) continue;
+      let username = stringData?.[0]?.value;
 
-      const username = stringData[0]?.value;
+      // Fall back to title if value not present
+      if (!username && item.title) {
+        username = item.title;
+      }
+
       if (!username) continue;
 
       const userId = this.generateUserId(username);
@@ -287,17 +301,61 @@ export class InstagramParser extends BaseParser {
 
   /**
    * Find a file in the map (case-insensitive, supports paths)
+   * Prioritizes files in followers_and_following directory over threads directory
    */
   private findFile(files: Map<string, ArrayBuffer>, targetName: string): string | null {
+    console.log(`[InstagramParser] Searching for file containing: "${targetName}"`);
+    console.log(`[InstagramParser] Available files:`, Array.from(files.keys()));
+
+    const candidates: string[] = [];
+
     for (const fileName of files.keys()) {
       const normalizedFileName = fileName.toLowerCase();
       const normalizedTarget = targetName.toLowerCase();
 
       if (normalizedFileName.includes(normalizedTarget)) {
-        return fileName;
+        candidates.push(fileName);
       }
     }
-    return null;
+
+    console.log(`[InstagramParser] Found ${candidates.length} candidates:`, candidates);
+
+    if (candidates.length === 0) {
+      console.log(`[InstagramParser] No file found containing: "${targetName}"`);
+      return null;
+    }
+
+    // Priority 1: files in followers_and_following directory (the main Instagram data)
+    const followersAndFollowingMatch = candidates.find(f =>
+      f.toLowerCase().includes('followers_and_following') ||
+      f.toLowerCase().includes('connections/followers_and_following')
+    );
+    if (followersAndFollowingMatch) {
+      console.log(`[InstagramParser] Found primary match (followers_and_following): "${followersAndFollowingMatch}"`);
+      return followersAndFollowingMatch;
+    }
+
+    // Priority 2: files directly named followers_1.json or following.json (numbered format)
+    const numberedMatch = candidates.find(f => {
+      const baseName = f.split('/').pop()?.toLowerCase() || '';
+      return baseName.match(/^followers_\d+\.json$/) || baseName.match(/^following\.json$/);
+    });
+    if (numberedMatch) {
+      console.log(`[InstagramParser] Found numbered match: "${numberedMatch}"`);
+      return numberedMatch;
+    }
+
+    // Priority 3: AVOID threads directory (that's Threads app data, not Instagram)
+    const nonThreadsMatch = candidates.find(f => !f.toLowerCase().includes('/threads/'));
+    if (nonThreadsMatch) {
+      console.log(`[InstagramParser] Found non-threads match: "${nonThreadsMatch}"`);
+      return nonThreadsMatch;
+    }
+
+    // Last resort: use any match, but warn about it
+    console.warn(`[InstagramParser] Only found Threads data, which may not contain Instagram followers/following`);
+    console.log(`[InstagramParser] Using fallback match: "${candidates[0]}"`);
+    return candidates[0];
   }
 }
 

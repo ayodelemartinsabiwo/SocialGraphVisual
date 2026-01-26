@@ -91,17 +91,22 @@ export interface TwitterLike {
 }
 
 // Instagram
+// Supports both older and newer Instagram export formats
 export interface InstagramFollower {
-  string_list_data: Array<{
-    value: string;
-    timestamp: number;
+  title?: string; // Newer format: username in title field
+  string_list_data?: Array<{
+    value?: string; // Older format: username here
+    href?: string;
+    timestamp?: number;
   }>;
 }
 
 export interface InstagramFollowing {
-  string_list_data: Array<{
-    value: string;
-    timestamp: number;
+  title?: string; // Newer format: username in title field
+  string_list_data?: Array<{
+    value?: string; // Older format: username here
+    href?: string;
+    timestamp?: number;
   }>;
 }
 

@@ -4433,6 +4433,7 @@ describe('Mode-Aware UI Behavior', () => {
 | Version | Date | Section | Change | Reason |
 |---------|------|---------|--------|--------|
 | 1.0 | Dec 29, 2025 | All | Initial creation | Establish UI implementation standards |
+| 1.3 | Jan 25, 2026 | New Component | Added ConstellationBackground component | Animated network visualization background for landing page hero, CTA, and footer sections |
 | - | - | - | - | - |
 
 **How to Amend This Document:**

@@ -187,6 +187,15 @@ Components:
 - **Border:** 1px bottom border (Gray-200 light, Gray-700 dark)
 - **Background:** White (light mode), Gray-900 (dark mode)
 
+**Implementation Note (Added 2026-01-25):**
+- **Landing Page:** Uses dedicated `LandingHeader` component (`components/landing/LandingHeader.tsx`)
+  - Navigation links point to anchor sections: `#features`, `#how-it-works`, `#pricing`
+  - Mobile slide-in menu with full-screen overlay
+  - Scroll shadow effect on scroll
+- **App Pages:** Use shared `Header` component (`components/layout/Header.tsx`)
+  - Navigation links point to routes: `/upload`, `/graph`, `/insights`
+  - User menu/avatar when authenticated
+
 ---
 
 ### **2.2 Global Footer (All Pages)**
@@ -260,11 +269,99 @@ Specifications:
 
 **Purpose:** First impression, value proposition, trust signals, conversion to upload
 
+**Animated Background Effect (Added 2026-01-25):**
+
+The landing page features an animated constellation/network graph background effect that visually represents the core value proposition. This effect appears in:
+- **Hero Section:** Full-width animated constellation behind content
+- **Privacy Section:** Contained constellation in the illustration box
+- **CTA Section:** Subtle overlay constellation
+- **Footer:** Minimal constellation effect
+
+**ConstellationBackground Component Specifications:**
+```
+Component: ConstellationBackground
+File: apps/web/src/components/ui/ConstellationBackground.tsx
+
+Props:
+├─ nodeCount: number (default: 30)
+│  └─ Number of animated nodes
+├─ animate: boolean (default: true)
+│  └─ Enable/disable animation
+├─ opacity: number (default: 0.6)
+│  └─ Overall effect opacity (0-1)
+├─ colorTheme: 'orange' | 'blue' | 'purple' | 'mixed' (default: 'mixed')
+│  └─ Color palette for nodes
+├─ connectionDensity: number (default: 0.15)
+│  └─ Probability of edge connections (0-1)
+├─ showGlow: boolean (default: true)
+│  └─ Enable glow effect on larger nodes
+├─ speedMultiplier: number (default: 1)
+│  └─ Animation speed multiplier
+
+Node Sizing (represents network value):
+├─ Regular nodes: 2-5px (general connections)
+├─ Bridge nodes: 4-7px (10% of nodes)
+├─ Influencer nodes: 5-9px (15% of nodes, with glow)
+
+Edge Behavior:
+├─ Gradient color between connected node colors
+├─ Opacity fades based on distance
+├─ Line width: 0.5-1.5px based on weight
+
+Animation:
+├─ Floating motion with gentle direction changes
+├─ 60fps via requestAnimationFrame
+├─ Wraps around viewport edges
+├─ Reduced motion support: static when disabled
+
+Performance:
+├─ Canvas rendering (not DOM elements)
+├─ Device pixel ratio aware
+├─ Resizes automatically
+├─ Pointer-events disabled (non-interactive)
+```
+
+**Section-Specific Configurations:**
+```
+Hero Section:
+├─ nodeCount: 40
+├─ opacity: 0.4
+├─ colorTheme: 'mixed'
+├─ connectionDensity: 0.12
+├─ showGlow: true
+├─ speedMultiplier: 0.5
+
+Privacy Illustration Box:
+├─ nodeCount: 25
+├─ opacity: 0.7
+├─ colorTheme: 'mixed'
+├─ connectionDensity: 0.2
+├─ showGlow: true
+├─ speedMultiplier: 0.3
+
+CTA Section:
+├─ nodeCount: 20
+├─ opacity: 0.15
+├─ colorTheme: 'orange'
+├─ connectionDensity: 0.1
+├─ showGlow: false
+├─ speedMultiplier: 0.3
+
+Footer:
+├─ nodeCount: 15
+├─ opacity: 0.2
+├─ colorTheme: 'mixed'
+├─ connectionDensity: 0.08
+├─ showGlow: true
+├─ speedMultiplier: 0.2
+```
+
 **Desktop Layout (1440px viewport):**
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │ SECTION 1: HERO (Viewport height: 90vh, min: 600px)            │
 │ Background: Gradient (Gray-50 → White, subtle)                 │
+│ + ConstellationBackground (z-index: 0)                         │
 │ ┌──────────────────────────────────────────────────────────┐   │
 │ │ Container (Max-width: 1200px, centered, padding: 80px 0)  │   │
 │ │ ┌────────────────────┐  ┌─────────────────────────────┐  │   │
@@ -3735,6 +3832,8 @@ This section tracks changes to the layout specification over time.
 | Date | Version | Section | Change | Author | Approved By |
 |------|---------|---------|--------|--------|-------------|
 | 2025-12-30 | 1.0 | All | Initial comprehensive specification | Claude | Pending |
+| 2026-01-25 | 1.1 | 2.1 | Added implementation note for LandingHeader vs Header components | Copilot CLI | Pending |
+| 2026-01-25 | 1.2 | 3.1 | Added ConstellationBackground animated effect specification with props, section configurations (Hero, Privacy, CTA, Footer) | Copilot CLI | Pending |
 
 **Future Amendments:**
 - When sections are added/modified, log here with rationale

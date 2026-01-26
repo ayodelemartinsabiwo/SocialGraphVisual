@@ -56,6 +56,11 @@ ctx.onmessage = async (event: MessageEvent<WorkerMessage>) => {
 async function handleParseStart(payload: ParseStartPayload): Promise<void> {
   const { platform, fileData, fileName } = payload;
 
+  console.log('[Parser Worker] handleParseStart called');
+  console.log('[Parser Worker] Platform:', platform);
+  console.log('[Parser Worker] File name:', fileName);
+  console.log('[Parser Worker] File size:', fileData.byteLength);
+
   try {
     // Phase 1: Extract ZIP
     sendProgress({
@@ -114,9 +119,16 @@ async function handleParseStart(payload: ParseStartPayload): Promise<void> {
     });
 
     // Phase 5: Send result
+    console.log('[Parser Worker] Parsing complete, sending result');
+    console.log('[Parser Worker] Result nodes:', result.nodes.length);
+    console.log('[Parser Worker] Result edges:', result.edges.length);
     sendComplete(result);
   } catch (error) {
-    sendError((error as Error).message || 'Unknown parsing error');
+    console.error('[Parser Worker] Error during parsing:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('[Parser Worker] Error stack:', errorStack);
+    sendError(errorMessage || 'Unknown parsing error');
   }
 }
 
@@ -131,14 +143,27 @@ async function extractZip(
   data: ArrayBuffer,
   onProgress: (progress: number) => void
 ): Promise<Map<string, ArrayBuffer>> {
-  const zip = await JSZip.loadAsync(data);
+  console.log('[Parser Worker] Starting ZIP extraction, size:', data.byteLength);
+
+  let zip;
+  try {
+    zip = await JSZip.loadAsync(data);
+  } catch (error) {
+    console.error('[Parser Worker] Failed to load ZIP:', error);
+    throw new Error(`Failed to load ZIP file: ${(error as Error).message}`);
+  }
+
   const files = new Map<string, ArrayBuffer>();
 
   const fileNames = Object.keys(zip.files).filter(
     (name) => !zip.files[name].dir
   );
 
+  console.log('[Parser Worker] Found', fileNames.length, 'files in ZIP');
+  console.log('[Parser Worker] Sample files:', fileNames.slice(0, 10));
+
   let processed = 0;
+  let extracted = 0;
   const total = fileNames.length;
 
   for (const fileName of fileNames) {
@@ -153,13 +178,17 @@ async function extractZip(
     try {
       const content = await file.async('arraybuffer');
       files.set(fileName, content);
+      extracted++;
     } catch (error) {
-      console.warn(`Failed to extract ${fileName}:`, error);
+      console.warn(`[Parser Worker] Failed to extract ${fileName}:`, error);
     }
 
     processed++;
     onProgress(Math.round((processed / total) * 100));
   }
+
+  console.log('[Parser Worker] Extracted', extracted, 'files successfully');
+  console.log('[Parser Worker] File names in map:', Array.from(files.keys()).slice(0, 10));
 
   return files;
 }

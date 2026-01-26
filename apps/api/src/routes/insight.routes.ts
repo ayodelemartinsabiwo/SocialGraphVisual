@@ -144,6 +144,11 @@ router.get(
         throw new ForbiddenError('You do not have access to this insight');
       }
 
+      // Parse JSON strings from SQLite
+      const data = typeof insight.data === 'string' ? JSON.parse(insight.data) : insight.data;
+      const actions = insight.actions ? (typeof insight.actions === 'string' ? JSON.parse(insight.actions) : insight.actions) : null;
+      const visualAnnotations = insight.visualAnnotations ? (typeof insight.visualAnnotations === 'string' ? JSON.parse(insight.visualAnnotations) : insight.visualAnnotations) : null;
+
       res.status(200).json({
         success: true,
         data: {
@@ -153,10 +158,10 @@ router.get(
           type: insight.type,
           title: insight.title,
           description: insight.description,
-          data: insight.data,
+          data,
           confidence: insight.confidence,
-          actions: insight.actions,
-          visualAnnotations: insight.visualAnnotations,
+          actions,
+          visualAnnotations,
           priority: insight.priority,
           isHighlighted: insight.isHighlighted,
           createdAt: insight.createdAt.toISOString(),

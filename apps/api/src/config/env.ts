@@ -4,6 +4,17 @@
  */
 
 import { z } from 'zod';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env file before parsing
+// Resolve path from src/config/ to apps/api/.env
+const envPath = path.resolve(__dirname, '../../.env');
+dotenv.config({ path: envPath });
 
 /**
  * Environment schema with validation rules
@@ -13,8 +24,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3001),
 
-  // Database
-  DATABASE_URL: z.string().url('DATABASE_URL must be a valid PostgreSQL URL'),
+  // Database (accepts PostgreSQL URLs or SQLite file paths)
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
   // Redis
   REDIS_URL: z.string().url('REDIS_URL must be a valid Redis URL').optional(),
@@ -69,16 +80,6 @@ const envSchema = z.object({
  * Parsed and validated environment variables
  */
 function parseEnv() {
-  // Load dotenv in development
-  if (process.env.NODE_ENV !== 'production') {
-    // Dynamic import to avoid bundling dotenv in production
-    try {
-      require('dotenv').config();
-    } catch {
-      // dotenv not available, continue with process.env
-    }
-  }
-
   const parsed = envSchema.safeParse(process.env);
 
   if (!parsed.success) {

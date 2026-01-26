@@ -174,3 +174,48 @@ export const requirePro = requireTier('PRO', 'CREATOR');
  * Require CREATOR tier
  */
 export const requireCreator = requireTier('CREATOR');
+
+/**
+ * Development-only auth middleware
+ * In production: requires authentication
+ * In development: uses auth if provided, otherwise uses a demo user
+ */
+export function devAuth(req: Request, _res: Response, next: NextFunction): void {
+  try {
+    const token = extractToken(req);
+
+    if (token) {
+      try {
+        const payload = verifyToken(token);
+        req.user = {
+          id: payload.sub,
+          email: payload.email,
+          tier: payload.tier,
+        };
+        return next();
+      } catch {
+        // In development, continue with demo user
+        // In production, throw the error
+        if (env.NODE_ENV === 'production') {
+          throw new UnauthorizedError('Invalid token', 'INVALID_TOKEN');
+        }
+      }
+    }
+
+    // In production, require authentication
+    if (env.NODE_ENV === 'production') {
+      throw new UnauthorizedError('Authentication required', 'UNAUTHORIZED');
+    }
+
+    // In development, use a demo user
+    req.user = {
+      id: 'demo-user-dev',
+      email: 'demo@vsg.local',
+      tier: 'FREE' as UserTier,
+    };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}

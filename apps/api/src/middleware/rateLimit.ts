@@ -194,6 +194,10 @@ const uploadRateLimiterOptions = {
       60 * 60 // 1 hour
     ));
   },
+  skip: () => {
+    // Skip rate limiting in development mode for easier testing
+    return env.NODE_ENV === 'development';
+  },
 };
 
 export const uploadRateLimiter = rateLimit(

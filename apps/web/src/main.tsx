@@ -3,7 +3,11 @@ import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { initializeCsrf } from '@/services/api/client';
 import '@/styles/globals.css';
+
+// Initialize CSRF token early for better UX
+initializeCsrf();
 
 // Configure React Query client with sensible defaults
 const queryClient = new QueryClient({
