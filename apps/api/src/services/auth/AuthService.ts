@@ -9,6 +9,7 @@ import { prisma } from '../../config/database.js';
 import { JwtService, type TokenPair } from './JwtService.js';
 import { UnauthorizedError, BadRequestError } from '../../middleware/errorHandler.js';
 import { logger } from '../../middleware/logger.js';
+import type { UserTier } from '@vsg/shared';
 
 // ============================================================
 // GOOGLE OAUTH TYPES
@@ -196,7 +197,7 @@ export const AuthService = {
     const tokens = await JwtService.generateTokenPair({
       sub: user.id,
       email: user.email,
-      tier: user.tier,
+      tier: user.tier as UserTier,
     });
 
     logger.info('User authenticated via magic link', { userId: user.id });
@@ -207,7 +208,7 @@ export const AuthService = {
         id: user.id,
         email: user.email,
         name: user.name,
-        tier: user.tier,
+        tier: user.tier as UserTier,
       },
     };
   },
@@ -305,7 +306,7 @@ export const AuthService = {
       const tokens = await JwtService.generateTokenPair({
         sub: user.id,
         email: user.email,
-        tier: user.tier,
+        tier: user.tier as UserTier,
       });
 
       logger.info('User authenticated via Google OAuth', { userId: user.id, isNewUser });
@@ -316,7 +317,7 @@ export const AuthService = {
           id: user.id,
           email: user.email,
           name: user.name,
-          tier: user.tier,
+          tier: user.tier as UserTier,
         },
         isNewUser,
       };
@@ -355,7 +356,7 @@ export const AuthService = {
     const accessToken = JwtService.generateAccessToken({
       sub: user.id,
       email: user.email,
-      tier: user.tier,
+      tier: user.tier as UserTier,
     });
 
     // Get expiry time

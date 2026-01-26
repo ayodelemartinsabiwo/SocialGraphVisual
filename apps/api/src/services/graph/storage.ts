@@ -97,14 +97,20 @@ export async function getGraph(
     return null;
   }
 
+  // Parse JSON strings from SQLite
+  const nodesData = typeof graph.nodesData === 'string' ? JSON.parse(graph.nodesData) : graph.nodesData;
+  const edgesData = typeof graph.edgesData === 'string' ? JSON.parse(graph.edgesData) : graph.edgesData;
+  const metadata = typeof graph.metadata === 'string' ? JSON.parse(graph.metadata) : graph.metadata;
+  const statistics = graph.statistics ? (typeof graph.statistics === 'string' ? JSON.parse(graph.statistics) : graph.statistics) : null;
+
   const stored: StoredGraph = {
     id: graph.id,
     userId: graph.userId,
     platform: graph.platform as Platform,
-    nodesData: graph.nodesData as unknown[],
-    edgesData: graph.edgesData as unknown[],
-    metadata: graph.metadata as Record<string, unknown>,
-    statistics: graph.statistics as Record<string, unknown> | null,
+    nodesData: nodesData as unknown[],
+    edgesData: edgesData as unknown[],
+    metadata: metadata as Record<string, unknown>,
+    statistics: statistics as Record<string, unknown> | null,
     status: graph.status as GraphStatus,
     createdAt: graph.createdAt,
     updatedAt: graph.updatedAt,
@@ -130,14 +136,20 @@ export async function getGraphInternal(graphId: string): Promise<StoredGraph | n
     return null;
   }
 
+  // Parse JSON strings from SQLite
+  const nodesDataInternal = typeof graph.nodesData === 'string' ? JSON.parse(graph.nodesData) : graph.nodesData;
+  const edgesDataInternal = typeof graph.edgesData === 'string' ? JSON.parse(graph.edgesData) : graph.edgesData;
+  const metadataInternal = typeof graph.metadata === 'string' ? JSON.parse(graph.metadata) : graph.metadata;
+  const statisticsInternal = graph.statistics ? (typeof graph.statistics === 'string' ? JSON.parse(graph.statistics) : graph.statistics) : null;
+
   return {
     id: graph.id,
     userId: graph.userId,
     platform: graph.platform as Platform,
-    nodesData: graph.nodesData as unknown[],
-    edgesData: graph.edgesData as unknown[],
-    metadata: graph.metadata as Record<string, unknown>,
-    statistics: graph.statistics as Record<string, unknown> | null,
+    nodesData: nodesDataInternal as unknown[],
+    edgesData: edgesDataInternal as unknown[],
+    metadata: metadataInternal as Record<string, unknown>,
+    statistics: statisticsInternal as Record<string, unknown> | null,
     status: graph.status as GraphStatus,
     createdAt: graph.createdAt,
     updatedAt: graph.updatedAt,
@@ -184,7 +196,8 @@ export async function listGraphs(
   });
 
   const items: GraphListItem[] = graphs.map((g) => {
-    const meta = g.metadata as Record<string, unknown>;
+    // Parse JSON strings from SQLite
+    const meta = typeof g.metadata === 'string' ? JSON.parse(g.metadata) : g.metadata;
     return {
       id: g.id,
       platform: g.platform as Platform,
@@ -211,7 +224,7 @@ export async function updateStatistics(
 ): Promise<void> {
   await prisma.graph.update({
     where: { id: graphId },
-    data: { statistics: JSON.parse(JSON.stringify(statistics)) },
+    data: { statistics: JSON.stringify(statistics) },
   });
 
   // Invalidate cache
@@ -230,13 +243,14 @@ export async function updateMetadata(
     select: { metadata: true },
   });
 
-  const existingMeta = (graph?.metadata as Record<string, unknown>) || {};
+  // Parse JSON strings from SQLite
+  const existingMeta = graph?.metadata ? (typeof graph.metadata === 'string' ? JSON.parse(graph.metadata) : graph.metadata) : {};
   const mergedMeta = { ...existingMeta, ...metadata };
 
   await prisma.graph.update({
     where: { id: graphId },
     data: {
-      metadata: JSON.parse(JSON.stringify(mergedMeta)),
+      metadata: JSON.stringify(mergedMeta),
     },
   });
 

@@ -42,8 +42,13 @@ const PUBLIC_ENDPOINTS = [
   '/auth/magic-link/verify',
   '/auth/google/callback',
   '/auth/refresh',
+  '/csrf-token',
   '/health',
 ];
+
+// CSRF token fetch state
+let csrfTokenFetched = false;
+let csrfTokenFetchPromise: Promise<void> | null = null;
 
 // ============================================================
 // CREATE CLIENT
@@ -59,7 +64,7 @@ const createApiClient = (): AxiosInstance => {
     withCredentials: true, // Include cookies for CSRF
   });
 
-  // Request interceptor - add auth token
+  // Request interceptor - add auth token and CSRF
   client.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
       // Skip auth for public endpoints
@@ -76,9 +81,18 @@ const createApiClient = (): AxiosInstance => {
         }
       }
 
+      // For state-changing requests, ensure CSRF token exists
+      const isStateChanging = ['post', 'put', 'patch', 'delete'].includes(
+        config.method?.toLowerCase() || ''
+      );
+
+      if (isStateChanging) {
+        await ensureCsrfToken();
+      }
+
       // Get CSRF token from cookie and add to header
       const csrfToken = getCsrfTokenFromCookie();
-      if (csrfToken && config.method !== 'get') {
+      if (csrfToken && isStateChanging) {
         config.headers['X-CSRF-Token'] = csrfToken;
       }
 
@@ -141,11 +155,49 @@ function getCsrfTokenFromCookie(): string | null {
   const cookies = document.cookie.split(';');
   for (const cookie of cookies) {
     const [name, value] = cookie.trim().split('=');
-    if (name === 'XSRF-TOKEN') {
+    // Match the backend CSRF cookie name: csrf_token
+    if (name === 'csrf_token') {
       return decodeURIComponent(value);
     }
   }
   return null;
+}
+
+/**
+ * Fetch CSRF token from the API (sets the cookie)
+ */
+async function fetchCsrfToken(): Promise<void> {
+  if (csrfTokenFetched) return;
+
+  // Deduplicate concurrent requests
+  if (csrfTokenFetchPromise) {
+    return csrfTokenFetchPromise;
+  }
+
+  csrfTokenFetchPromise = (async () => {
+    try {
+      await axios.get(`${API_BASE_URL}/csrf-token`, {
+        withCredentials: true,
+      });
+      csrfTokenFetched = true;
+    } catch (error) {
+      console.warn('Failed to fetch CSRF token:', error);
+    } finally {
+      csrfTokenFetchPromise = null;
+    }
+  })();
+
+  return csrfTokenFetchPromise;
+}
+
+/**
+ * Ensure CSRF token is available before state-changing requests
+ */
+async function ensureCsrfToken(): Promise<void> {
+  const existingToken = getCsrfTokenFromCookie();
+  if (!existingToken) {
+    await fetchCsrfToken();
+  }
 }
 
 /**
@@ -201,6 +253,12 @@ async function refreshAccessToken(): Promise<{
 // ============================================================
 
 export const apiClient = createApiClient();
+
+/**
+ * Initialize CSRF protection by fetching the token
+ * Call this early in app lifecycle for better UX
+ */
+export const initializeCsrf = fetchCsrfToken;
 
 // Convenience methods
 export const api = {

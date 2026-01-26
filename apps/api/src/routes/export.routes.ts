@@ -90,7 +90,7 @@ router.post(
         });
       }
 
-      // Create export record
+      // Create export record (serialize JSON for SQLite)
       const exportRecord = await prisma.export.create({
         data: {
           userId,
@@ -98,7 +98,7 @@ router.post(
           type: type as any,
           format: getExportFormat(type) as any,
           status: 'PENDING',
-          options: options || {},
+          options: options ? JSON.stringify(options) : null,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         },
       });

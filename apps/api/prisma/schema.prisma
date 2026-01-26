@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -19,7 +19,7 @@ model User {
   email     String   @unique
   name      String?
   googleId  String?  @unique
-  tier      UserTier @default(FREE)
+  tier      String   @default("FREE") // FREE | PRO | CREATOR
   secretKey String?  // Encrypted per-user key for pseudonymization
 
   createdAt DateTime @default(now())
@@ -36,12 +36,6 @@ model User {
   @@index([email])
   @@index([googleId])
   @@index([tier])
-}
-
-enum UserTier {
-  FREE
-  PRO
-  CREATOR
 }
 
 model RefreshToken {
@@ -78,26 +72,26 @@ model MagicLink {
 // ============================================================
 
 model Graph {
-  id        String      @id @default(cuid())
+  id        String @id @default(cuid())
   userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  platform  Platform
-  version   Int         @default(1)
-  isLatest  Boolean     @default(true)
-  status    GraphStatus @default(PROCESSING)
+  platform  String  // TWITTER | INSTAGRAM | LINKEDIN | FACEBOOK | TIKTOK
+  version   Int     @default(1)
+  isLatest  Boolean @default(true)
+  status    String  @default("PROCESSING") // PROCESSING | READY | ERROR
 
-  // Graph structure stored as JSONB for flexibility
+  // Graph structure stored as JSON for flexibility
   // Array of GraphNode objects
-  nodesData Json
+  nodesData String // JSON stored as text for SQLite
   // Array of GraphEdge objects
-  edgesData Json
+  edgesData String // JSON stored as text for SQLite
   // GraphMetadata object (parsing info, source file, errors)
-  metadata  Json
+  metadata  String // JSON stored as text for SQLite
 
   // Computed statistics (cached, nullable until processing completes)
   // GraphStatistics object
-  statistics Json?
+  statistics String? // JSON stored as text for SQLite
 
   // Processing error message if status is ERROR
   errorMsg   String?
@@ -117,38 +111,24 @@ model Graph {
   @@index([createdAt])
 }
 
-enum Platform {
-  TWITTER
-  INSTAGRAM
-  LINKEDIN
-  FACEBOOK
-  TIKTOK
-}
-
-enum GraphStatus {
-  PROCESSING
-  READY
-  ERROR
-}
-
 // ============================================================
 // UPLOADS
 // ============================================================
 
 model Upload {
-  id        String       @id @default(cuid())
+  id        String @id @default(cuid())
   userId    String
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  platform  Platform
+  platform  String // TWITTER | INSTAGRAM | LINKEDIN | FACEBOOK | TIKTOK
   fileName  String
-  fileSize  Int          // bytes
-  checksum  String?      // SHA-256 hash
+  fileSize  Int    // bytes
+  checksum  String? // SHA-256 hash
 
   // Tus upload URL (for resumable uploads)
   uploadUrl String?
 
-  status    UploadStatus @default(PENDING)
+  status    String @default("PENDING") // PENDING | UPLOADING | COMPLETED | FAILED | EXPIRED
   errorMsg  String?
 
   // Upload expires if not completed
@@ -161,42 +141,34 @@ model Upload {
   @@index([expiresAt])
 }
 
-enum UploadStatus {
-  PENDING
-  UPLOADING
-  COMPLETED
-  FAILED
-  EXPIRED
-}
-
 // ============================================================
 // INSIGHTS
 // ============================================================
 
 model Insight {
-  id        String          @id @default(cuid())
+  id        String @id @default(cuid())
   graphId   String
-  graph     Graph           @relation(fields: [graphId], references: [id], onDelete: Cascade)
+  graph     Graph  @relation(fields: [graphId], references: [id], onDelete: Cascade)
 
-  category  InsightCategory
-  type      String          // Specific insight type identifier
+  category  String // NETWORK | COMMUNITY | ENGAGEMENT | GROWTH
+  type      String // Specific insight type identifier
 
   title       String
-  description String        @db.Text
+  description String
 
-  // Insight-specific computed data as JSONB
-  data        Json
-  confidence  Confidence    @default(MEDIUM)
+  // Insight-specific computed data as JSON
+  data        String // JSON stored as text for SQLite
+  confidence  String @default("MEDIUM") // HIGH | MEDIUM | LOW
 
-  // Actions as JSONB array
-  actions     Json?
+  // Actions as JSON array
+  actions     String? // JSON stored as text for SQLite
 
   // Visual annotations for graph highlighting
-  visualAnnotations Json?
+  visualAnnotations String? // JSON stored as text for SQLite
 
   // Display priority (higher = more important)
-  priority      Int         @default(0)
-  isHighlighted Boolean     @default(false)
+  priority      Int     @default(0)
+  isHighlighted Boolean @default(false)
 
   // Template tracking for A/B testing
   templateId    String?
@@ -210,41 +182,28 @@ model Insight {
   @@index([priority])
 }
 
-enum InsightCategory {
-  NETWORK
-  COMMUNITY
-  ENGAGEMENT
-  GROWTH
-}
-
-enum Confidence {
-  HIGH
-  MEDIUM
-  LOW
-}
-
 // ============================================================
 // EXPORTS
 // ============================================================
 
 model Export {
-  id        String       @id @default(cuid())
+  id        String @id @default(cuid())
   userId    String
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   graphId   String
-  graph     Graph        @relation(fields: [graphId], references: [id], onDelete: Cascade)
+  graph     Graph  @relation(fields: [graphId], references: [id], onDelete: Cascade)
 
-  type      ExportType
-  format    ExportFormat
-  status    ExportStatus @default(PENDING)
+  type      String // PDF_REPORT | SOCIAL_CARD | DATA_CSV | DATA_JSON
+  format    String // PDF | PNG | JPG | CSV | JSON
+  status    String @default("PENDING") // PENDING | PROCESSING | COMPLETED | FAILED
 
   // File info (populated when completed)
   fileUrl   String?
-  fileSize  Int?         // bytes
+  fileSize  Int?    // bytes
   fileName  String?
 
-  // Export options as JSONB
-  options   Json?
+  // Export options as JSON
+  options   String? // JSON stored as text for SQLite
 
   // Error message if failed
   errorMsg  String?
@@ -260,62 +219,32 @@ model Export {
   @@index([createdAt])
 }
 
-enum ExportType {
-  PDF_REPORT
-  SOCIAL_CARD
-  DATA_CSV
-  DATA_JSON
-}
-
-enum ExportFormat {
-  PDF
-  PNG
-  JPG
-  CSV
-  JSON
-}
-
-enum ExportStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-}
-
 // ============================================================
 // SUBSCRIPTIONS & BILLING
 // ============================================================
 
 model Subscription {
-  id                   String             @id @default(cuid())
-  userId               String             @unique
-  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String  @id @default(cuid())
+  userId               String  @unique
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  stripeCustomerId     String             @unique
-  stripeSubscriptionId String?            @unique
+  stripeCustomerId     String  @unique
+  stripeSubscriptionId String? @unique
   stripePriceId        String?
 
-  status               SubscriptionStatus @default(INACTIVE)
+  status               String  @default("INACTIVE") // ACTIVE | INACTIVE | PAST_DUE | CANCELED | TRIALING
 
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
-  cancelAtPeriodEnd    Boolean            @default(false)
+  cancelAtPeriodEnd    Boolean   @default(false)
 
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
   canceledAt           DateTime?
 
   @@index([stripeCustomerId])
   @@index([stripeSubscriptionId])
   @@index([status])
-}
-
-enum SubscriptionStatus {
-  ACTIVE
-  INACTIVE
-  PAST_DUE
-  CANCELED
-  TRIALING
 }
 
 // ============================================================
@@ -327,7 +256,7 @@ model AnalyticsEvent {
   userId    String?  // Nullable for anonymous events
 
   event     String   // Event name (e.g., "graph_created", "export_downloaded")
-  properties Json?   // Event-specific data
+  properties String? // JSON stored as text for SQLite
 
   sessionId String?
   ipHash    String?  // Hashed IP for privacy

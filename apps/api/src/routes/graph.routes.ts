@@ -5,7 +5,7 @@
 
 import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, devAuth } from '../middleware/auth.js';
 import { validateBody, validateQuery, validateParams, platformSchema, paginationSchema, idParamSchema } from '../middleware/validation.js';
 import { uploadRateLimiter } from '../middleware/rateLimit.js';
 import { prisma } from '../config/database.js';
@@ -83,7 +83,7 @@ const listGraphsSchema = paginationSchema.extend({
  */
 router.post(
   '/upload/initiate',
-  requireAuth,
+  devAuth,
   uploadRateLimiter,
   validateBody(initiateUploadSchema),
   async (req: Request, res: Response, next: NextFunction) => {
@@ -126,7 +126,7 @@ router.post(
  */
 router.post(
   '/',
-  requireAuth,
+  devAuth,
   validateBody(createGraphSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -145,7 +145,7 @@ router.post(
         data: { isLatest: false },
       });
 
-      // Create the graph
+      // Create the graph (serialize JSON for SQLite)
       const graph = await prisma.graph.create({
         data: {
           userId,
@@ -153,9 +153,9 @@ router.post(
           version,
           isLatest: true,
           status: 'PROCESSING',
-          nodesData: nodes,
-          edgesData: edges,
-          metadata: {
+          nodesData: JSON.stringify(nodes),
+          edgesData: JSON.stringify(edges),
+          metadata: JSON.stringify({
             uploadId,
             ...metadata,
             statistics: {
@@ -164,7 +164,7 @@ router.post(
               density: edges.length / (nodes.length * (nodes.length - 1)) || 0,
               averageDegree: (2 * edges.length) / nodes.length || 0,
             },
-          },
+          }),
         },
       });
 
@@ -194,7 +194,7 @@ router.post(
  */
 router.get(
   '/',
-  requireAuth,
+  devAuth,
   validateQuery(listGraphsSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -230,17 +230,22 @@ router.get(
       res.status(200).json({
         success: true,
         data: {
-          graphs: graphs.map(g => ({
-            id: g.id,
-            platform: g.platform,
-            version: g.version,
-            isLatest: g.isLatest,
-            status: g.status,
-            nodeCount: (g.metadata as any)?.statistics?.nodeCount || 0,
-            edgeCount: (g.metadata as any)?.statistics?.edgeCount || 0,
-            communityCount: (g.statistics as any)?.communities?.count || null,
-            createdAt: g.createdAt.toISOString(),
-          })),
+          graphs: graphs.map(g => {
+            // Parse JSON strings from SQLite
+            const metadata = typeof g.metadata === 'string' ? JSON.parse(g.metadata) : g.metadata;
+            const statistics = g.statistics ? (typeof g.statistics === 'string' ? JSON.parse(g.statistics) : g.statistics) : null;
+            return {
+              id: g.id,
+              platform: g.platform,
+              version: g.version,
+              isLatest: g.isLatest,
+              status: g.status,
+              nodeCount: metadata?.statistics?.nodeCount || 0,
+              edgeCount: metadata?.statistics?.edgeCount || 0,
+              communityCount: statistics?.communities?.count || null,
+              createdAt: g.createdAt.toISOString(),
+            };
+          }),
           total,
           page,
           pageSize,
@@ -258,7 +263,7 @@ router.get(
  */
 router.get(
   '/:id',
-  requireAuth,
+  devAuth,
   validateParams(idParamSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -277,6 +282,12 @@ router.get(
         throw new ForbiddenError('You do not have access to this graph');
       }
 
+      // Parse JSON strings from SQLite
+      const nodes = typeof graph.nodesData === 'string' ? JSON.parse(graph.nodesData) : graph.nodesData;
+      const edges = typeof graph.edgesData === 'string' ? JSON.parse(graph.edgesData) : graph.edgesData;
+      const metadata = typeof graph.metadata === 'string' ? JSON.parse(graph.metadata) : graph.metadata;
+      const statistics = graph.statistics ? (typeof graph.statistics === 'string' ? JSON.parse(graph.statistics) : graph.statistics) : null;
+
       res.status(200).json({
         success: true,
         data: {
@@ -286,10 +297,10 @@ router.get(
           version: graph.version,
           isLatest: graph.isLatest,
           status: graph.status,
-          nodes: graph.nodesData,
-          edges: graph.edgesData,
-          metadata: graph.metadata,
-          statistics: graph.statistics,
+          nodes,
+          edges,
+          metadata,
+          statistics,
           createdAt: graph.createdAt.toISOString(),
           updatedAt: graph.updatedAt.toISOString(),
         },
