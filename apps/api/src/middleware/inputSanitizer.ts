@@ -17,9 +17,9 @@ import { logger } from './logger.js';
 // ============================================================
 
 const MAX_STRING_LENGTH = 10000;
-const MAX_ARRAY_LENGTH = 1000;
+const MAX_ARRAY_LENGTH = 50000; // Support large social graphs (up to 50K nodes/edges)
 const MAX_OBJECT_DEPTH = 10;
-const MAX_JSON_BODY_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_JSON_BODY_SIZE = 50 * 1024 * 1024; // 50MB for large graph payloads
 
 // Valid content types for JSON APIs
 const VALID_JSON_CONTENT_TYPES = [

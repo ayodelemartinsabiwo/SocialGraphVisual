@@ -107,6 +107,12 @@ export function useUpload() {
       updateProgress('parsing', 10, 'Parsing file...');
 
       const parsedData = await parseFile(file);
+      
+      console.log('[useUpload] Parsed data received:', {
+        nodeCount: parsedData.nodes.length,
+        edgeCount: parsedData.edges.length,
+        firstNode: parsedData.nodes[0],
+      });
 
       if (abortRef.current) throw new Error('Upload cancelled');
       updateProgress('parsing', 30, `Found ${parsedData.nodes.length} connections`);

@@ -2,9 +2,12 @@ import { X, User, Users, TrendingUp, Zap, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
+import type { GraphNode, GraphEdge } from '@vsg/shared';
 
 interface NodeDetailsProps {
-  nodeId: string;
+  node: GraphNode | null;
+  edges: GraphEdge[];
+  allNodes: GraphNode[];
   onClose: () => void;
 }
 
@@ -29,35 +32,43 @@ const communityColors = [
  * - Connections list
  * - Engagement stats
  */
-function NodeDetails({ nodeId, onClose }: NodeDetailsProps) {
-  // Mock node data - will be replaced with real data from store
-  const node = {
-    id: nodeId,
-    name: 'John Doe',
-    username: '@johndoe',
-    platform: 'Twitter',
-    avatar: null,
-    community: 0,
-    metrics: {
-      pageRank: 0.85,
-      betweenness: 0.12,
-      degree: 42,
-      inDegree: 28,
-      outDegree: 14,
-    },
-    engagement: {
-      mutualConnections: 15,
-      engagementRate: 0.08,
-      lastInteraction: '2 days ago',
-    },
-    topConnections: [
-      { id: '1', name: 'Jane Smith', strength: 0.9 },
-      { id: '2', name: 'Bob Johnson', strength: 0.85 },
-      { id: '3', name: 'Alice Williams', strength: 0.78 },
-    ],
-  };
+function NodeDetails({ node, edges, allNodes, onClose }: NodeDetailsProps) {
+  if (!node) return null;
 
-  const communityInfo = communityColors[node.community % communityColors.length];
+  // Calculate metrics from actual data
+  const connectedEdges = edges.filter(
+    e => e.source === node.id || e.target === node.id
+  );
+  
+  const inDegree = edges.filter(e => e.target === node.id).length;
+  const outDegree = edges.filter(e => e.source === node.id).length;
+  const degree = inDegree + outDegree;
+  
+  // Find mutual connections (both follow each other)
+  const mutualConnections = edges.filter(e => {
+    if (e.source === node.id) {
+      return edges.some(e2 => e2.source === e.target && e2.target === node.id);
+    }
+    return false;
+  }).length;
+
+  // Get top connections by edge weight
+  const topConnections = connectedEdges
+    .map(e => {
+      const otherId = e.source === node.id ? e.target : e.source;
+      const otherNode = allNodes.find(n => n.id === otherId);
+      return {
+        id: otherId,
+        name: otherNode?.displayName || otherNode?.username || otherId,
+        strength: e.weight,
+      };
+    })
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, 5);
+
+  const communityInfo = communityColors[(node.communityId || 0) % communityColors.length];
+  const pageRank = node.pageRank || 0;
+  const betweenness = node.betweenness || 0;
 
   return (
     <Card className="h-full overflow-hidden flex flex-col">
@@ -69,8 +80,8 @@ function NodeDetails({ nodeId, onClose }: NodeDetailsProps) {
               <User className="w-6 h-6 text-vsg-gray-400" />
             </div>
             <div>
-              <CardTitle className="text-h4">{node.name}</CardTitle>
-              <p className="text-body-sm text-vsg-gray-500">{node.username}</p>
+              <CardTitle className="text-h4">{node.displayName}</CardTitle>
+              <p className="text-body-sm text-vsg-gray-500">@{node.username}</p>
             </div>
           </div>
           <Button
@@ -107,48 +118,27 @@ function NodeDetails({ nodeId, onClose }: NodeDetailsProps) {
             <MetricCard
               icon={TrendingUp}
               label="Influence"
-              value={`${(node.metrics.pageRank * 100).toFixed(0)}%`}
+              value={`${(pageRank * 100).toFixed(0)}%`}
               description="PageRank score"
             />
             <MetricCard
               icon={Zap}
               label="Bridge Score"
-              value={`${(node.metrics.betweenness * 100).toFixed(0)}%`}
+              value={`${(betweenness * 100).toFixed(0)}%`}
               description="Betweenness centrality"
             />
             <MetricCard
               icon={Users}
               label="Connections"
-              value={node.metrics.degree.toString()}
-              description={`${node.metrics.inDegree} in / ${node.metrics.outDegree} out`}
+              value={degree.toString()}
+              description={`${inDegree} in / ${outDegree} out`}
             />
             <MetricCard
               icon={Users}
               label="Mutual"
-              value={node.engagement.mutualConnections.toString()}
+              value={mutualConnections.toString()}
               description="Mutual connections"
             />
-          </div>
-        </div>
-
-        {/* Engagement */}
-        <div>
-          <p className="text-caption text-vsg-gray-500 uppercase tracking-wider mb-3">
-            Engagement
-          </p>
-          <div className="space-y-2">
-            <div className="flex justify-between text-body-sm">
-              <span className="text-vsg-gray-500">Engagement Rate</span>
-              <span className="font-medium text-vsg-gray-900 dark:text-white">
-                {(node.engagement.engagementRate * 100).toFixed(1)}%
-              </span>
-            </div>
-            <div className="flex justify-between text-body-sm">
-              <span className="text-vsg-gray-500">Last Interaction</span>
-              <span className="font-medium text-vsg-gray-900 dark:text-white">
-                {node.engagement.lastInteraction}
-              </span>
-            </div>
           </div>
         </div>
 
@@ -158,41 +148,49 @@ function NodeDetails({ nodeId, onClose }: NodeDetailsProps) {
             Strongest Connections
           </p>
           <div className="space-y-2">
-            {node.topConnections.map((connection) => (
-              <div
-                key={connection.id}
-                className="flex items-center justify-between p-2 rounded-md hover:bg-vsg-gray-50 dark:hover:bg-vsg-gray-800 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-vsg-gray-200 dark:bg-vsg-gray-700 flex items-center justify-center">
-                    <User className="w-4 h-4 text-vsg-gray-400" />
+            {topConnections.length > 0 ? (
+              topConnections.map((connection) => (
+                <div
+                  key={connection.id}
+                  className="flex items-center justify-between p-2 rounded-md hover:bg-vsg-gray-50 dark:hover:bg-vsg-gray-800 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-vsg-gray-200 dark:bg-vsg-gray-700 flex items-center justify-center">
+                      <User className="w-4 h-4 text-vsg-gray-400" />
+                    </div>
+                    <span className="text-body-sm font-medium text-vsg-gray-900 dark:text-white truncate max-w-[120px]">
+                      {connection.name}
+                    </span>
                   </div>
-                  <span className="text-body-sm font-medium text-vsg-gray-900 dark:text-white">
-                    {connection.name}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-16 h-1.5 bg-vsg-gray-200 dark:bg-vsg-gray-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-vsg-orange-500 rounded-full"
-                      style={{ width: `${connection.strength * 100}%` }}
-                    />
+                  <div className="flex items-center gap-1">
+                    <div className="w-16 h-1.5 bg-vsg-gray-200 dark:bg-vsg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-vsg-orange-500 rounded-full"
+                        style={{ width: `${Math.max(connection.strength * 100, 10)}%` }}
+                      />
+                    </div>
+                    <span className="text-caption text-vsg-gray-500 w-8 text-right">
+                      {Math.round(connection.strength * 100)}
+                    </span>
                   </div>
-                  <span className="text-caption text-vsg-gray-500 w-8 text-right">
-                    {Math.round(connection.strength * 100)}
-                  </span>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-body-sm text-vsg-gray-400">No connections found</p>
+            )}
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Node type badge */}
         <div className="pt-4 border-t border-vsg-gray-200 dark:border-vsg-gray-800">
-          <Button variant="outline" size="sm" className="w-full">
-            <ExternalLink className="w-4 h-4 mr-2" />
-            View on {node.platform}
-          </Button>
+          <span className={cn(
+            "inline-block px-2 py-1 rounded text-caption font-medium",
+            node.type === 'SELF' 
+              ? "bg-vsg-orange-100 text-vsg-orange-700 dark:bg-vsg-orange-900 dark:text-vsg-orange-300"
+              : "bg-vsg-gray-100 text-vsg-gray-700 dark:bg-vsg-gray-800 dark:text-vsg-gray-300"
+          )}>
+            {node.type === 'SELF' ? 'You' : 'Connection'}
+          </span>
         </div>
       </CardContent>
     </Card>

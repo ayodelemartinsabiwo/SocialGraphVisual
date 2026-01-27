@@ -141,7 +141,7 @@ export abstract class BaseParser implements PlatformParser {
   }
 
   /**
-   * Calculate edge weights based on interactions
+   * Calculate edge weights based on interactions and relationship type
    */
   protected calculateEdgeWeights(): void {
     // Find max interactions for normalization
@@ -158,16 +158,20 @@ export abstract class BaseParser implements PlatformParser {
     for (const edge of this.edgeMap.values()) {
       const totalInteractions = this.getTotalInteractions(edge);
 
-      // Base weight from relationship type
+      // Base weight from relationship type - higher for mutual
       let baseWeight = 0.3; // Default for follows
       if (edge.type === 'MUTUAL') {
-        baseWeight = 0.5;
+        baseWeight = 0.7; // Mutual connections are stronger
       } else if (edge.type === 'ENGAGES_WITH') {
+        baseWeight = 0.5;
+      } else if (edge.type === 'FOLLOWED_BY') {
         baseWeight = 0.4;
       }
 
-      // Add interaction-based weight (up to 0.5 additional)
-      const interactionWeight = (totalInteractions / maxInteractions) * 0.5;
+      // Add interaction-based weight (up to 0.3 additional)
+      const interactionWeight = maxInteractions > 1 
+        ? (totalInteractions / maxInteractions) * 0.3 
+        : 0;
 
       edge.weight = Math.min(1, baseWeight + interactionWeight);
     }

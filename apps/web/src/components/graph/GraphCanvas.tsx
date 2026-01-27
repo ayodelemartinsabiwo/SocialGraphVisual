@@ -144,7 +144,12 @@ function GraphCanvas({
   const graphData = useMemo(() => {
     // Only use real data if we have nodes - edges may be 0 for isolated nodes
     if (propNodes && propNodes.length > 0) {
-      const d3Nodes: D3GraphNode[] = propNodes.map((node) => ({ ...node }));
+      // Clone nodes and assign communities if not already assigned
+      const d3Nodes: D3GraphNode[] = propNodes.map((node, index) => ({ 
+        ...node,
+        // Assign community based on simple heuristic if not set
+        communityId: node.communityId ?? Math.floor(index / Math.ceil(propNodes.length / 5))
+      }));
       
       // Create a set of valid node IDs for O(1) lookup
       const nodeIds = new Set(d3Nodes.map(n => n.id));
@@ -164,8 +169,12 @@ function GraphCanvas({
         .map((edge) => ({
           source: edge.source,
           target: edge.target,
-          weight: edge.weight,
+          // Ensure minimum weight for visibility, scale up for thickness
+          weight: Math.max(0.3, edge.weight || 0.3),
         }));
+      
+      // Run simple community detection (label propagation style)
+      assignCommunities(d3Nodes, d3Edges);
       
       console.log(`[GraphCanvas] Loaded ${d3Nodes.length} nodes, ${d3Edges.length} valid edges`);
       return { nodes: d3Nodes, edges: d3Edges };
@@ -173,6 +182,77 @@ function GraphCanvas({
     console.log('[GraphCanvas] No nodes provided, using mock data');
     return mockData;
   }, [propNodes, propEdges, mockData]);
+
+/**
+ * Simple community detection using label propagation
+ * Assigns nodes to communities based on their connections
+ */
+function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
+  const NUM_COMMUNITIES = 5;
+  
+  // Build adjacency list
+  const adjacency = new Map<string, string[]>();
+  for (const node of nodes) {
+    adjacency.set(node.id, []);
+  }
+  for (const edge of edges) {
+    const sourceId = typeof edge.source === 'string' ? edge.source : edge.source.id;
+    const targetId = typeof edge.target === 'string' ? edge.target : edge.target.id;
+    adjacency.get(sourceId)?.push(targetId);
+    adjacency.get(targetId)?.push(sourceId);
+  }
+  
+  // Initialize communities based on degree (high degree nodes seed communities)
+  const nodesByDegree = [...nodes].sort((a, b) => 
+    (adjacency.get(b.id)?.length || 0) - (adjacency.get(a.id)?.length || 0)
+  );
+  
+  // Assign top nodes as community seeds
+  const communitySeeds: string[] = [];
+  for (let i = 0; i < Math.min(NUM_COMMUNITIES, nodesByDegree.length); i++) {
+    communitySeeds.push(nodesByDegree[i].id);
+    nodesByDegree[i].communityId = i;
+  }
+  
+  // Propagate labels - assign each node to the community of its most connected neighbor
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+  
+  for (const node of nodes) {
+    if (communitySeeds.includes(node.id)) continue;
+    
+    const neighbors = adjacency.get(node.id) || [];
+    if (neighbors.length === 0) {
+      // Isolated node - assign randomly
+      node.communityId = Math.floor(Math.random() * NUM_COMMUNITIES);
+      continue;
+    }
+    
+    // Count community votes from neighbors
+    const communityVotes = new Map<number, number>();
+    for (const neighborId of neighbors) {
+      const neighbor = nodeMap.get(neighborId);
+      if (neighbor && neighbor.communityId !== undefined) {
+        const votes = communityVotes.get(neighbor.communityId) || 0;
+        communityVotes.set(neighbor.communityId, votes + 1);
+      }
+    }
+    
+    // Assign to most popular community among neighbors, or random if no votes
+    if (communityVotes.size > 0) {
+      let maxVotes = 0;
+      let bestCommunity = 0;
+      for (const [community, votes] of communityVotes) {
+        if (votes > maxVotes) {
+          maxVotes = votes;
+          bestCommunity = community;
+        }
+      }
+      node.communityId = bestCommunity;
+    } else {
+      node.communityId = Math.floor(Math.random() * NUM_COMMUNITIES);
+    }
+  }
+}
 
   /**
    * Handle resize
@@ -237,7 +317,7 @@ function GraphCanvas({
 
     simulationRef.current = simulation;
 
-    // Create edge elements
+    // Create edge elements - scale thickness by weight
     const edges = g
       .append('g')
       .attr('class', 'edges')
@@ -245,8 +325,12 @@ function GraphCanvas({
       .data(graphData.edges)
       .join('line')
       .attr('stroke', '#9CA3AF')
-      .attr('stroke-opacity', 0.3)
-      .attr('stroke-width', (d) => Math.max(1, d.weight * 2));
+      .attr('stroke-opacity', 0.4)
+      .attr('stroke-width', (d) => {
+        // Scale edge width: min 0.5, max 4 based on weight
+        const weight = d.weight || 0.3;
+        return Math.max(0.5, weight * 4);
+      });
 
     // Create node elements
     const nodes = g

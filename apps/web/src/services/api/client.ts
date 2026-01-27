@@ -34,7 +34,9 @@ export interface ApiResponse<T> {
 // CONFIGURATION
 // ============================================================
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+// Use relative URL to go through Vite's proxy in development
+// This avoids CORS issues since requests go to the same origin
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
 // Endpoints that don't require authentication
 const PUBLIC_ENDPOINTS = [
