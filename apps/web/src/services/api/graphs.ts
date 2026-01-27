@@ -72,12 +72,20 @@ export async function cancelUpload(uploadId: string): Promise<void> {
  * Create a new graph from parsed data
  */
 export async function createGraph(graphData: CreateGraphBody): Promise<CreateGraphResponse> {
+  console.log('[createGraph] Sending graph data:', {
+    uploadId: graphData.uploadId,
+    platform: graphData.platform,
+    nodeCount: graphData.nodes.length,
+    edgeCount: graphData.edges.length,
+  });
+  
   const response = await api.post<CreateGraphResponse>('/graphs', graphData);
 
   if (!response.success || !response.data) {
     throw new Error('Failed to create graph');
   }
 
+  console.log('[createGraph] Response:', response.data);
   return response.data;
 }
 

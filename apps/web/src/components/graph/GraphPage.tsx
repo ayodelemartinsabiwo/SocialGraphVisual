@@ -102,8 +102,8 @@ function GraphPage() {
     console.log('Export graph');
   }, []);
 
-  // Show loading state
-  if (isLoading) {
+  // Show loading state - wait for actual graph data, not just loading flag
+  if (isLoading || (graphId && !graph?.nodes?.length)) {
     return (
       <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
         <div className="text-center">
@@ -229,15 +229,15 @@ function GraphPage() {
         {/* Graph canvas */}
         <div className="flex-1 relative min-w-0">
           <Card padding="none" className="h-full overflow-hidden">
-            {/* Canvas */}
+            {/* Canvas - graph.nodes/edges guaranteed by loading guard above */}
             <GraphCanvas
               zoom={zoom}
               viewMode={viewMode}
               searchQuery={searchQuery}
               selectedNode={selectedNode}
               onNodeSelect={handleNodeSelect}
-              nodes={graph?.nodes || filteredNodes}
-              edges={graph?.edges || filteredEdges}
+              nodes={graph?.nodes}
+              edges={graph?.edges}
             />
 
             {/* Zoom controls */}
@@ -319,10 +319,12 @@ function GraphPage() {
         </div>
 
         {/* Node details panel - shows when node is selected */}
-        {selectedNode && (
+        {selectedNode && graph?.nodes && (
           <div className="w-80 flex-shrink-0">
             <NodeDetails
-              nodeId={selectedNode}
+              node={graph.nodes.find(n => n.id === selectedNode) || null}
+              edges={graph.edges || []}
+              allNodes={graph.nodes}
               onClose={() => setSelectedNode(null)}
             />
           </div>
