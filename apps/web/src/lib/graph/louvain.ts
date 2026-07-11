@@ -113,7 +113,9 @@ export function detectCommunities(
   const communityNodes = new Map<string, string[]>();
 
   graph.forEachNode((nodeId) => {
-    const communityId = graph.getNodeAttribute(nodeId, 'community')?.toString() || '0';
+    // louvain.detailed() returns assignments in its mapping; it does NOT
+    // write a 'community' node attribute (that's louvain.assign())
+    const communityId = details.communities[nodeId]?.toString() ?? '0';
     nodeAssignments.set(nodeId, communityId);
 
     if (!communityNodes.has(communityId)) {
