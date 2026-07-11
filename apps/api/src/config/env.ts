@@ -64,6 +64,9 @@ const envSchema = z.object({
   // CORS
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
 
+  // Public app URL used in emails/links (falls back to first CORS origin)
+  APP_URL: z.string().url().optional(),
+
   // Rate Limiting
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(60000), // 1 minute
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
@@ -102,6 +105,13 @@ export type Env = z.infer<typeof envSchema>;
  * Check if running in production
  */
 export const isProduction = env.NODE_ENV === 'production';
+
+/**
+ * Base URL of the web app for links in emails.
+ * CORS_ORIGIN may be a comma-separated list; use APP_URL or its first entry.
+ */
+export const appBaseUrl: string =
+  env.APP_URL ?? (env.CORS_ORIGIN.split(',')[0] ?? 'http://localhost:5173').trim();
 
 /**
  * Check if running in development

@@ -8,6 +8,7 @@ export {
   isProduction,
   isDevelopment,
   isTest,
+  appBaseUrl,
   type Env,
 } from './env.js';
 

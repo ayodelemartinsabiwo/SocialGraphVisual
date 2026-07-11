@@ -4,9 +4,10 @@
  */
 
 import { randomBytes, createHash } from 'crypto';
-import { env } from '../../config/index.js';
+import { env, appBaseUrl } from '../../config/index.js';
 import { prisma } from '../../config/database.js';
 import { JwtService, type TokenPair } from './JwtService.js';
+import { EmailService } from '../email/index.js';
 import { UnauthorizedError, BadRequestError } from '../../middleware/errorHandler.js';
 import { logger } from '../../middleware/logger.js';
 import type { UserTier } from '@vsg/shared';
@@ -121,23 +122,16 @@ export const AuthService = {
       },
     });
 
-    // Build magic link URL
-    const magicLinkUrl = `${env.CORS_ORIGIN}/auth/verify?token=${token}`;
+    // Build magic link URL (APP_URL or first CORS origin; CORS_ORIGIN may be a list)
+    const magicLinkUrl = `${appBaseUrl}/auth/verify?token=${token}`;
 
-    // TODO: Send email using EmailService
-    // For now, log the link in development
-    if (env.NODE_ENV !== 'production') {
-      logger.info('Magic link generated (dev only)', {
-        email: normalizedEmail,
-        url: magicLinkUrl,
-        token, // Only log in development!
-      });
-    }
+    const expiresIn = Math.floor(expiresInMs / 1000);
 
-    // In production, send email
-    // await EmailService.sendMagicLink(normalizedEmail, magicLinkUrl);
+    // Send email via Resend; without an API key this logs the link in
+    // development and throws in production (see EmailService)
+    await EmailService.sendMagicLink(normalizedEmail, magicLinkUrl, expiresIn);
 
-    return { expiresIn: Math.floor(expiresInMs / 1000) };
+    return { expiresIn };
   },
 
   /**
