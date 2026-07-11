@@ -84,13 +84,15 @@ export abstract class BaseParser implements PlatformParser {
    * Create a node from user data
    */
   protected createNode(user: UserMap): GraphNode {
-    const pseudonym = this.pseudonymize(user.username);
+    // Use real username (no pseudonymization)
+    const displayName = user.displayName || user.username;
+    const username = user.username.startsWith('@') ? user.username : `@${user.username}`;
 
     return {
       id: user.id,
       type: user.type,
-      displayName: pseudonym,
-      username: `@${pseudonym.toLowerCase()}`,
+      displayName: displayName,
+      username: username,
       followerCount: user.followerCount,
       followingCount: user.followingCount,
       degree: 0,

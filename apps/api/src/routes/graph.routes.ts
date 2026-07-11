@@ -10,6 +10,7 @@ import { validateBody, validateQuery, validateParams, platformSchema, pagination
 import { uploadRateLimiter } from '../middleware/rateLimit.js';
 import { prisma } from '../config/database.js';
 import { NotFoundError, ForbiddenError } from '../middleware/errorHandler.js';
+import { runCommunityDetection } from '../services/insights/analyzer.js';
 
 const router: IRouter = Router();
 
@@ -145,16 +146,32 @@ router.post(
         data: { isLatest: false },
       });
 
-      // Create the graph (serialize JSON for SQLite)
-      // Calculate basic statistics during creation
-      const nodeCount = nodes.length;
+      // Run real community detection using Louvain algorithm
+      console.log(`[Graph] Running community detection on ${nodes.length} nodes, ${edges.length} edges...`);
+      const startTime = Date.now();
+      const detectionResult = runCommunityDetection(nodes, edges);
+      const detectionTime = Date.now() - startTime;
+      console.log(`[Graph] Community detection completed in ${detectionTime}ms: ${detectionResult.communities.count} communities found`);
+
+      // Use nodes with communityId assigned
+      const nodesWithCommunities = detectionResult.nodesWithCommunities;
+
+      // Calculate basic statistics
+      const nodeCount = nodesWithCommunities.length;
       const edgeCount = edges.length;
       const density = nodeCount > 1 ? edgeCount / (nodeCount * (nodeCount - 1)) : 0;
       const averageDegree = nodeCount > 0 ? (2 * edgeCount) / nodeCount : 0;
       
-      // Count mutual connections (estimate)
+      // Count mutual connections
       const mutualEdges = edges.filter((e: { type?: string }) => e.type === 'MUTUAL').length;
       const mutualPercentage = edgeCount > 0 ? (mutualEdges / edgeCount) * 100 : 0;
+
+      // Find top influencers by PageRank
+      const topNodes = nodesWithCommunities
+        .filter(n => n.pageRank !== undefined)
+        .sort((a, b) => (b.pageRank || 0) - (a.pageRank || 0))
+        .slice(0, 10)
+        .map(n => ({ id: n.id, score: n.pageRank || 0 }));
 
       const graph = await prisma.graph.create({
         data: {
@@ -162,8 +179,8 @@ router.post(
           platform,
           version,
           isLatest: true,
-          status: 'READY', // Set to READY immediately for MVP
-          nodesData: JSON.stringify(nodes),
+          status: 'READY',
+          nodesData: JSON.stringify(nodesWithCommunities),
           edgesData: JSON.stringify(edges),
           metadata: JSON.stringify({
             uploadId,
@@ -175,23 +192,23 @@ router.post(
               averageDegree,
             },
           }),
-          // Basic statistics for insights display
+          // Real statistics from Louvain analysis
           statistics: JSON.stringify({
             communities: {
-              count: Math.max(1, Math.floor(nodeCount / 50)), // Estimate: ~50 nodes per community
-              sizes: [],
-              modularity: 0,
+              count: detectionResult.communities.count,
+              sizes: detectionResult.communities.sizes,
+              modularity: detectionResult.communities.modularity,
             },
             centrality: {
               pageRank: {
-                selfScore: 1.0,
-                selfPercentile: Math.min(99, 50 + Math.log10(nodeCount) * 15), // Estimate based on network size
-                maxScore: 1.0,
-                topNodes: [],
+                selfScore: detectionResult.pageRankScores.get('self') || 0,
+                selfPercentile: calculatePercentile(detectionResult.pageRankScores, 'self'),
+                maxScore: Math.max(...Array.from(detectionResult.pageRankScores.values())),
+                topNodes,
               },
             },
             engagement: {
-              activePercentage: mutualPercentage > 0 ? mutualPercentage : 5.0, // Estimate
+              activePercentage: mutualPercentage > 0 ? mutualPercentage : 5.0,
               avgInteractions: 0,
               topEngagers: [],
             },
@@ -199,7 +216,7 @@ router.post(
         },
       });
 
-      // TODO: Queue graph processing job (Louvain, PageRank, etc.) for more accurate statistics
+      // Community detection already done above
 
       res.status(201).json({
         success: true,
@@ -208,8 +225,9 @@ router.post(
           platform: graph.platform,
           version: graph.version,
           status: graph.status,
-          nodeCount: nodes.length,
+          nodeCount: nodesWithCommunities.length,
           edgeCount: edges.length,
+          communityCount: detectionResult.communities.count,
           createdAt: graph.createdAt.toISOString(),
         },
       });
@@ -218,6 +236,18 @@ router.post(
     }
   }
 );
+
+/**
+ * Calculate percentile of a node's score
+ */
+function calculatePercentile(scores: Map<string, number>, nodeId: string): number {
+  const nodeScore = scores.get(nodeId);
+  if (nodeScore === undefined) return 50;
+  
+  const allScores = Array.from(scores.values()).sort((a, b) => a - b);
+  const rank = allScores.findIndex(s => s >= nodeScore);
+  return Math.round((rank / allScores.length) * 100);
+}
 
 /**
  * GET /graphs

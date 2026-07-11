@@ -5,7 +5,7 @@
 
 import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
-import { requireAuth, devAuth } from '../middleware/auth.js';
+import { devAuth } from '../middleware/auth.js';
 import { validateBody, validateQuery, validateParams, insightCategorySchema, paginationSchema, idParamSchema } from '../middleware/validation.js';
 import { prisma } from '../config/database.js';
 import { NotFoundError, ForbiddenError } from '../middleware/errorHandler.js';

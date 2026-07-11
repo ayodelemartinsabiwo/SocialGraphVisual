@@ -178,9 +178,10 @@ function detectCommunities(
     return { communities: [], modularity: 0 };
   }
 
-  // Run Louvain - assign communities to nodes
-  // The louvain function returns community assignments and modifies the graph
-  louvain(graph, { resolution: 1 });
+  // Run Louvain and write the 'community' attribute onto each node.
+  // Plain louvain() only returns a mapping; assign() mutates the graph,
+  // which the attribute reads below depend on.
+  louvain.assign(graph, { resolution: 1 });
 
   // Count nodes per community
   const communityCounts = new Map<string, number>();
@@ -487,6 +488,146 @@ function calculateReciprocity(graph: GraphInstance): number {
   });
 
   return reciprocal / graph.size;
+}
+
+// ============================================================
+// LIGHTWEIGHT COMMUNITY DETECTION FOR GRAPH CREATION
+// ============================================================
+
+export interface CommunityDetectionResult {
+  /** Nodes with communityId assigned */
+  nodesWithCommunities: Array<{ id: string; communityId: number; pageRank?: number; [key: string]: unknown }>;
+  /** Community statistics */
+  communities: {
+    count: number;
+    sizes: number[];
+    modularity: number;
+  };
+  /** PageRank scores for nodes */
+  pageRankScores: Map<string, number>;
+}
+
+/**
+ * Run community detection on raw nodes/edges and return nodes with communityId assigned.
+ * This is a lightweight function for use during graph creation.
+ */
+export function runCommunityDetection(
+  nodes: Array<{ id: string; [key: string]: unknown }>,
+  edges: Array<{ source: string; target: string; weight?: number }>
+): CommunityDetectionResult {
+  // Build graphology instance
+  const graph: GraphInstance = new Graph({ multi: false, type: 'directed', allowSelfLoops: false });
+
+  // Add nodes
+  for (const node of nodes) {
+    if (!graph.hasNode(node.id)) {
+      graph.addNode(node.id, { ...node });
+    }
+  }
+
+  // Add edges
+  for (const edge of edges) {
+    if (
+      graph.hasNode(edge.source) &&
+      graph.hasNode(edge.target) &&
+      !graph.hasEdge(edge.source, edge.target)
+    ) {
+      graph.addEdge(edge.source, edge.target, {
+        weight: edge.weight || 1,
+      });
+    }
+  }
+
+  // Run Louvain community detection
+  let modularity = 0;
+  const communityCounts = new Map<number, number>();
+
+  if (graph.order >= 2) {
+    try {
+      // Louvain assigns 'community' attribute to each node
+      louvain.assign(graph, { resolution: 1.0 });
+
+      // Count nodes per community
+      graph.forEachNode((nodeId: string) => {
+        const community = graph.getNodeAttribute(nodeId, 'community') ?? 0;
+        communityCounts.set(community, (communityCounts.get(community) || 0) + 1);
+      });
+
+      // Calculate modularity
+      if (graph.size > 0) {
+        const m = graph.size;
+        let q = 0;
+        graph.forEachEdge((_edge: string, _attrs: unknown, source: string, target: string) => {
+          const ci = graph.getNodeAttribute(source, 'community');
+          const cj = graph.getNodeAttribute(target, 'community');
+          if (ci === cj) {
+            const ki = graph.degree(source);
+            const kj = graph.degree(target);
+            q += 1 - (ki * kj) / (2 * m);
+          }
+        });
+        modularity = q / (2 * m);
+      }
+    } catch (error) {
+      console.error('[CommunityDetection] Louvain failed, using fallback:', error);
+      // Fallback: assign all to community 0
+      graph.forEachNode((nodeId: string) => {
+        graph.setNodeAttribute(nodeId, 'community', 0);
+      });
+      communityCounts.set(0, graph.order);
+    }
+  } else {
+    // Single node or empty graph
+    graph.forEachNode((nodeId: string) => {
+      graph.setNodeAttribute(nodeId, 'community', 0);
+    });
+    communityCounts.set(0, graph.order);
+  }
+
+  // Calculate PageRank scores
+  const pageRankScores = new Map<string, number>();
+  if (graph.order > 0) {
+    try {
+      const scores = pagerank(graph, {
+        alpha: 0.85,
+        maxIterations: 100,
+        tolerance: 1e-6,
+        getEdgeWeight: (edge: string) => graph.getEdgeAttribute(edge, 'weight') || 1,
+      });
+      for (const [nodeId, score] of Object.entries(scores)) {
+        pageRankScores.set(nodeId, score as number);
+      }
+    } catch (error) {
+      console.error('[CommunityDetection] PageRank failed:', error);
+      // Fallback: equal scores
+      const equalScore = 1 / graph.order;
+      graph.forEachNode((nodeId: string) => {
+        pageRankScores.set(nodeId, equalScore);
+      });
+    }
+  }
+
+  // Build result nodes with communityId and pageRank
+  const nodesWithCommunities = nodes.map(node => ({
+    ...node,
+    communityId: graph.hasNode(node.id) 
+      ? (graph.getNodeAttribute(node.id, 'community') ?? 0)
+      : 0,
+    pageRank: pageRankScores.get(node.id) ?? 0,
+  }));
+
+  // Build community sizes array sorted by size (descending)
+  const sizes = Array.from(communityCounts.values()).sort((a, b) => b - a);
+
+  return {
+    nodesWithCommunities,
+    communities: {
+      count: communityCounts.size,
+      sizes,
+      modularity: Math.max(0, Math.min(1, modularity)), // Clamp between 0 and 1
+    },
+    pageRankScores,
+  };
 }
 
 export default analyzeGraph;

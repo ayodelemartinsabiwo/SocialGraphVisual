@@ -1,47 +1,77 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { X, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
+import { getCommunityColorHex, getCommunityDisplayName } from '@/lib/graph/colors';
+
+/**
+ * Filter state that can be passed to parent components
+ */
+export interface GraphFilters {
+  communities: Set<number>;
+  minPageRank: number;
+  minEdgeWeight: number;
+  showLabels: boolean;
+  showIsolated: boolean;
+}
 
 interface FilterPanelProps {
   onClose: () => void;
+  /** Community sizes from graph.statistics.communities.sizes */
+  communitySizes?: number[];
+  /** Callback when filters change */
+  onFiltersChange?: (filters: GraphFilters) => void;
 }
-
-/**
- * Community colors following VSG design system
- */
-const communities = [
-  { id: 0, name: 'Tech & Innovation', color: 'bg-vsg-community-blue', count: 45 },
-  { id: 1, name: 'Creative Arts', color: 'bg-vsg-community-purple', count: 38 },
-  { id: 2, name: 'Business & Finance', color: 'bg-vsg-community-green', count: 52 },
-  { id: 3, name: 'Lifestyle', color: 'bg-vsg-community-amber', count: 31 },
-  { id: 4, name: 'Entertainment', color: 'bg-vsg-community-pink', count: 28 },
-];
 
 /**
  * FilterPanel Component
  *
  * Collapsible filter panel for the graph view:
- * - Community toggles
+ * - Community toggles (dynamic from graph data)
  * - Node size range (by PageRank)
  * - Edge strength threshold
  * - Show/hide labels
  */
-function FilterPanel({ onClose }: FilterPanelProps) {
+function FilterPanel({ onClose, communitySizes = [], onFiltersChange }: FilterPanelProps) {
+  // Build dynamic communities list from sizes
+  const communities = useMemo(() => 
+    communitySizes.map((count, index) => ({
+      id: index,
+      name: getCommunityDisplayName(index),
+      color: getCommunityColorHex(index),
+      count,
+    })),
+    [communitySizes]
+  );
+  
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     communities: true,
     metrics: true,
     display: false,
   });
 
-  const [filters, setFilters] = useState({
-    communities: new Set(communities.map((c) => c.id)),
+  // Initialize filters with all communities selected
+  const [filters, setFilters] = useState<GraphFilters>(() => ({
+    communities: new Set(communitySizes.map((_, i) => i)),
     minPageRank: 0,
     minEdgeWeight: 0,
     showLabels: true,
     showIsolated: true,
-  });
+  }));
+
+  // Update community set when communitySizes changes
+  useEffect(() => {
+    setFilters(prev => ({
+      ...prev,
+      communities: new Set(communitySizes.map((_, i) => i)),
+    }));
+  }, [communitySizes]);
+
+  // Notify parent when filters change
+  useEffect(() => {
+    onFiltersChange?.(filters);
+  }, [filters, onFiltersChange]);
 
   /**
    * Toggle section expansion
@@ -71,15 +101,15 @@ function FilterPanel({ onClose }: FilterPanelProps) {
   /**
    * Reset all filters
    */
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setFilters({
-      communities: new Set(communities.map((c) => c.id)),
+      communities: new Set(communitySizes.map((_, i) => i)),
       minPageRank: 0,
       minEdgeWeight: 0,
       showLabels: true,
       showIsolated: true,
     });
-  };
+  }, [communitySizes]);
 
   return (
     <Card className="h-full overflow-hidden flex flex-col">
@@ -150,8 +180,11 @@ function FilterPanel({ onClose }: FilterPanelProps) {
                     </svg>
                   )}
                 </div>
-                <div className={cn('w-3 h-3 rounded-full', community.color)} />
-                <span className="flex-1 text-body-sm text-vsg-gray-700 dark:text-vsg-gray-300">
+                <div 
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: community.color }}
+                />
+                <span className="flex-1 text-body-sm text-vsg-gray-700 dark:text-vsg-gray-300 truncate">
                   {community.name}
                 </span>
                 <span className="text-caption text-vsg-gray-400">

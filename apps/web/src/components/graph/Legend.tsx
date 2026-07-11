@@ -1,41 +1,69 @@
 import { cn } from '@/lib/utils';
+import { getCommunityColorHex, getCommunityDisplayName } from '@/lib/graph/colors';
 
 /**
- * Community data with colors from VSG design system
+ * Community info from graph statistics
  */
-const communities = [
-  { name: 'Tech & Innovation', color: 'bg-vsg-community-blue' },
-  { name: 'Creative Arts', color: 'bg-vsg-community-purple' },
-  { name: 'Business & Finance', color: 'bg-vsg-community-green' },
-  { name: 'Lifestyle', color: 'bg-vsg-community-amber' },
-  { name: 'Entertainment', color: 'bg-vsg-community-pink' },
-];
+export interface CommunityInfo {
+  id: number;
+  size: number;
+}
+
+interface LegendProps {
+  /** Array of community sizes from graph.statistics.communities.sizes */
+  communitySizes?: number[];
+  /** Maximum communities to display (default: 8) */
+  maxDisplay?: number;
+}
 
 /**
  * Legend Component
  *
  * Displays the color legend for the graph visualization:
- * - Community colors
+ * - Community colors (dynamic from graph data)
  * - Node size meaning
  * - Edge weight meaning
  */
-function Legend() {
+function Legend({ communitySizes = [], maxDisplay = 8 }: LegendProps) {
+  // Build dynamic community list from sizes array
+  const communities = communitySizes.slice(0, maxDisplay).map((size, index) => ({
+    id: index,
+    name: getCommunityDisplayName(index, size),
+    color: getCommunityColorHex(index),
+  }));
+
+  // Show message if no communities detected
+  const hasNoCommunities = communities.length === 0;
   return (
     <div className="bg-white dark:bg-vsg-gray-900 rounded-md shadow-md p-3 min-w-[180px]">
       {/* Communities */}
       <div className="mb-3">
         <p className="text-caption font-medium text-vsg-gray-500 uppercase tracking-wider mb-2">
-          Communities
+          Communities {communities.length > 0 && `(${communitySizes.length})`}
         </p>
         <div className="space-y-1.5">
-          {communities.map((community) => (
-            <div key={community.name} className="flex items-center gap-2">
-              <div className={cn('w-3 h-3 rounded-full', community.color)} />
-              <span className="text-caption text-vsg-gray-700 dark:text-vsg-gray-300">
-                {community.name}
-              </span>
-            </div>
-          ))}
+          {hasNoCommunities ? (
+            <p className="text-caption text-vsg-gray-400 italic">No communities detected</p>
+          ) : (
+            <>
+              {communities.map((community) => (
+                <div key={community.id} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: community.color }}
+                  />
+                  <span className="text-caption text-vsg-gray-700 dark:text-vsg-gray-300 truncate">
+                    {community.name}
+                  </span>
+                </div>
+              ))}
+              {communitySizes.length > maxDisplay && (
+                <p className="text-caption text-vsg-gray-400 italic">
+                  +{communitySizes.length - maxDisplay} more
+                </p>
+              )}
+            </>
+          )}
         </div>
       </div>
 

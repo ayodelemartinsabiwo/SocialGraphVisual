@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 import { cn } from '@/lib/utils';
+import { COMMUNITY_COLORS_HEX } from '@/lib/graph/colors';
 import type { GraphNode as SharedGraphNode, GraphEdge as SharedGraphEdge } from '@vsg/shared';
 
 // Force Vite recompile - timestamp: 2026-01-26T15:57
@@ -8,8 +9,11 @@ import type { GraphNode as SharedGraphNode, GraphEdge as SharedGraphEdge } from 
 // Internal D3 compatible types (extends shared with D3 simulation fields)
 interface D3GraphNode extends SharedGraphNode {
   index?: number;
+  x?: number;
+  y?: number;
   vx?: number;
   vy?: number;
+  bio?: string; // Optional bio field for industry classification
 }
 
 interface D3GraphEdge {
@@ -20,96 +24,80 @@ interface D3GraphEdge {
 
 interface GraphCanvasProps {
   zoom: number;
-  viewMode: 'force' | 'radial' | 'hierarchical';
+  viewMode: 'force' | 'radial' | 'hierarchical' | 'circular';
   searchQuery: string;
   selectedNode: string | null;
   onNodeSelect: (nodeId: string | null) => void;
   nodes?: SharedGraphNode[];
   edges?: SharedGraphEdge[];
+  showLabels?: boolean;
 }
 
 /**
- * Community colors following VSG design system
+ * Community colors from shared utility (supports 16+ communities with cycling)
  */
-const communityColors = [
-  '#3B82F6', // Blue
-  '#8B5CF6', // Purple
-  '#10B981', // Green
-  '#F59E0B', // Amber
-  '#EC4899', // Pink
-  '#06B6D4', // Cyan
-  '#EF4444', // Red
-  '#6366F1', // Indigo
-];
+const communityColors = COMMUNITY_COLORS_HEX;
 
 /**
- * Generate mock graph data for development/fallback
+ * Industry-based community names and colors
  */
-function generateMockData(): { nodes: D3GraphNode[]; edges: D3GraphEdge[] } {
-  const nodes: D3GraphNode[] = [];
-  const edges: D3GraphEdge[] = [];
+const INDUSTRY_COMMUNITIES = {
+  0: { name: 'Technology', color: '#3B82F6' }, // Blue
+  1: { name: 'Creative', color: '#8B5CF6' },    // Purple
+  2: { name: 'Business', color: '#10B981' },    // Green
+  3: { name: 'Media', color: '#F59E0B' },       // Amber
+  4: { name: 'Education', color: '#EC4899' },   // Pink
+  5: { name: 'Healthcare', color: '#06B6D4' },  // Cyan
+  6: { name: 'Finance', color: '#14B8A6' },     // Teal
+  7: { name: 'Community', color: '#6366F1' },   // Indigo
+};
 
-  // Create nodes with communities
-  const numNodes = 100;
-  const numCommunities = 5;
+/**
+ * Keywords for industry classification
+ */
+const INDUSTRY_KEYWORDS = {
+  Technology: ['tech', 'developer', 'software', 'engineer', 'programmer', 'code', 'data', 'ai', 'ml', 'cloud', 'devops', 'frontend', 'backend', 'fullstack', 'web dev', 'mobile dev'],
+  Creative: ['design', 'designer', 'art', 'artist', 'creative', 'ui', 'ux', 'graphic', 'video', 'photo', 'content', 'writer', 'author', 'illustrator', 'animator'],
+  Business: ['business', 'entrepreneur', 'founder', 'ceo', 'cto', 'manager', 'consultant', 'strategy', 'sales', 'marketing', 'product', 'startup', 'venture'],
+  Media: ['media', 'journalist', 'reporter', 'news', 'broadcaster', 'podcaster', 'youtuber', 'influencer', 'streamer', 'content creator'],
+  Education: ['teacher', 'educator', 'professor', 'instructor', 'student', 'academic', 'researcher', 'scholar', 'education', 'learning'],
+  Healthcare: ['doctor', 'nurse', 'health', 'medical', 'physician', 'therapist', 'healthcare', 'wellness', 'fitness', 'nutrition'],
+  Finance: ['finance', 'banker', 'investor', 'trader', 'analyst', 'accounting', 'economist', 'financial', 'crypto', 'blockchain'],
+};
 
-  for (let i = 0; i < numNodes; i++) {
-    const communityId = Math.floor(Math.random() * numCommunities);
-    nodes.push({
-      id: `node-${i}`,
-      type: 'USER',
-      displayName: `User ${i}`,
-      username: `user_${i}`,
-      communityId,
-      pageRank: Math.random(),
-      betweenness: Math.random() * 0.1,
-      degree: 0,
-    });
-  }
+/**
+ * Classify node into industry based on bio, username, or display name
+ */
+function classifyNodeIndustry(node: D3GraphNode): number {
+  const searchText = `${node.displayName} ${node.username} ${node.bio || ''}`.toLowerCase();
 
-  // Create edges - more likely within same community
-  for (let i = 0; i < numNodes; i++) {
-    const numEdges = Math.floor(Math.random() * 5) + 2;
-    for (let j = 0; j < numEdges; j++) {
-      // 70% chance to connect within community
-      let targetIdx: number;
-      if (Math.random() < 0.7) {
-        // Find node in same community
-        const sameCommNodes = nodes.filter(
-          (n, idx) => n.communityId === nodes[i].communityId && idx !== i
-        );
-        if (sameCommNodes.length > 0) {
-          const target = sameCommNodes[Math.floor(Math.random() * sameCommNodes.length)];
-          targetIdx = nodes.findIndex((n) => n.id === target.id);
-        } else {
-          targetIdx = Math.floor(Math.random() * numNodes);
-        }
-      } else {
-        targetIdx = Math.floor(Math.random() * numNodes);
+  // Check each industry for keyword matches
+  const industryScores: { [key: string]: number } = {};
+
+  for (const [industry, keywords] of Object.entries(INDUSTRY_KEYWORDS)) {
+    let score = 0;
+    for (const keyword of keywords) {
+      if (searchText.includes(keyword)) {
+        score++;
       }
-
-      if (targetIdx !== i) {
-        // Check if edge already exists
-        const exists = edges.some(
-          (e) =>
-            (typeof e.source === 'string' ? e.source : e.source.id) === nodes[i].id &&
-            (typeof e.target === 'string' ? e.target : e.target.id) === nodes[targetIdx].id
-        );
-
-        if (!exists) {
-          edges.push({
-            source: nodes[i].id,
-            target: nodes[targetIdx].id,
-            weight: Math.random() * 0.8 + 0.2,
-          });
-          nodes[i].degree = (nodes[i].degree || 0) + 1;
-          nodes[targetIdx].degree = (nodes[targetIdx].degree || 0) + 1;
-        }
-      }
+    }
+    if (score > 0) {
+      industryScores[industry] = score;
     }
   }
 
-  return { nodes, edges };
+  // Return industry with highest score
+  if (Object.keys(industryScores).length > 0) {
+    const topIndustry = Object.entries(industryScores).sort((a, b) => b[1] - a[1])[0][0];
+    return Object.keys(INDUSTRY_COMMUNITIES).find(
+      key => INDUSTRY_COMMUNITIES[parseInt(key) as keyof typeof INDUSTRY_COMMUNITIES].name === topIndustry
+    ) ? parseInt(Object.keys(INDUSTRY_COMMUNITIES).find(
+      key => INDUSTRY_COMMUNITIES[parseInt(key) as keyof typeof INDUSTRY_COMMUNITIES].name === topIndustry
+    )!) : 7; // Default to Community
+  }
+
+  // Default to Community if no industry matches
+  return 7;
 }
 
 /**
@@ -121,74 +109,111 @@ function generateMockData(): { nodes: D3GraphNode[]; edges: D3GraphEdge[] } {
  * - Edge weighting for engagement strength
  * - Zoom/pan interactions
  * - Node selection and highlighting
- * - Performance optimization for large graphs
+ * - Multiple layout modes (force, radial, hierarchical)
  */
-function GraphCanvas({
-  zoom,
-  viewMode,
-  searchQuery,
-  selectedNode,
-  onNodeSelect,
-  nodes: propNodes,
-  edges: propEdges,
-}: GraphCanvasProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
-  const simulationRef = useRef<d3.Simulation<D3GraphNode, D3GraphEdge> | null>(null);
-
-  // Use provided data or fall back to mock data for development
-  const [mockData] = useState(() => generateMockData());
-
-  // Convert shared types to D3-compatible format and validate edges
-  const graphData = useMemo(() => {
-    // Only use real data if we have nodes - edges may be 0 for isolated nodes
-    if (propNodes && propNodes.length > 0) {
-      // Clone nodes and assign communities if not already assigned
-      const d3Nodes: D3GraphNode[] = propNodes.map((node, index) => ({ 
-        ...node,
-        // Assign community based on simple heuristic if not set
-        communityId: node.communityId ?? Math.floor(index / Math.ceil(propNodes.length / 5))
-      }));
-      
-      // Create a set of valid node IDs for O(1) lookup
-      const nodeIds = new Set(d3Nodes.map(n => n.id));
-      
-      // Filter edges to only include those referencing existing nodes
-      // This prevents D3.js "node not found" errors
-      const d3Edges: D3GraphEdge[] = (propEdges || [])
-        .filter((edge) => {
-          const sourceValid = nodeIds.has(edge.source);
-          const targetValid = nodeIds.has(edge.target);
-          if (!sourceValid || !targetValid) {
-            console.warn(`[GraphCanvas] Filtering invalid edge: ${edge.source} -> ${edge.target}`);
-            return false;
-          }
-          return true;
-        })
-        .map((edge) => ({
-          source: edge.source,
-          target: edge.target,
-          // Ensure minimum weight for visibility, scale up for thickness
-          weight: Math.max(0.3, edge.weight || 0.3),
-        }));
-      
-      // Run simple community detection (label propagation style)
-      assignCommunities(d3Nodes, d3Edges);
-      
-      console.log(`[GraphCanvas] Loaded ${d3Nodes.length} nodes, ${d3Edges.length} valid edges`);
-      return { nodes: d3Nodes, edges: d3Edges };
-    }
-    console.log('[GraphCanvas] No nodes provided, using mock data');
-    return mockData;
-  }, [propNodes, propEdges, mockData]);
 
 /**
- * Simple community detection using label propagation
- * Assigns nodes to communities based on their connections
+ * Apply circular layout - perfect circle with center node (matching mockup)
  */
-function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
-  const NUM_COMMUNITIES = 5;
+function applyCircularLayout(nodes: D3GraphNode[], width: number, height: number): void {
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) * 0.38; // Slightly larger for better spacing
+
+  // Find self node
+  const selfNode = nodes.find((n) => n.type === 'SELF');
+  const otherNodes = nodes.filter((n) => n.type !== 'SELF');
+
+  // Position self node at center
+  if (selfNode) {
+    selfNode.x = centerX;
+    selfNode.y = centerY;
+  }
+
+  // Arrange other nodes in perfect circle
+  const angleStep = (2 * Math.PI) / otherNodes.length;
+  otherNodes.forEach((node, index) => {
+    const angle = angleStep * index - Math.PI / 2; // Start from top
+    node.x = centerX + radius * Math.cos(angle);
+    node.y = centerY + radius * Math.sin(angle);
+  });
+}
+
+/**
+ * Apply radial layout - nodes arranged in concentric circles by community
+ */
+function applyRadialLayout(nodes: D3GraphNode[], width: number, height: number): void {
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const maxRadius = Math.min(width, height) * 0.4;
+
+  // Group nodes by community
+  const communities = new Map<number, D3GraphNode[]>();
+  for (const node of nodes) {
+    const cid = node.communityId || 0;
+    if (!communities.has(cid)) {
+      communities.set(cid, []);
+    }
+    communities.get(cid)!.push(node);
+  }
+
+  // Sort communities by size (largest first)
+  const sortedCommunities = [...communities.entries()].sort((a, b) => b[1].length - a[1].length);
+
+  // Assign each community to a ring, with nodes spread around
+  const numRings = Math.max(1, sortedCommunities.length);
+  const ringSpacing = maxRadius / numRings;
+
+  sortedCommunities.forEach(([, communityNodes], ringIndex) => {
+    const radius = ringSpacing * (ringIndex + 1);
+    const angleStep = (2 * Math.PI) / communityNodes.length;
+
+    communityNodes.forEach((node, nodeIndex) => {
+      const angle = angleStep * nodeIndex - Math.PI / 2; // Start from top
+      node.x = centerX + radius * Math.cos(angle);
+      node.y = centerY + radius * Math.sin(angle);
+    });
+  });
+}
+
+/**
+ * Apply hierarchical/tree layout - root at top, levels below
+ */
+function applyHierarchicalLayout(
+  nodes: D3GraphNode[],
+  edges: D3GraphEdge[],
+  width: number,
+  height: number
+): void {
+  // Build adjacency for degree calculation
+  const degree = new Map<string, number>();
+  for (const node of nodes) {
+    degree.set(node.id, 0);
+  }
+  for (const edge of edges) {
+    const sourceId = typeof edge.source === 'string' ? edge.source : edge.source.id;
+    const targetId = typeof edge.target === 'string' ? edge.target : edge.target.id;
+    degree.set(sourceId, (degree.get(sourceId) || 0) + 1);
+    degree.set(targetId, (degree.get(targetId) || 0) + 1);
+  }
+  
+  // Find root (highest degree node, or highest pageRank)
+  let rootNode = nodes[0];
+  let maxScore = 0;
+  for (const node of nodes) {
+    const score = (degree.get(node.id) || 0) + (node.pageRank || 0) * 100;
+    if (score > maxScore) {
+      maxScore = score;
+      rootNode = node;
+    }
+  }
+  
+  // BFS to assign levels
+  const level = new Map<string, number>();
+  const visited = new Set<string>();
+  const queue: D3GraphNode[] = [rootNode];
+  level.set(rootNode.id, 0);
+  visited.add(rootNode.id);
   
   // Build adjacency list
   const adjacency = new Map<string, string[]>();
@@ -202,55 +227,201 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
     adjacency.get(targetId)?.push(sourceId);
   }
   
-  // Initialize communities based on degree (high degree nodes seed communities)
-  const nodesByDegree = [...nodes].sort((a, b) => 
-    (adjacency.get(b.id)?.length || 0) - (adjacency.get(a.id)?.length || 0)
-  );
-  
-  // Assign top nodes as community seeds
-  const communitySeeds: string[] = [];
-  for (let i = 0; i < Math.min(NUM_COMMUNITIES, nodesByDegree.length); i++) {
-    communitySeeds.push(nodesByDegree[i].id);
-    nodesByDegree[i].communityId = i;
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    const currentLevel = level.get(current.id) || 0;
+    
+    for (const neighborId of adjacency.get(current.id) || []) {
+      if (!visited.has(neighborId)) {
+        visited.add(neighborId);
+        level.set(neighborId, currentLevel + 1);
+        const neighbor = nodes.find(n => n.id === neighborId);
+        if (neighbor) queue.push(neighbor);
+      }
+    }
   }
   
-  // Propagate labels - assign each node to the community of its most connected neighbor
-  const nodeMap = new Map(nodes.map(n => [n.id, n]));
-  
+  // Handle disconnected nodes (put them at bottom)
+  const maxLevel = Math.max(...level.values(), 0);
   for (const node of nodes) {
-    if (communitySeeds.includes(node.id)) continue;
+    if (!level.has(node.id)) {
+      level.set(node.id, maxLevel + 1);
+    }
+  }
+  
+  // Group nodes by level
+  const levels = new Map<number, D3GraphNode[]>();
+  for (const node of nodes) {
+    const lvl = level.get(node.id) || 0;
+    if (!levels.has(lvl)) {
+      levels.set(lvl, []);
+    }
+    levels.get(lvl)!.push(node);
+  }
+  
+  // Assign positions
+  const numLevels = Math.max(...levels.keys()) + 1;
+  const levelHeight = height / (numLevels + 1);
+  const padding = 50;
+  
+  for (const [lvl, levelNodes] of levels.entries()) {
+    const y = padding + levelHeight * (lvl + 0.5);
+    const xStep = (width - 2 * padding) / (levelNodes.length + 1);
     
+    levelNodes.forEach((node, index) => {
+      node.x = padding + xStep * (index + 1);
+      node.y = y;
+    });
+  }
+}
+
+function GraphCanvas({
+  zoom,
+  viewMode,
+  searchQuery,
+  selectedNode,
+  onNodeSelect,
+  nodes: propNodes,
+  edges: propEdges,
+  showLabels = true,
+}: GraphCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const simulationRef = useRef<d3.Simulation<D3GraphNode, D3GraphEdge> | null>(null);
+
+  // Convert shared types to D3-compatible format and validate edges
+  const graphData = useMemo(() => {
+    // Only proceed if we have real nodes
+    if (!propNodes || propNodes.length === 0) {
+      console.warn('[GraphCanvas] No nodes provided - GraphPage should handle this');
+      return { nodes: [], edges: [] };
+    }
+
+    // Clone nodes - use hybrid approach for industry classification
+    const d3Nodes: D3GraphNode[] = propNodes.map((node) => {
+      // Try keyword-based industry classification first
+      const industryId = classifyNodeIndustry(node);
+
+      // If keyword matching found an industry (not Community/7), use it
+      // Otherwise, map backend's Louvain community to an industry cyclically
+      let finalCommunityId: number;
+      if (industryId !== 7) {
+        // Keyword matching found an industry
+        finalCommunityId = industryId;
+      } else if (node.communityId !== undefined && node.communityId !== null) {
+        // Map backend community to industry (cycle through 0-7)
+        finalCommunityId = node.communityId % 8;
+      } else {
+        // Fallback to Community
+        finalCommunityId = 7;
+      }
+
+      return {
+        ...node,
+        communityId: finalCommunityId,
+        // Ensure display name uses real username if no displayName
+        displayName: node.displayName || node.username || `User ${node.id.slice(0, 8)}`,
+      };
+    });
+
+    // Create a set of valid node IDs for O(1) lookup
+    const nodeIds = new Set(d3Nodes.map(n => n.id));
+
+    // Filter edges to only include those referencing existing nodes
+    // This prevents D3.js "node not found" errors
+    const d3Edges: D3GraphEdge[] = (propEdges || [])
+      .filter((edge) => {
+        const sourceValid = nodeIds.has(edge.source);
+        const targetValid = nodeIds.has(edge.target);
+        if (!sourceValid || !targetValid) {
+          console.warn(`[GraphCanvas] Filtering invalid edge: ${edge.source} -> ${edge.target}`);
+          return false;
+        }
+        return true;
+      })
+      .map((edge) => ({
+        source: edge.source,
+        target: edge.target,
+        // Ensure minimum weight for visibility, scale up for thickness
+        weight: Math.max(0.3, edge.weight || 0.3),
+      }));
+
+    // Use label propagation for nodes that couldn't be classified by industry
+    assignIndustryCommunities(d3Nodes, d3Edges);
+
+    console.log(`[GraphCanvas] Loaded ${d3Nodes.length} nodes, ${d3Edges.length} valid edges`);
+    return { nodes: d3Nodes, edges: d3Edges };
+  }, [propNodes, propEdges]);
+
+/**
+ * Industry-based community assignment with label propagation fallback
+ * For nodes classified as "Community" (7), use label propagation to assign
+ * them to industry communities based on their connections
+ */
+function assignIndustryCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
+  // Build adjacency list
+  const adjacency = new Map<string, string[]>();
+  for (const node of nodes) {
+    adjacency.set(node.id, []);
+  }
+  for (const edge of edges) {
+    const sourceId = typeof edge.source === 'string' ? edge.source : edge.source.id;
+    const targetId = typeof edge.target === 'string' ? edge.target : edge.target.id;
+    adjacency.get(sourceId)?.push(targetId);
+    adjacency.get(targetId)?.push(sourceId);
+  }
+
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+
+  // For nodes with "Community" classification (7), use label propagation
+  // to assign them to industry communities based on their connections
+  for (const node of nodes) {
+    // Skip nodes that already have industry classification
+    if (node.communityId !== 7) continue;
+
     const neighbors = adjacency.get(node.id) || [];
     if (neighbors.length === 0) {
-      // Isolated node - assign randomly
-      node.communityId = Math.floor(Math.random() * NUM_COMMUNITIES);
+      // Isolated node - keep as Community
       continue;
     }
-    
-    // Count community votes from neighbors
-    const communityVotes = new Map<number, number>();
+
+    // Count industry votes from neighbors
+    const industryVotes = new Map<number, number>();
     for (const neighborId of neighbors) {
       const neighbor = nodeMap.get(neighborId);
-      if (neighbor && neighbor.communityId !== undefined) {
-        const votes = communityVotes.get(neighbor.communityId) || 0;
-        communityVotes.set(neighbor.communityId, votes + 1);
+      if (neighbor && neighbor.communityId !== undefined && neighbor.communityId !== 7) {
+        const votes = industryVotes.get(neighbor.communityId) || 0;
+        industryVotes.set(neighbor.communityId, votes + 1);
       }
     }
-    
-    // Assign to most popular community among neighbors, or random if no votes
-    if (communityVotes.size > 0) {
+
+    // Assign to most popular industry among neighbors
+    if (industryVotes.size > 0) {
       let maxVotes = 0;
-      let bestCommunity = 0;
-      for (const [community, votes] of communityVotes) {
+      let bestIndustry = 7;
+      for (const [industry, votes] of industryVotes) {
         if (votes > maxVotes) {
           maxVotes = votes;
-          bestCommunity = community;
+          bestIndustry = industry;
         }
       }
-      node.communityId = bestCommunity;
-    } else {
-      node.communityId = Math.floor(Math.random() * NUM_COMMUNITIES);
+      node.communityId = bestIndustry;
     }
+    // Otherwise keep as Community (7)
+  }
+
+  // Log industry distribution
+  const industryCount = new Map<number, number>();
+  for (const node of nodes) {
+    const count = industryCount.get(node.communityId || 7) || 0;
+    industryCount.set(node.communityId || 7, count + 1);
+  }
+
+  console.log('[GraphCanvas] Industry distribution:');
+  for (const [industryId, count] of industryCount.entries()) {
+    const industry = INDUSTRY_COMMUNITIES[industryId as keyof typeof INDUSTRY_COMMUNITIES];
+    console.log(`  ${industry?.name || 'Unknown'}: ${count} nodes`);
   }
 }
 
@@ -276,7 +447,7 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
   }, []);
 
   /**
-   * Initialize D3 visualization
+   * Initialize D3 visualization with different layouts based on viewMode
    */
   useEffect(() => {
     if (!svgRef.current || !graphData) return;
@@ -300,27 +471,13 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
 
     svg.call(zoomBehavior);
 
-    // Create simulation
-    const simulation = d3
-      .forceSimulation<D3GraphNode>(graphData.nodes)
-      .force(
-        'link',
-        d3
-          .forceLink<D3GraphNode, D3GraphEdge>(graphData.edges)
-          .id((d) => d.id)
-          .distance(80)
-          .strength((d) => d.weight * 0.5)
-      )
-      .force('charge', d3.forceManyBody().strength(-200))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(20));
-
-    simulationRef.current = simulation;
+    // Create edges first (behind nodes)
+    const edgesGroup = g.append('g').attr('class', 'edges');
+    const nodesGroup = g.append('g').attr('class', 'nodes');
+    const labelsGroup = g.append('g').attr('class', 'labels');
 
     // Create edge elements - scale thickness by weight
-    const edges = g
-      .append('g')
-      .attr('class', 'edges')
+    const edges = edgesGroup
       .selectAll('line')
       .data(graphData.edges)
       .join('line')
@@ -333,14 +490,16 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
       });
 
     // Create node elements
-    const nodes = g
-      .append('g')
-      .attr('class', 'nodes')
+    const nodes = nodesGroup
       .selectAll('circle')
       .data(graphData.nodes)
       .join('circle')
       .attr('r', (d) => Math.max(6, (d.pageRank || 0.5) * 20 + 4))
-      .attr('fill', (d) => communityColors[(d.communityId || 0) % communityColors.length])
+      .attr('fill', (d) => {
+        // Use industry colors if available, otherwise fallback to generic colors
+        const industryId = d.communityId || 0;
+        return INDUSTRY_COMMUNITIES[industryId as keyof typeof INDUSTRY_COMMUNITIES]?.color || communityColors[industryId % communityColors.length];
+      })
       .attr('stroke', '#fff')
       .attr('stroke-width', 2)
       .attr('cursor', 'pointer')
@@ -374,8 +533,172 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
         edges
           .attr('stroke-opacity', 0.3)
           .attr('stroke', '#9CA3AF');
-      })
-      .call(
+      });
+
+    // Add labels for larger nodes
+    const labels = labelsGroup
+      .selectAll('text')
+      .data(graphData.nodes.filter((d) => (d.pageRank || 0) > 0.7))
+      .join('text')
+      .text((d) => d.displayName)
+      .attr('font-size', 10)
+      .attr('fill', '#374151')
+      .attr('text-anchor', 'middle')
+      .attr('dy', -12)
+      .attr('pointer-events', 'none');
+
+    // Apply layout based on viewMode
+    if (viewMode === 'circular') {
+      // CIRCULAR LAYOUT: Perfect circle with center node (matches mockup)
+      applyCircularLayout(graphData.nodes, width, height);
+
+      // Set fixed positions with smooth transition
+      nodes
+        .transition()
+        .duration(800)
+        .attr('cx', (d) => d.x!)
+        .attr('cy', (d) => d.y!);
+
+      edges
+        .transition()
+        .duration(800)
+        .attr('x1', (d) => (d.source as D3GraphNode).x!)
+        .attr('y1', (d) => (d.source as D3GraphNode).y!)
+        .attr('x2', (d) => (d.target as D3GraphNode).x!)
+        .attr('y2', (d) => (d.target as D3GraphNode).y!);
+
+      labels
+        .transition()
+        .duration(800)
+        .attr('x', (d) => d.x!)
+        .attr('y', (d) => d.y!);
+
+      // Add drag for circular layout
+      nodes.call(
+        d3
+          .drag<SVGCircleElement, D3GraphNode>()
+          .on('drag', (event, d) => {
+            d.x = event.x;
+            d.y = event.y;
+            d3.select(event.sourceEvent.target).attr('cx', d.x || 0).attr('cy', d.y || 0);
+
+            // Update connected edges
+            edges
+              .filter((e) => {
+                const sourceId = typeof e.source === 'string' ? e.source : e.source.id;
+                const targetId = typeof e.target === 'string' ? e.target : e.target.id;
+                return sourceId === d.id || targetId === d.id;
+              })
+              .attr('x1', (e) => (e.source as D3GraphNode).x!)
+              .attr('y1', (e) => (e.source as D3GraphNode).y!)
+              .attr('x2', (e) => (e.target as D3GraphNode).x!)
+              .attr('y2', (e) => (e.target as D3GraphNode).y!);
+          }) as unknown as (selection: d3.Selection<SVGCircleElement | d3.BaseType, D3GraphNode, SVGGElement, unknown>) => void
+      );
+
+    } else if (viewMode === 'radial') {
+      // RADIAL LAYOUT: Position nodes in concentric circles by community
+      applyRadialLayout(graphData.nodes, width, height);
+      
+      // Set fixed positions immediately
+      nodes
+        .attr('cx', (d) => d.x!)
+        .attr('cy', (d) => d.y!);
+      
+      edges
+        .attr('x1', (d) => (d.source as D3GraphNode).x!)
+        .attr('y1', (d) => (d.source as D3GraphNode).y!)
+        .attr('x2', (d) => (d.target as D3GraphNode).x!)
+        .attr('y2', (d) => (d.target as D3GraphNode).y!);
+      
+      labels
+        .attr('x', (d) => d.x!)
+        .attr('y', (d) => d.y!);
+
+      // Add drag for radial layout (fixed positions, no simulation)
+      nodes.call(
+        d3
+          .drag<SVGCircleElement, D3GraphNode>()
+          .on('drag', (event, d) => {
+            d.x = event.x;
+            d.y = event.y;
+            d3.select(event.sourceEvent.target).attr('cx', d.x || 0).attr('cy', d.y || 0);
+            
+            // Update connected edges
+            edges
+              .filter((e) => {
+                const sourceId = typeof e.source === 'string' ? e.source : e.source.id;
+                const targetId = typeof e.target === 'string' ? e.target : e.target.id;
+                return sourceId === d.id || targetId === d.id;
+              })
+              .attr('x1', (e) => (e.source as D3GraphNode).x!)
+              .attr('y1', (e) => (e.source as D3GraphNode).y!)
+              .attr('x2', (e) => (e.target as D3GraphNode).x!)
+              .attr('y2', (e) => (e.target as D3GraphNode).y!);
+          }) as unknown as (selection: d3.Selection<SVGCircleElement | d3.BaseType, D3GraphNode, SVGGElement, unknown>) => void
+      );
+
+    } else if (viewMode === 'hierarchical') {
+      // HIERARCHICAL/TREE LAYOUT: Find most connected node as root
+      applyHierarchicalLayout(graphData.nodes, graphData.edges, width, height);
+      
+      // Set fixed positions
+      nodes
+        .attr('cx', (d) => d.x!)
+        .attr('cy', (d) => d.y!);
+      
+      edges
+        .attr('x1', (d) => (d.source as D3GraphNode).x!)
+        .attr('y1', (d) => (d.source as D3GraphNode).y!)
+        .attr('x2', (d) => (d.target as D3GraphNode).x!)
+        .attr('y2', (d) => (d.target as D3GraphNode).y!);
+      
+      labels
+        .attr('x', (d) => d.x!)
+        .attr('y', (d) => d.y!);
+
+      // Add drag for hierarchical layout
+      nodes.call(
+        d3
+          .drag<SVGCircleElement, D3GraphNode>()
+          .on('drag', (event, d) => {
+            d.x = event.x;
+            d.y = event.y;
+            d3.select(event.sourceEvent.target).attr('cx', d.x || 0).attr('cy', d.y || 0);
+            
+            edges
+              .filter((e) => {
+                const sourceId = typeof e.source === 'string' ? e.source : e.source.id;
+                const targetId = typeof e.target === 'string' ? e.target : e.target.id;
+                return sourceId === d.id || targetId === d.id;
+              })
+              .attr('x1', (e) => (e.source as D3GraphNode).x!)
+              .attr('y1', (e) => (e.source as D3GraphNode).y!)
+              .attr('x2', (e) => (e.target as D3GraphNode).x!)
+              .attr('y2', (e) => (e.target as D3GraphNode).y!);
+          }) as unknown as (selection: d3.Selection<SVGCircleElement | d3.BaseType, D3GraphNode, SVGGElement, unknown>) => void
+      );
+
+    } else {
+      // FORCE LAYOUT (default)
+      const simulation = d3
+        .forceSimulation<D3GraphNode>(graphData.nodes)
+        .force(
+          'link',
+          d3
+            .forceLink<D3GraphNode, D3GraphEdge>(graphData.edges)
+            .id((d) => d.id)
+            .distance(80)
+            .strength((d) => d.weight * 0.5)
+        )
+        .force('charge', d3.forceManyBody().strength(-200))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(20));
+
+      simulationRef.current = simulation;
+
+      // Add drag behavior for force simulation
+      nodes.call(
         d3
           .drag<SVGCircleElement, D3GraphNode>()
           .on('start', (event, d) => {
@@ -394,36 +717,23 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
           }) as unknown as (selection: d3.Selection<SVGCircleElement | d3.BaseType, D3GraphNode, SVGGElement, unknown>) => void
       );
 
-    // Add labels for larger nodes
-    const labels = g
-      .append('g')
-      .attr('class', 'labels')
-      .selectAll('text')
-      .data(graphData.nodes.filter((d) => (d.pageRank || 0) > 0.7))
-      .join('text')
-      .text((d) => d.displayName)
-      .attr('font-size', 10)
-      .attr('fill', '#374151')
-      .attr('text-anchor', 'middle')
-      .attr('dy', -12)
-      .attr('pointer-events', 'none');
+      // Update positions on simulation tick
+      simulation.on('tick', () => {
+        edges
+          .attr('x1', (d) => (d.source as D3GraphNode).x!)
+          .attr('y1', (d) => (d.source as D3GraphNode).y!)
+          .attr('x2', (d) => (d.target as D3GraphNode).x!)
+          .attr('y2', (d) => (d.target as D3GraphNode).y!);
 
-    // Update positions on simulation tick
-    simulation.on('tick', () => {
-      edges
-        .attr('x1', (d) => (d.source as D3GraphNode).x!)
-        .attr('y1', (d) => (d.source as D3GraphNode).y!)
-        .attr('x2', (d) => (d.target as D3GraphNode).x!)
-        .attr('y2', (d) => (d.target as D3GraphNode).y!);
+        nodes
+          .attr('cx', (d) => d.x!)
+          .attr('cy', (d) => d.y!);
 
-      nodes
-        .attr('cx', (d) => d.x!)
-        .attr('cy', (d) => d.y!);
-
-      labels
-        .attr('x', (d) => d.x!)
-        .attr('y', (d) => d.y!);
-    });
+        labels
+          .attr('x', (d) => d.x!)
+          .attr('y', (d) => d.y!);
+      });
+    }
 
     // Click on background to deselect
     svg.on('click', () => {
@@ -431,9 +741,11 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
     });
 
     return () => {
-      simulation.stop();
+      if (simulationRef.current) {
+        simulationRef.current.stop();
+      }
     };
-  }, [graphData, dimensions, onNodeSelect]);
+  }, [graphData, dimensions, viewMode, onNodeSelect]);
 
   /**
    * Update zoom level
@@ -486,6 +798,16 @@ function assignCommunities(nodes: D3GraphNode[], edges: D3GraphEdge[]): void {
       .attr('stroke', (d) => (d.id === selectedNode ? '#F97316' : '#fff'))
       .attr('stroke-width', (d) => (d.id === selectedNode ? 4 : 2));
   }, [selectedNode]);
+
+  /**
+   * Toggle label visibility
+   */
+  useEffect(() => {
+    if (!svgRef.current) return;
+    
+    const svg = d3.select(svgRef.current);
+    svg.selectAll('.labels').style('display', showLabels ? 'block' : 'none');
+  }, [showLabels]);
 
   return (
     <div
