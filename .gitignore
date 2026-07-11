@@ -20,3 +20,20 @@ Thumbs.db
 
 # dev Images
 image_errors/
+
+# Claude files
+.claude/
+
+# Local databases (contain ingested user data)
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
+
+# Personal social media data exports (never commit)
+instagram-*/
+instagram-*.zip
+*Meta_Information_Social_Data*
+
+# Dev/debug debris
+cookies*.txt
+console_log/
+*.tsbuildinfo
